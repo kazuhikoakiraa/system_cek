@@ -7,33 +7,43 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Mesin extends Model
+class PengecekanMesin extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'nama_mesin',
+        'mesin_id',
         'user_id',
-        'deskripsi',
+        'tanggal_pengecekan',
+        'status',
     ];
 
     protected $casts = [
+        'tanggal_pengecekan' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    public function mesin(): BelongsTo
+    {
+        return $this->belongsTo(Mesin::class);
+    }
 
     public function operator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function komponenMesins(): HasMany
+    public function detailPengecekan(): HasMany
     {
-        return $this->hasMany(KomponenMesin::class);
+        return $this->hasMany(DetailPengecekanMesin::class);
     }
 
-    public function pengecekan(): HasMany
+    /**
+     * Prevent deletion of pengecekan records
+     */
+    public function canDelete(): bool
     {
-        return $this->hasMany(PengecekanMesin::class);
+        return false;
     }
 }

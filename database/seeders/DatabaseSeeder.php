@@ -35,5 +35,11 @@ class DatabaseSeeder extends Seeder
         $this->command->info('✓ Super Admin created!');
         $this->command->info('  Email: admin@system-cek.com');
         $this->command->info('  Password: password');
+
+        // Seed mesin dan pengecekan (optional, uncomment jika ingin seed data)
+        // $this->call([
+        //     MesinSeeder::class,
+        //     PengecekanSeeder::class,
+        // ]);
     }
 }
