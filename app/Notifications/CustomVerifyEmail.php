@@ -18,6 +18,9 @@ class CustomVerifyEmail extends VerifyEmailBase
      */
     protected function verificationUrl($notifiable)
     {
+        // Force URL to use APP_URL scheme and host
+        URL::forceRootUrl(config('app.url'));
+        
         return URL::temporarySignedRoute(
             'verification.verify',
             Carbon::now()->addMinutes(Config::get('auth.verification.expire', 60)),

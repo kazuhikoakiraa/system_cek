@@ -29,7 +29,9 @@ class UserForm
                                     ->label('Foto Profil')
                                     ->image()
                                     ->avatar()
+                                    ->disk('public')
                                     ->directory('avatars')
+                                    ->visibility('public')
                                     ->maxSize(2048) // 2MB
                                     ->imageEditor()
                                     ->circleCropper()

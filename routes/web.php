@@ -9,20 +9,30 @@ Route::get('/', function () {
     return redirect('/admin');
 });
 
-// Email Verification Routes
+// Email Verification Handler - Tidak butuh auth karena signed URL
+Route::get('/email/verify/{id}/{hash}', function (Request $request, $id, $hash) {
+    $user = \App\Models\User::findOrFail($id);
+    
+    // Verify hash matches
+    if (!hash_equals($hash, sha1($user->getEmailForVerification()))) {
+        abort(403, 'Invalid verification link.');
+    }
+    
+    // Mark email as verified
+    if (!$user->hasVerifiedEmail()) {
+        $user->markEmailAsVerified();
+    }
+    
+    return redirect('/admin/login')->with('success', 'Email Anda berhasil diverifikasi! Silakan login.');
+})->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
+
+// Email Verification Routes (butuh auth)
 Route::middleware('auth')->group(function () {
     
     // Email verification notice
     Route::get('/email/verify', function () {
         return view('auth.verify-email');
     })->name('verification.notice');
-
-    // Email verification handler
-    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-        $request->fulfill();
-
-        return redirect('/admin')->with('success', 'Email Anda berhasil diverifikasi!');
-    })->middleware(['signed'])->name('verification.verify');
 
     // Resend verification email
     Route::post('/email/verification-notification', function (Request $request) {
