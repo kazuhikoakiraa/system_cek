@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LaporanExportController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -7,6 +8,12 @@ use Illuminate\Http\Request;
 // Home route
 Route::get('/', function () {
     return redirect('/admin');
+});
+
+// Laporan Export Routes
+Route::middleware(['auth'])->prefix('laporan')->name('laporan.')->group(function () {
+    Route::get('/export-pdf', [LaporanExportController::class, 'exportPdf'])->name('export-pdf');
+    Route::get('/export-excel', [LaporanExportController::class, 'exportExcel'])->name('export-excel');
 });
 
 // Email Verification Handler - Tidak butuh auth karena signed URL
