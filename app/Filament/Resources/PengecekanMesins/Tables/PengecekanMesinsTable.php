@@ -2,68 +2,124 @@
 
 namespace App\Filament\Resources\PengecekanMesins\Tables;
 
+use App\Models\Mesin;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class PengecekanMesinsTable
 {
     public static function configure(Table $table): Table
     {
         return $table
+            ->query(Mesin::query())
             ->columns([
-                TextColumn::make('mesin.nama_mesin')
+                TextColumn::make('nama_mesin')
                     ->label('Nama Mesin')
                     ->searchable()
-                    ->sortable(),
-
-                TextColumn::make('tanggal_pengecekan')
-                    ->label('Tanggal Pengecekan')
-                    ->dateTime('d F Y H:i:s')
-                    ->sortable(),
+                    ->sortable()
+                    ->weight('bold'),
 
                 TextColumn::make('operator.name')
                     ->label('Operator')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->default('Tidak ada operator'),
 
-                TextColumn::make('status')
-                    ->label('Status')
+                TextColumn::make('status_pengecekan_hari_ini')
+                    ->label('Status Pengecekan')
                     ->badge()
+                    ->state(function (Mesin $record): string {
+                        $pengecekanHariIni = $record->pengecekan()
+                            ->whereDate('tanggal_pengecekan', today())
+                            ->first();
+
+                        if (!$pengecekanHariIni) {
+                            return 'Belum Dicek';
+                        }
+
+                        return $pengecekanHariIni->status === 'selesai' 
+                            ? 'Sudah Dicek' 
+                            : 'Sedang Dicek';
+                    })
                     ->color(fn (string $state): string => match ($state) {
-                        'selesai' => 'success',
-                        'dalam_proses' => 'warning',
+                        'Sudah Dicek' => 'success',
+                        'Sedang Dicek' => 'warning',
+                        'Belum Dicek' => 'danger',
                         default => 'gray',
                     })
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'selesai' => 'Selesai',
-                        'dalam_proses' => 'Dalam Proses',
-                        default => $state,
+                    ->icon(fn (string $state): string => match ($state) {
+                        'Sudah Dicek' => 'heroicon-o-check-circle',
+                        'Sedang Dicek' => 'heroicon-o-clock',
+                        'Belum Dicek' => 'heroicon-o-x-circle',
+                        default => 'heroicon-o-question-mark-circle',
                     }),
 
-                TextColumn::make('detailPengecekan_count')
-                    ->label('Jumlah Komponen')
-                    ->counts('detailPengecekan')
-                    ->alignCenter(),
+                TextColumn::make('waktu_pengecekan')
+                    ->label('Waktu Pengecekan')
+                    ->state(function (Mesin $record): ?string {
+                        $pengecekanHariIni = $record->pengecekan()
+                            ->whereDate('tanggal_pengecekan', today())
+                            ->first();
 
-                TextColumn::make('created_at')
-                    ->label('Dibuat')
-                    ->dateTime('d M Y H:i')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                        return $pengecekanHariIni?->tanggal_pengecekan?->format('H:i:s');
+                    })
+                    ->placeholder('-')
+                    ->alignCenter(),
             ])
+            ->defaultSort('nama_mesin')
             ->filters([
-                SelectFilter::make('status')
+                SelectFilter::make('status_pengecekan')
+                    ->label('Status Pengecekan')
                     ->options([
-                        'selesai' => 'Selesai',
-                        'dalam_proses' => 'Dalam Proses',
-                    ]),
+                        'sudah' => 'Sudah Dicek',
+                        'sedang' => 'Sedang Dicek',
+                        'belum' => 'Belum Dicek',
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        $status = $data['value'] ?? null;
+
+                        if (!$status) {
+                            return $query;
+                        }
+
+                        return match ($status) {
+                            'sudah' => $query->whereHas('pengecekan', function ($q) {
+                                $q->whereDate('tanggal_pengecekan', today())
+                                    ->where('status', 'selesai');
+                            }),
+                            'sedang' => $query->whereHas('pengecekan', function ($q) {
+                                $q->whereDate('tanggal_pengecekan', today())
+                                    ->where('status', 'dalam_proses');
+                            }),
+                            'belum' => $query->whereDoesntHave('pengecekan', function ($q) {
+                                $q->whereDate('tanggal_pengecekan', today());
+                            }),
+                            default => $query,
+                        };
+                    }),
             ])
-            ->defaultSort('tanggal_pengecekan', 'desc')
             ->recordActions([
-                ViewAction::make(),
+                ViewAction::make()
+                    ->url(function (Mesin $record): ?string {
+                        $pengecekan = $record->pengecekan()
+                            ->whereDate('tanggal_pengecekan', today())
+                            ->first();
+                        
+                        if ($pengecekan) {
+                            return route('filament.admin.resources.pengecekan-mesins.index', ['tableSearch' => $record->nama_mesin]);
+                        }
+                        
+                        return null;
+                    })
+                    ->visible(function (Mesin $record): bool {
+                        return $record->pengecekan()
+                            ->whereDate('tanggal_pengecekan', today())
+                            ->exists();
+                    }),
             ])
-            ->toolbarActions([]);
+            ->poll('30s');
     }
 }

@@ -8,6 +8,7 @@ use App\Filament\Resources\PengecekanMesins\Pages\ListPengecekanMesins;
 use App\Filament\Resources\PengecekanMesins\Pages\MulaiPengecekan;
 use App\Filament\Resources\PengecekanMesins\Schemas\PengecekanMesinForm;
 use App\Filament\Resources\PengecekanMesins\Tables\PengecekanMesinsTable;
+use App\Filament\Widgets\StatusPengecekanOverview;
 use App\Models\PengecekanMesin;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -27,6 +28,10 @@ class PengecekanMesinResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Pengecekan Mesin';
 
+    protected static string|\UnitEnum|null $navigationGroup = 'Manajemen Mesin';
+
+    protected static ?int $navigationSort = 2;
+
     public static function form(Schema $schema): Schema
     {
         return PengecekanMesinForm::configure($schema);
@@ -41,6 +46,13 @@ class PengecekanMesinResource extends Resource
     {
         return [
             //
+        ];
+    }
+
+    public static function getWidgets(): array
+    {
+        return [
+            StatusPengecekanOverview::class,
         ];
     }
 

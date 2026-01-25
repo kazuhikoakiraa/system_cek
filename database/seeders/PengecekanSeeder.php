@@ -26,9 +26,14 @@ class PengecekanSeeder extends Seeder
 
         // Buat pengecekan untuk setiap mesin
         foreach ($mesins as $mesin) {
-            // Buat 5 pengecekan untuk mesin ini (5 hari terakhir)
-            for ($i = 0; $i < 5; $i++) {
-                $tanggal = Carbon::today()->subDays($i);
+            // Buat 5 pengecekan untuk mesin ini (5 hari terakhir, mulai dari kemarin)
+            for ($i = 1; $i <= 5; $i++) {
+                // Start from yesterday (subDays(1)) to avoid creating today's data
+                $tanggal = Carbon::today()->subDays($i)->setTime(
+                    fake()->numberBetween(7, 16),  // Hour between 7am-4pm
+                    fake()->numberBetween(0, 59),   // Minute
+                    fake()->numberBetween(0, 59)    // Second
+                );
 
                 // Buat pengecekan
                 $pengecekan = PengecekanMesin::create([

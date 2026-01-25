@@ -8,6 +8,8 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class StatusPengecekanOverview extends BaseWidget
 {
+    protected ?string $pollingInterval = '30s';
+
     protected function getStats(): array
     {
         $totalMesin = Mesin::count();
@@ -35,18 +37,17 @@ class StatusPengecekanOverview extends BaseWidget
                 ->color('primary'),
 
             Stat::make('Sudah Dicek', $sudahDicek)
-                ->description("$persentaseSelesai% dari total mesin")
+                ->description("$persentaseSelesai% selesai")
                 ->descriptionIcon('heroicon-o-check-circle')
-                ->color('success')
-                ->chart([7, 4, 6, 8, 10, 12, $sudahDicek]),
+                ->color('success'),
 
             Stat::make('Sedang Dicek', $sedangDicek)
-                ->description('Proses pengecekan berlangsung')
+                ->description('Proses berlangsung')
                 ->descriptionIcon('heroicon-o-clock')
                 ->color('warning'),
 
             Stat::make('Belum Dicek', $belumDicek)
-                ->description('Memerlukan pengecekan hari ini')
+                ->description('Perlu dicek hari ini')
                 ->descriptionIcon('heroicon-o-x-circle')
                 ->color('danger'),
         ];
