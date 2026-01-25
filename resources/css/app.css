@@ -9,3 +9,152 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+/* Custom Blue & White Elegant Theme - Light Mode Only */
+:root:not(.dark) {
+    /* Background gradients untuk tampilan mewah */
+    --elegant-bg-gradient: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #ffffff 100%);
+    --elegant-card-bg: rgba(255, 255, 255, 0.95);
+    --elegant-sidebar-bg: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    
+    /* Shadow untuk kesan depth */
+    --elegant-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.1), 0 2px 4px -1px rgba(14, 165, 233, 0.06);
+    --elegant-shadow-lg: 0 10px 15px -3px rgba(14, 165, 233, 0.15), 0 4px 6px -2px rgba(14, 165, 233, 0.08);
+}
+
+/* Background utama aplikasi */
+:root:not(.dark) .fi-body,
+:root:not(.dark) body {
+    background: var(--elegant-bg-gradient) !important;
+}
+
+/* Panel dan Card styling */
+:root:not(.dark) .fi-panel,
+:root:not(.dark) .fi-section,
+:root:not(.dark) .fi-card {
+    background: var(--elegant-card-bg) !important;
+    box-shadow: var(--elegant-shadow) !important;
+    border: 1px solid rgba(14, 165, 233, 0.1) !important;
+}
+
+/* Sidebar styling */
+:root:not(.dark) .fi-sidebar,
+:root:not(.dark) .fi-sidebar-nav {
+    background: var(--elegant-sidebar-bg) !important;
+    border-right: 1px solid rgba(14, 165, 233, 0.15) !important;
+}
+
+/* Topbar styling */
+:root:not(.dark) .fi-topbar {
+    background: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(10px) !important;
+    border-bottom: 1px solid rgba(14, 165, 233, 0.15) !important;
+    box-shadow: var(--elegant-shadow) !important;
+}
+
+/* Login page styling */
+:root:not(.dark) .fi-simple-layout {
+    background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 50%, #60a5fa 100%) !important;
+    position: relative;
+}
+
+:root:not(.dark) .fi-simple-layout::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+/* Login card */
+:root:not(.dark) .fi-simple-main {
+    background: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(20px) !important;
+    box-shadow: 0 20px 25px -5px rgba(14, 165, 233, 0.3), 0 10px 10px -5px rgba(14, 165, 233, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Button primary styling */
+:root:not(.dark) .fi-btn-primary {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%) !important;
+    box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.3) !important;
+    transition: all 0.3s ease !important;
+}
+
+:root:not(.dark) .fi-btn-primary:hover {
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
+    box-shadow: 0 6px 8px -1px rgba(14, 165, 233, 0.4) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Input fields styling */
+:root:not(.dark) .fi-input,
+:root:not(.dark) .fi-select,
+:root:not(.dark) .fi-textarea {
+    background: rgba(255, 255, 255, 0.9) !important;
+    border: 1px solid rgba(14, 165, 233, 0.2) !important;
+    transition: all 0.3s ease !important;
+}
+
+:root:not(.dark) .fi-input:focus,
+:root:not(.dark) .fi-select:focus,
+:root:not(.dark) .fi-textarea:focus {
+    border-color: #0ea5e9 !important;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1) !important;
+}
+
+/* Navigation items */
+:root:not(.dark) .fi-sidebar-item-button {
+    transition: all 0.3s ease !important;
+}
+
+:root:not(.dark) .fi-sidebar-item-button:hover {
+    background: rgba(14, 165, 233, 0.08) !important;
+    transform: translateX(4px) !important;
+}
+
+:root:not(.dark) .fi-sidebar-item-button.fi-active {
+    background: rgba(14, 165, 233, 0.12) !important;
+    border-left: 3px solid #0ea5e9 !important;
+}
+
+/* Table styling */
+:root:not(.dark) .fi-table {
+    background: var(--elegant-card-bg) !important;
+}
+
+:root:not(.dark) .fi-table-row:hover {
+    background: rgba(14, 165, 233, 0.05) !important;
+}
+
+/* Header text colors */
+:root:not(.dark) .fi-header-heading,
+:root:not(.dark) h1, :root:not(.dark) h2, :root:not(.dark) h3 {
+    color: #075985 !important;
+}
+
+/* Badge and stats styling */
+:root:not(.dark) .fi-badge {
+    background: rgba(14, 165, 233, 0.1) !important;
+    color: #0369a1 !important;
+    border: 1px solid rgba(14, 165, 233, 0.2) !important;
+}
+
+/* Modal styling */
+:root:not(.dark) .fi-modal-window {
+    background: var(--elegant-card-bg) !important;
+    box-shadow: var(--elegant-shadow-lg) !important;
+    border: 1px solid rgba(14, 165, 233, 0.15) !important;
+}
+
+/* Notification styling */
+:root:not(.dark) .fi-notification {
+    background: var(--elegant-card-bg) !important;
+    box-shadow: var(--elegant-shadow-lg) !important;
+    border-left: 4px solid #0ea5e9 !important;
+}
