@@ -63,41 +63,49 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerif
         );
     }
 
+    /**
+     * Resolve avatar URL from various input formats
+     * 
+     * @suppress PhanUndeclaredVariable
+     */
     protected function resolveAvatarUrl(mixed $avatar): string
     {
-        // Cek apakah avatar kosong
+        // Early return jika avatar kosong atau bukan string
         if (empty($avatar) || !is_string($avatar)) {
             return $this->getDefaultAvatarUrl();
         }
-
-        $avatarPath = trim($avatar);
-
-        // Jika kosong setelah trim
-        if ($avatarPath === '') {
+        
+        // Assign ke variabel dan trim
+        $path = trim($avatar);
+        
+        // Return default jika kosong setelah trim
+        if ($path === '') {
             return $this->getDefaultAvatarUrl();
         }
-
+        
         // Hilangkan leading slash
-        $avatarPath = ltrim($avatarPath, '/');
-
+        $path = ltrim($path, '/');
+        
         // Jika sudah URL lengkap (http, https, atau data URI)
-        if (Str::startsWith($avatarPath, ['http://', 'https://', 'data:'])) {
-            return $avatarPath;
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, 'data:')) {
+            return $path;
         }
 
         // Jika path mengandung 'public/', hilangkan prefix tersebut
-        if (Str::startsWith($avatarPath, 'public/')) {
-            $avatarPath = Str::after($avatarPath, 'public/');
+        if (str_starts_with($path, 'public/')) {
+            $path = substr($path, 7); // strlen('public/') = 7
         }
 
         // Jika path mengandung 'storage/', gunakan asset helper
-        if (Str::startsWith($avatarPath, 'storage/')) {
-            return asset($avatarPath);
+        if (str_starts_with($path, 'storage/')) {
+            return asset($path);
         }
 
         // Default: gunakan Storage URL dengan disk public
-        // Path seharusnya seperti: avatars/filename.jpg
-        return Storage::disk('public')->url($avatarPath);
+        /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+        $disk = Storage::disk('public');
+        
+        return $disk->url($path);
     }
 
     protected function getDefaultAvatarUrl(): string
