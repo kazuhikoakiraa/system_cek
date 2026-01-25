@@ -65,27 +65,39 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerif
 
     protected function resolveAvatarUrl(mixed $avatar): string
     {
-        $avatarPath = is_string($avatar) ? trim($avatar) : '';
+        // Cek apakah avatar kosong
+        if (empty($avatar) || !is_string($avatar)) {
+            return $this->getDefaultAvatarUrl();
+        }
 
+        $avatarPath = trim($avatar);
+
+        // Jika kosong setelah trim
         if ($avatarPath === '') {
             return $this->getDefaultAvatarUrl();
         }
 
+        // Hilangkan leading slash
         $avatarPath = ltrim($avatarPath, '/');
 
+        // Jika sudah URL lengkap (http, https, atau data URI)
         if (Str::startsWith($avatarPath, ['http://', 'https://', 'data:'])) {
             return $avatarPath;
         }
 
+        // Jika path mengandung 'public/', hilangkan prefix tersebut
         if (Str::startsWith($avatarPath, 'public/')) {
             $avatarPath = Str::after($avatarPath, 'public/');
         }
 
+        // Jika path mengandung 'storage/', gunakan asset helper
         if (Str::startsWith($avatarPath, 'storage/')) {
             return asset($avatarPath);
         }
 
-        return url('storage/' . $avatarPath);
+        // Default: gunakan Storage URL dengan disk public
+        // Path seharusnya seperti: avatars/filename.jpg
+        return Storage::disk('public')->url($avatarPath);
     }
 
     protected function getDefaultAvatarUrl(): string
@@ -95,6 +107,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerif
 
         $parts = preg_split('/\s+/', $name) ?: [];
         $initials = '';
+        
         foreach ($parts as $part) {
             $part = trim($part);
             if ($part === '') {
@@ -112,11 +125,11 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerif
         $svg = "<svg xmlns='http://www.w3.org/2000/svg' width='128' height='128' viewBox='0 0 128 128'>".
             "<rect width='128' height='128' rx='64' fill='#0D8ABC'/>".
             "<text x='50%' y='52%' text-anchor='middle' dominant-baseline='middle' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial' font-size='52' fill='#fff'>".
-            e($initials).
+            htmlspecialchars($initials, ENT_XML1 | ENT_QUOTES, 'UTF-8').
             "</text>".
             "</svg>";
 
-        return 'data:image/svg+xml;charset=UTF-8,' . rawurlencode($svg);
+        return 'data:image/svg+xml;base64,' . base64_encode($svg);
     }
 
     /**
