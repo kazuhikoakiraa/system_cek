@@ -31,7 +31,9 @@ class LaporanPengecekan extends Page implements HasForms
 
     protected static string|\UnitEnum|null $navigationGroup = 'Laporan';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 50;
+
+    protected static ?int $navigationGroupSort = 3;
 
     public ?array $data = [];
 

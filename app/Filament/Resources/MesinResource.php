@@ -37,7 +37,9 @@ class MesinResource extends Resource
 
     protected static string|\UnitEnum|null $navigationGroup = 'Manajemen Mesin';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 20;
+
+    protected static ?int $navigationGroupSort = 2;
 
     public static function form(Schema $schema): Schema
     {

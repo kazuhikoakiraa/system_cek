@@ -20,7 +20,7 @@ class PengecekanMesinResource extends Resource
 {
     protected static ?string $model = PengecekanMesin::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentCheck;
 
     protected static ?string $navigationLabel = 'Pengecekan Mesin';
 
@@ -30,7 +30,7 @@ class PengecekanMesinResource extends Resource
 
     protected static string|\UnitEnum|null $navigationGroup = 'Manajemen Mesin';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 21;
 
     public static function form(Schema $schema): Schema
     {
