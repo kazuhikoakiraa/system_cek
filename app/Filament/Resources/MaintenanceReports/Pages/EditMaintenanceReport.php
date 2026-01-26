@@ -13,6 +13,8 @@ class EditMaintenanceReport extends EditRecord
     protected static string $resource = MaintenanceReportResource::class;
 
     protected ?array $oldSparePartsData = null;
+    
+    protected ?array $sparePartsData = null;
 
     protected function getHeaderActions(): array
     {

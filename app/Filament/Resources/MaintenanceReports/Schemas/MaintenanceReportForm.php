@@ -6,6 +6,7 @@ use App\Models\KomponenMesin;
 use App\Models\Mesin;
 use App\Models\SparePart;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Placeholder;
@@ -92,7 +93,7 @@ class MaintenanceReportForm
                         Select::make('teknisi_id')
                             ->label('Teknisi')
                             ->relationship('teknisi', 'name')
-                            ->default(fn () => auth()->id())
+                            ->default(fn () => Auth::id())
                             ->required()
                             ->searchable()
                             ->preload()

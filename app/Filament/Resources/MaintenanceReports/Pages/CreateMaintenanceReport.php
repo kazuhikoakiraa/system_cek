@@ -10,6 +10,8 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateMaintenanceReport extends CreateRecord
 {
     protected static string $resource = MaintenanceReportResource::class;
+    
+    protected array $sparePartsData = [];
 
     protected function getRedirectUrl(): string
     {
