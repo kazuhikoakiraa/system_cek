@@ -51,6 +51,7 @@ class AdminPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
                 AccountWidget::class,
+                \App\Filament\Widgets\AdminGreetingWidget::class,
                 \App\Filament\Widgets\TrenPengecekanChart::class,
                 \App\Filament\Widgets\OperatorReminderWidget::class,
             ])
