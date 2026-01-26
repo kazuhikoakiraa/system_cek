@@ -21,6 +21,12 @@ class CreateUser extends CreateRecord
     {
         $user = $this->record;
 
+        // Pastikan user hanya memiliki 1 role (ambil role terakhir jika ada multiple)
+        if ($user->roles()->count() > 1) {
+            $latestRole = $user->roles()->latest()->first();
+            $user->syncRoles([$latestRole->name]);
+        }
+
         // Kirim email verifikasi otomatis
         if (!$user->hasVerifiedEmail()) {
             try {

@@ -42,20 +42,9 @@ class UsersTable
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
-                TextColumn::make('shift')
-                    ->label('Shift')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'pagi' => 'success',
-                        'siang' => 'warning',
-                        'malam' => 'info',
-                        default => 'gray',
-                    })
-                    ->toggleable(),
                 TextColumn::make('roles.name')
                     ->label('Role')
                     ->badge()
-                    ->separator(',')
                     ->searchable(),
                 IconColumn::make('is_active')
                     ->label('Status')
@@ -71,13 +60,6 @@ class UsersTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                SelectFilter::make('shift')
-                    ->label('Shift')
-                    ->options([
-                        'pagi' => 'Pagi',
-                        'siang' => 'Siang',
-                        'malam' => 'Malam',
-                    ]),
                 SelectFilter::make('department')
                     ->label('Departemen')
                     ->searchable()

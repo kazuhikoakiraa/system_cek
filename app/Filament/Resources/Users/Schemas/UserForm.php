@@ -19,87 +19,92 @@ class UserForm
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(3)
             ->components([
-                // Avatar Section - Full Width
-                Section::make()
+                // Avatar Section - Sidebar
+                Section::make('Foto Profil')
+                    ->description('Upload foto profil pengguna')
+                    ->icon('heroicon-o-camera')
                     ->components([
-                        Grid::make(1)
-                            ->components([
-                                FileUpload::make('avatar')
-                                    ->label('Foto Profil')
-                                    ->image()
-                                    ->avatar()
-                                    ->disk('public')
-                                    ->directory('avatars')
-                                    ->visibility('public')
-                                    ->maxSize(2048) // 2MB
-                                    ->imageEditor()
-                                    ->circleCropper()
-                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                                    ->helperText('Upload foto profil (maks. 2MB). Format: JPG, PNG, WEBP')
-                                    ->alignCenter(),
-                            ]),
+                        FileUpload::make('avatar')
+                            ->label('')
+                            ->image()
+                            ->avatar()
+                            ->disk('public')
+                            ->directory('avatars')
+                            ->visibility('public')
+                            ->maxSize(2048)
+                            ->imageEditor()
+                            ->circleCropper()
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                            ->helperText('Maks. 2MB (JPG, PNG, WEBP)')
+                            ->alignCenter(),
                     ])
-                    ->columnSpanFull(),
+                    ->columnSpan(1)
+                    ->collapsible()
+                    ->collapsed(false),
 
-                // Personal Information Section
-                Section::make('Informasi Pribadi')
-                    ->description('Data pribadi pengguna')
-                    ->icon('heroicon-o-user')
+                // Main Form - Takes 2/3 width
+                Section::make('Data Pengguna')
+                    ->description('Informasi lengkap pengguna sistem')
+                    ->icon('heroicon-o-identification')
+                    ->columns(2)
                     ->components([
-                        Grid::make(2)
+                        // Personal Information
+                        Section::make('Informasi Pribadi')
+                            ->icon('heroicon-o-user')
+                            ->columns(2)
                             ->components([
                                 TextInput::make('name')
                                     ->label('Nama Lengkap')
                                     ->required()
                                     ->maxLength(255)
-                                    ->placeholder('contoh: John Doe')
+                                    ->placeholder('John Doe')
                                     ->autocomplete('name')
                                     ->prefixIcon('heroicon-o-user')
                                     ->columnSpan(2),
 
                                 TextInput::make('email')
-                                    ->label('Email')
+                                    ->label('Alamat Email')
                                     ->email()
                                     ->required()
                                     ->unique(ignoreRecord: true)
                                     ->maxLength(255)
-                                    ->placeholder('contoh: john.doe@company.com')
+                                    ->placeholder('john.doe@company.com')
                                     ->autocomplete('email')
                                     ->prefixIcon('heroicon-o-envelope')
-                                    ->suffixIcon('heroicon-o-at-symbol'),
+                                    ->columnSpan(1),
 
                                 TextInput::make('phone')
                                     ->label('No. Telepon')
                                     ->tel()
                                     ->maxLength(20)
-                                    ->placeholder('contoh: +62 812-3456-7890')
+                                    ->placeholder('+62 812-3456-7890')
                                     ->prefixIcon('heroicon-o-phone')
-                                    ->telRegex('/^[+]?[0-9\s\-\(\)]+$/'),
-                            ]),
-                    ])
-                    ->collapsible(),
+                                    ->telRegex('/^[+]?[0-9\s\-\(\)]+$/')
+                                    ->columnSpan(1),
+                            ])
+                            ->columnSpanFull(),
 
-                // Work Information Section
-                Section::make('Informasi Pekerjaan')
-                    ->description('Data kepegawaian dan jabatan')
-                    ->icon('heroicon-o-briefcase')
-                    ->components([
-                        Grid::make(2)
+                        // Work Information
+                        Section::make('Informasi Kepegawaian')
+                            ->icon('heroicon-o-briefcase')
+                            ->columns(2)
                             ->components([
                                 TextInput::make('employee_id')
                                     ->label('ID Karyawan')
                                     ->unique(ignoreRecord: true)
                                     ->maxLength(50)
-                                    ->placeholder('contoh: EMP-001')
+                                    ->placeholder('EMP-001')
                                     ->prefixIcon('heroicon-o-identification')
-                                    ->helperText('ID unik untuk setiap karyawan')
-                                    ->alphaDash(),
+                                    ->helperText('ID unik karyawan')
+                                    ->alphaDash()
+                                    ->columnSpan(1),
 
                                 TextInput::make('department')
                                     ->label('Departemen')
                                     ->maxLength(100)
-                                    ->placeholder('contoh: IT, Production, Quality Control')
+                                    ->placeholder('Pilih atau ketik departemen')
                                     ->prefixIcon('heroicon-o-building-office')
                                     ->datalist([
                                         'IT',
@@ -109,40 +114,27 @@ class UserForm
                                         'Warehouse',
                                         'HR',
                                         'Finance',
-                                    ]),
-
-                                Select::make('shift')
-                                    ->label('Shift Kerja')
-                                    ->options([
-                                        'pagi' => 'Shift Pagi (07:00 - 15:00)',
-                                        'siang' => 'Shift Siang (15:00 - 23:00)',
-                                        'malam' => 'Shift Malam (23:00 - 07:00)',
                                     ])
-                                    ->native(false)
-                                    ->placeholder('Pilih shift kerja')
-                                    ->prefixIcon('heroicon-o-clock')
-                                    ->searchable(),
+                                    ->columnSpan(1),
 
                                 Select::make('roles')
                                     ->label('Role / Jabatan')
                                     ->relationship('roles', 'name')
-                                    ->multiple()
                                     ->preload()
                                     ->searchable()
                                     ->required()
                                     ->prefixIcon('heroicon-o-shield-check')
-                                    ->helperText('Pilih satu atau lebih role untuk pengguna')
-                                    ->placeholder('Pilih role'),
-                            ]),
-                    ])
-                    ->collapsible(),
+                                    ->helperText('Pilih satu role untuk pengguna')
+                                    ->placeholder('Pilih role')
+                                    ->native(false)
+                                    ->columnSpan(2),
+                            ])
+                            ->columnSpanFull(),
 
-                // Security Section
-                Section::make('Keamanan & Akses')
-                    ->description('Pengaturan password dan verifikasi email')
-                    ->icon('heroicon-o-lock-closed')
-                    ->components([
-                        Grid::make(2)
+                        // Security
+                        Section::make('Keamanan Akun')
+                            ->icon('heroicon-o-lock-closed')
+                            ->columns(2)
                             ->components([
                                 TextInput::make('password')
                                     ->label('Password')
@@ -155,9 +147,10 @@ class UserForm
                                     ->maxLength(255)
                                     ->placeholder('Minimal 8 karakter')
                                     ->prefixIcon('heroicon-o-key')
-                                    ->helperText('Password minimal 8 karakter. Kosongkan jika tidak ingin mengubah.')
+                                    ->helperText('Min. 8 karakter (biarkan kosong untuk tidak mengubah)')
                                     ->confirmed()
-                                    ->validationAttribute('password'),
+                                    ->validationAttribute('password')
+                                    ->columnSpan(1),
 
                                 TextInput::make('password_confirmation')
                                     ->label('Konfirmasi Password')
@@ -165,13 +158,14 @@ class UserForm
                                     ->revealable()
                                     ->dehydrated(false)
                                     ->required(fn (string $context): bool => $context === 'create')
-                                    ->placeholder('Ulangi password')
+                                    ->placeholder('Ketik ulang password')
                                     ->prefixIcon('heroicon-o-key')
-                                    ->visible(fn ($context) => $context === 'create'),
+                                    ->visible(fn ($context) => $context === 'create')
+                                    ->columnSpan(1),
 
                                 Toggle::make('is_active')
                                     ->label('Status Aktif')
-                                    ->helperText('Nonaktifkan untuk melarang akses pengguna ke sistem')
+                                    ->helperText('Aktifkan untuk memberikan akses ke sistem')
                                     ->default(true)
                                     ->inline(false)
                                     ->onColor('success')
@@ -179,50 +173,54 @@ class UserForm
                                     ->columnSpan(1),
 
                                 Placeholder::make('email_verification_status')
-                                    ->label('Status Verifikasi Email')
+                                    ->label('Verifikasi Email')
                                     ->content(function ($record) {
                                         if (!$record) {
-                                            return 'Email verifikasi akan dikirim setelah user dibuat';
+                                            return '📧 Email verifikasi akan dikirim otomatis';
                                         }
                                         
                                         if ($record->hasVerifiedEmail()) {
-                                            return '✅ Email terverifikasi pada ' . 
-                                                   $record->email_verified_at->format('d M Y H:i');
+                                            return '✅ Terverifikasi (' . 
+                                                   $record->email_verified_at->format('d M Y H:i') . ')';
                                         }
                                         
-                                        return '⚠️ Email belum diverifikasi. Link verifikasi telah dikirim.';
+                                        return '⏳ Menunggu verifikasi';
                                     })
                                     ->columnSpan(1)
                                     ->visible(fn ($context) => $context === 'edit'),
-                            ]),
+                            ])
+                            ->columnSpanFull(),
                     ])
+                    ->columnSpan(2)
                     ->collapsible()
-                    ->columns(2),
+                    ->collapsed(false),
 
-                // Metadata Section (Only visible on edit)
+                // Metadata Section (Only visible on edit) - Full Width
                 Section::make('Informasi Sistem')
-                    ->description('Data sistem dan riwayat akun')
+                    ->description('Riwayat dan metadata akun')
                     ->icon('heroicon-o-information-circle')
+                    ->columns(3)
                     ->components([
-                        Grid::make(3)
-                            ->components([
-                                Placeholder::make('created_at')
-                                    ->label('Dibuat Pada')
-                                    ->content(fn ($record): string => $record?->created_at?->format('d M Y H:i') ?? '-'),
+                        Placeholder::make('created_at')
+                            ->label('Dibuat Pada')
+                            ->content(fn ($record): string => $record?->created_at?->format('d M Y, H:i') ?? '-')
+                            ->columnSpan(1),
 
-                                Placeholder::make('updated_at')
-                                    ->label('Terakhir Diupdate')
-                                    ->content(fn ($record): string => $record?->updated_at?->diffForHumans() ?? '-'),
+                        Placeholder::make('updated_at')
+                            ->label('Terakhir Diupdate')
+                            ->content(fn ($record): string => $record?->updated_at?->diffForHumans() ?? '-')
+                            ->columnSpan(1),
 
-                                Placeholder::make('email_verified_at')
-                                    ->label('Email Diverifikasi')
-                                    ->content(fn ($record): string => 
-                                        $record?->email_verified_at 
-                                            ? $record->email_verified_at->format('d M Y H:i')
-                                            : 'Belum diverifikasi'
-                                    ),
-                            ]),
+                        Placeholder::make('email_verified_at')
+                            ->label('Email Diverifikasi')
+                            ->content(fn ($record): string => 
+                                $record?->email_verified_at 
+                                    ? '✅ ' . $record->email_verified_at->format('d M Y, H:i')
+                                    : '⏳ Belum diverifikasi'
+                            )
+                            ->columnSpan(1),
                     ])
+                    ->columnSpanFull()
                     ->collapsible()
                     ->collapsed()
                     ->visible(fn ($context) => $context === 'edit'),

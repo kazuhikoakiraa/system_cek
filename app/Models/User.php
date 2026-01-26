@@ -27,7 +27,6 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerif
         'phone',
         'employee_id',
         'department',
-        'shift',
         'is_active',
     ];
 

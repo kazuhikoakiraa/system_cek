@@ -1,21 +1,21 @@
 <?php
 
-namespace App\Filament\Resources\Users\Pages;
+namespace App\Filament\Resources\Roles\Pages;
 
-use App\Filament\Resources\Users\UserResource;
+use App\Filament\Resources\Roles\RoleResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
-class ListUsers extends ListRecords
+class ListRoles extends ListRecords
 {
-    protected static string $resource = UserResource::class;
+    protected static string $resource = RoleResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
             CreateAction::make()
                 ->icon('heroicon-o-plus')
-                ->label('Tambah User Baru'),
+                ->label('Tambah Role Baru'),
         ];
     }
 }

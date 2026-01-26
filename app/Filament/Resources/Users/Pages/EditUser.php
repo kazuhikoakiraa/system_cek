@@ -93,6 +93,12 @@ class EditUser extends EditRecord
 
     protected function afterSave(): void
     {
+        // Pastikan user hanya memiliki 1 role (ambil role terakhir jika ada multiple)
+        if ($this->record->roles()->count() > 1) {
+            $latestRole = $this->record->roles()->latest()->first();
+            $this->record->syncRoles([$latestRole->name]);
+        }
+
         // Kirim notifikasi jika email berubah
         if ($this->record->wasChanged('email')) {
             // Reset email verification jika email berubah
