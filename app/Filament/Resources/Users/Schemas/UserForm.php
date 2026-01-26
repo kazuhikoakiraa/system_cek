@@ -142,14 +142,15 @@ class UserForm
                                     ->revealable()
                                     ->dehydrateStateUsing(fn ($state) => filled($state) ? Hash::make($state) : null)
                                     ->dehydrated(fn ($state) => filled($state))
-                                    ->required(fn (string $context): bool => $context === 'create')
+                                    ->required()
                                     ->minLength(8)
                                     ->maxLength(255)
                                     ->placeholder('Minimal 8 karakter')
                                     ->prefixIcon('heroicon-o-key')
-                                    ->helperText('Min. 8 karakter (biarkan kosong untuk tidak mengubah)')
+                                    ->helperText('Min. 8 karakter')
                                     ->confirmed()
                                     ->validationAttribute('password')
+                                    ->visible(fn ($context) => $context === 'create')
                                     ->columnSpan(1),
 
                                 TextInput::make('password_confirmation')
@@ -157,7 +158,7 @@ class UserForm
                                     ->password()
                                     ->revealable()
                                     ->dehydrated(false)
-                                    ->required(fn (string $context): bool => $context === 'create')
+                                    ->required()
                                     ->placeholder('Ketik ulang password')
                                     ->prefixIcon('heroicon-o-key')
                                     ->visible(fn ($context) => $context === 'create')
@@ -170,7 +171,7 @@ class UserForm
                                     ->inline(false)
                                     ->onColor('success')
                                     ->offColor('danger')
-                                    ->columnSpan(1),
+                                    ->columnSpan(fn ($context) => $context === 'create' ? 2 : 1),
 
                                 Placeholder::make('email_verification_status')
                                     ->label('Verifikasi Email')
@@ -186,6 +187,12 @@ class UserForm
                                         
                                         return '⏳ Menunggu verifikasi';
                                     })
+                                    ->columnSpan(1)
+                                    ->visible(fn ($context) => $context === 'edit'),
+
+                                Placeholder::make('password_reset_info')
+                                    ->label('Reset Password')
+                                    ->content('Gunakan tombol "Reset Password" di tabel user untuk mengirim link reset password ke email pengguna')
                                     ->columnSpan(1)
                                     ->visible(fn ($context) => $context === 'edit'),
                             ])

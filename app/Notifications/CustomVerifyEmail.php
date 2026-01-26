@@ -42,29 +42,23 @@ class CustomVerifyEmail extends VerifyEmailBase
         $verificationUrl = $this->verificationUrl($notifiable);
 
         return (new MailMessage)
-            ->subject('Verifikasi Alamat Email Anda - ' . config('app.name'))
+            ->subject('Verifikasi Email - ' . config('app.name'))
             ->greeting('Halo, ' . $notifiable->name . '!')
             ->line('Terima kasih telah mendaftar di ' . config('app.name') . '.')
-            ->line('Akun Anda telah dibuat dengan detail berikut:')
-            ->line('**Email:** ' . $notifiable->email)
-            ->line('**ID Karyawan:** ' . ($notifiable->employee_id ?? '-'))
-            ->line('**Departemen:** ' . ($notifiable->department ?? '-'))
             ->line('')
-            ->line('Untuk melengkapi proses pendaftaran, silakan klik tombol di bawah ini untuk memverifikasi alamat email Anda:')
+            ->line('**Detail Akun:**')
+            ->line('Email: ' . $notifiable->email)
+            ->line('ID Karyawan: ' . ($notifiable->employee_id ?? '-'))
+            ->line('Departemen: ' . ($notifiable->department ?? '-'))
+            ->line('')
+            ->line('Silakan klik tombol di bawah ini untuk memverifikasi alamat email Anda:')
             ->action('Verifikasi Email', $verificationUrl)
             ->line('')
             ->line('Link verifikasi ini akan kedaluwarsa dalam **60 menit**.')
             ->line('')
             ->line('Jika Anda tidak membuat akun ini, abaikan email ini.')
             ->line('')
-            ->line('Terima kasih,')
-            ->salutation('Tim ' . config('app.name'))
-            ->line('')
-            ->line('---')
-            ->line('**Catatan Keamanan:**')
-            ->line('Jangan bagikan link ini kepada siapa pun. Link ini hanya berlaku untuk Anda.')
-            ->line('Jika Anda mengalami masalah mengklik tombol "Verifikasi Email", salin dan tempel URL berikut ke browser Anda:')
-            ->line($verificationUrl);
+            ->salutation('Salam,  ' . "\n" . 'Tim ' . config('app.name'));
     }
 
     /**

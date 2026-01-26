@@ -5,12 +5,15 @@ namespace App\Filament\Resources\Users\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\Action;
+use Filament\Notifications\Notification;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Password;
 
 class UsersTable
 {
@@ -77,6 +80,33 @@ class UsersTable
             ])
             ->recordActions([
                 EditAction::make(),
+                Action::make('reset_password')
+                    ->label('Reset Password')
+                    ->icon('heroicon-o-key')
+                    ->color('warning')
+                    ->requiresConfirmation()
+                    ->modalHeading('Kirim Link Reset Password')
+                    ->modalDescription(fn ($record) => "Link reset password akan dikirim ke email: {$record->email}")
+                    ->modalSubmitActionLabel('Kirim Email')
+                    ->action(function ($record) {
+                        $status = Password::sendResetLink(
+                            ['email' => $record->email]
+                        );
+
+                        if ($status === Password::RESET_LINK_SENT) {
+                            Notification::make()
+                                ->title('Email Terkirim')
+                                ->body("Link reset password berhasil dikirim ke {$record->email}")
+                                ->success()
+                                ->send();
+                        } else {
+                            Notification::make()
+                                ->title('Gagal Mengirim Email')
+                                ->body('Terjadi kesalahan saat mengirim email. Silakan coba lagi.')
+                                ->danger()
+                                ->send();
+                        }
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
