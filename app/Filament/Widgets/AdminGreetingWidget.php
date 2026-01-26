@@ -18,7 +18,7 @@ class AdminGreetingWidget extends Widget
     public static function canView(): bool
     {
         $user = Auth::user();
-        return $user && $user->hasAnyRole(['super_admin', 'admin', 'panel_user']);
+        return $user && $user->hasAnyRole(['super_admin', 'admin']);
     }
 
     public function getMessage(): array

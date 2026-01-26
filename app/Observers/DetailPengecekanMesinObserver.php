@@ -4,6 +4,9 @@ namespace App\Observers;
 
 use App\Models\DetailPengecekanMesin;
 use App\Models\MaintenanceReport;
+use App\Models\User;
+use App\Notifications\KetidaksesuaianDitemukanNotification;
+use Illuminate\Support\Facades\Notification;
 
 class DetailPengecekanMesinObserver
 {
@@ -51,6 +54,27 @@ class DetailPengecekanMesinObserver
     }
 
     /**
+     * Send notification when ketidaksesuaian found
+     */
+    private function sendKetidaksesuaianNotification(MaintenanceReport $maintenanceReport): void
+    {
+        // Admin dan Manager mendapat notifikasi
+        $adminsAndManagers = User::role(['super_admin', 'admin'])
+            ->get();
+
+        // Teknisi mendapat notifikasi
+        $teknisi = User::role('teknisi')->get();
+
+        // Gabungkan dan kirim notifikasi
+        $recipients = $adminsAndManagers->merge($teknisi);
+        
+        Notification::send(
+            $recipients,
+            new KetidaksesuaianDitemukanNotification($maintenanceReport)
+        );
+    }
+
+    /**
      * Check if maintenance report should be created
      */
     private function checkAndCreateMaintenanceReport(DetailPengecekanMesin $detailPengecekanMesin): void
@@ -67,13 +91,16 @@ class DetailPengecekanMesinObserver
                 $pengecekanMesin = $detailPengecekanMesin->pengecekanMesin;
                 $komponenMesin = $detailPengecekanMesin->komponenMesin;
 
-                MaintenanceReport::create([
+                $maintenanceReport = MaintenanceReport::create([
                     'detail_pengecekan_mesin_id' => $detailPengecekanMesin->id,
                     'mesin_id' => $pengecekanMesin->mesin_id,
                     'komponen_mesin_id' => $detailPengecekanMesin->komponen_mesin_id,
                     'issue_description' => $detailPengecekanMesin->keterangan ?? "Ketidaksesuaian ditemukan pada komponen: {$komponenMesin->nama_komponen}",
                     'status' => 'pending',
                 ]);
+
+                // Kirim notifikasi ke Admin, Manager, dan Teknisi
+                $this->sendKetidaksesuaianNotification($maintenanceReport);
             }
         }
     }

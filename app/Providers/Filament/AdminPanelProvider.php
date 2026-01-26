@@ -50,6 +50,11 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->globalSearch(false)
             ->databaseNotifications()
+            ->databaseNotificationsPolling('30s')
+            ->renderHook(
+                'panels::head.end',
+                fn () => view('filament.custom-styles')
+            )
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
                 AccountWidget::class,

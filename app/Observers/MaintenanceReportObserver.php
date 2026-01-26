@@ -4,6 +4,9 @@ namespace App\Observers;
 
 use App\Models\MaintenanceReport;
 use App\Models\SparePart;
+use App\Models\User;
+use App\Notifications\MaintenanceSelesaiNotification;
+use Illuminate\Support\Facades\Notification;
 
 class MaintenanceReportObserver
 {
@@ -36,6 +39,9 @@ class MaintenanceReportObserver
             $maintenanceReport->status = 'completed';
             $maintenanceReport->tanggal_selesai = now();
             $maintenanceReport->saveQuietly();
+
+            // Kirim notifikasi ke Admin, Manager, dan Operator
+            $this->sendMaintenanceSelesaiNotification($maintenanceReport);
         }
     }
 
@@ -61,5 +67,28 @@ class MaintenanceReportObserver
     public function forceDeleted(MaintenanceReport $maintenanceReport): void
     {
         //
+    }
+
+    /**
+     * Send notification when maintenance completed
+     */
+    private function sendMaintenanceSelesaiNotification(MaintenanceReport $maintenanceReport): void
+    {
+        // Admin dan Manager mendapat notifikasi
+        $adminsAndManagers = User::role(['super_admin', 'admin'])
+            ->get();
+
+        // Operator yang melakukan pengecekan mendapat notifikasi
+        $operator = $maintenanceReport->detailPengecekanMesin?->pengecekanMesin?->operator;
+        
+        $recipients = $adminsAndManagers;
+        if ($operator) {
+            $recipients = $recipients->push($operator);
+        }
+
+        Notification::send(
+            $recipients,
+            new MaintenanceSelesaiNotification($maintenanceReport)
+        );
     }
 }
