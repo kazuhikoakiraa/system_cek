@@ -5,6 +5,7 @@ namespace App\Filament\Pages;
 use App\Models\Mesin;
 use App\Models\PengecekanMesin;
 use BackedEnum;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
@@ -22,6 +23,7 @@ use Illuminate\Support\Collection;
 class LaporanPengecekan extends Page implements HasForms
 {
     use InteractsWithForms;
+    use HasPageShield;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentChartBar;
 
