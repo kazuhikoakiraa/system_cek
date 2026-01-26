@@ -295,20 +295,17 @@ class LaporanPengecekan extends Page implements HasForms
                 'total_pengecekan' => 0,
                 'total_sesuai' => 0,
                 'total_tidak_sesuai' => 0,
-                'total_tidak_dicek' => 0,
             ];
         }
 
         $totalPengecekan = $this->laporanData->sum(fn($m) => $m->pengecekan->count());
         $totalSesuai = 0;
         $totalTidakSesuai = 0;
-        $totalTidakDicek = 0;
         
         foreach ($this->laporanData as $mesin) {
             foreach ($mesin->pengecekan as $p) {
                 $totalSesuai += $p->detailPengecekan->where('status_sesuai', 'sesuai')->count();
                 $totalTidakSesuai += $p->detailPengecekan->where('status_sesuai', 'tidak_sesuai')->count();
-                $totalTidakDicek += $p->detailPengecekan->where('status_sesuai', 'tidak_dicek')->count();
             }
         }
 
@@ -317,7 +314,6 @@ class LaporanPengecekan extends Page implements HasForms
             'total_pengecekan' => $totalPengecekan,
             'total_sesuai' => $totalSesuai,
             'total_tidak_sesuai' => $totalTidakSesuai,
-            'total_tidak_dicek' => $totalTidakDicek,
         ];
     }
 }

@@ -135,7 +135,6 @@ class LaporanMesinSheet implements FromCollection, WithTitle, WithStyles, WithEv
                         $row[] = match ($detail->status_sesuai) {
                             'sesuai' => '✓',
                             'tidak_sesuai' => '✗',
-                            'tidak_dicek' => '○',
                             default => '-',
                         };
                     } else {
@@ -274,11 +273,10 @@ class LaporanMesinSheet implements FromCollection, WithTitle, WithStyles, WithEv
                 $sheet->getStyle('A' . $ketRow)->getFont()->setBold(true);
                 $sheet->setCellValue('A' . ($ketRow + 1), '✓ = Sesuai/OK');
                 $sheet->setCellValue('A' . ($ketRow + 2), '✗ = Tidak Sesuai/NG');
-                $sheet->setCellValue('A' . ($ketRow + 3), '○ = Tidak Dicek (mesin beroperasi tapi tidak dilakukan pengecekan)');
-                $sheet->setCellValue('A' . ($ketRow + 4), '- = Tidak ada data pengecekan');
+                $sheet->setCellValue('A' . ($ketRow + 3), '- = Tidak ada data pengecekan/tidak dicek pada tanggal tersebut');
 
                 // ===== TANDA TANGAN SECTION =====
-                $ttdRow = $ketRow + 7;
+                $ttdRow = $ketRow + 6;
                 $sheet->setCellValue('A' . $ttdRow, 'Dibuat oleh,');
                 $sheet->setCellValue('C' . $ttdRow, 'Diketahui oleh,');
                 $sheet->setCellValue('E' . $ttdRow, 'Disetujui oleh,');

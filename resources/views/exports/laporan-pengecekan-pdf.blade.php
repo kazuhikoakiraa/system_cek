@@ -351,9 +351,6 @@
                                         } elseif ($detail->status_sesuai === 'tidak_sesuai') {
                                             $status = '✗';
                                             $class = 'check-ng';
-                                        } elseif ($detail->status_sesuai === 'tidak_dicek') {
-                                            $status = '○';
-                                            $class = 'check-skip';
                                         }
                                     }
                                 }
@@ -390,8 +387,7 @@
             <ul>
                 <li>✓ = Sesuai/OK - Kondisi komponen dalam keadaan baik</li>
                 <li>✗ = Tidak Sesuai/NG - Kondisi komponen memerlukan perbaikan</li>
-                <li>○ = Tidak Dicek - Mesin beroperasi tapi tidak dilakukan pengecekan</li>
-                <li>- = Tidak ada data pengecekan pada tanggal tersebut</li>
+                <li>- = Tidak ada data pengecekan/tidak dicek pada tanggal tersebut</li>
             </ul>
         </div>
 

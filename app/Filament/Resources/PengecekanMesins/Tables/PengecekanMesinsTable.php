@@ -37,28 +37,25 @@ class PengecekanMesinsTable
                             ->first();
 
                         if (!$pengecekanHariIni) {
-                            return 'Belum Ada Data';
+                            return 'Tidak Ada Data Pengecekan/Tidak Dicek';
                         }
 
                         return match ($pengecekanHariIni->status) {
                             'selesai' => 'Sudah Dicek',
                             'dalam_proses' => 'Sedang Dicek',
-                            'tidak_dicek' => 'Tidak Dicek',
                             default => 'Unknown',
                         };
                     })
                     ->color(fn (string $state): string => match ($state) {
                         'Sudah Dicek' => 'success',
                         'Sedang Dicek' => 'warning',
-                        'Tidak Dicek' => 'danger',
-                        'Belum Ada Data' => 'gray',
+                        'Tidak Ada Data Pengecekan/Tidak Dicek' => 'gray',
                         default => 'gray',
                     })
                     ->icon(fn (string $state): string => match ($state) {
                         'Sudah Dicek' => 'heroicon-o-check-circle',
                         'Sedang Dicek' => 'heroicon-o-clock',
-                        'Tidak Dicek' => 'heroicon-o-x-circle',
-                        'Belum Ada Data' => 'heroicon-o-minus-circle',
+                        'Tidak Ada Data Pengecekan/Tidak Dicek' => 'heroicon-o-minus-circle',
                         default => 'heroicon-o-question-mark-circle',
                     }),
 
@@ -81,8 +78,7 @@ class PengecekanMesinsTable
                     ->options([
                         'sudah' => 'Sudah Dicek',
                         'sedang' => 'Sedang Dicek',
-                        'tidak_dicek' => 'Tidak Dicek',
-                        'belum_ada' => 'Belum Ada Data',
+                        'tidak_ada_data' => 'Tidak Ada Data Pengecekan/Tidak Dicek',
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         $status = $data['value'] ?? null;
@@ -100,11 +96,7 @@ class PengecekanMesinsTable
                                 $q->whereDate('tanggal_pengecekan', today())
                                     ->where('status', 'dalam_proses');
                             }),
-                            'tidak_dicek' => $query->whereHas('pengecekan', function ($q) {
-                                $q->whereDate('tanggal_pengecekan', today())
-                                    ->where('status', 'tidak_dicek');
-                            }),
-                            'belum_ada' => $query->whereDoesntHave('pengecekan', function ($q) {
+                            'tidak_ada_data' => $query->whereDoesntHave('pengecekan', function ($q) {
                                 $q->whereDate('tanggal_pengecekan', today());
                             }),
                             default => $query,

@@ -26,94 +26,17 @@ class GenerateDailyPengecekan extends Command
      *
      * @var string
      */
-    protected $description = 'Generate record pengecekan harian untuk semua mesin yang belum dicek';
+    protected $description = 'Generate record pengecekan harian untuk semua mesin (command ini sudah tidak diperlukan karena "tidak dicek" = "tidak ada data")';
 
     /**
      * Execute the console command.
      */
     public function handle(): int
     {
-        $date = $this->option('date')
-            ? Carbon::parse($this->option('date'))
-            : Carbon::yesterday();
-
-        $force = $this->option('force');
-
-        $this->info("Generating pengecekan records for date: {$date->format('Y-m-d')}");
-
-        // Ambil semua mesin
-        $mesins = Mesin::with('komponenMesins')->get();
-
-        if ($mesins->isEmpty()) {
-            $this->warn('Tidak ada mesin yang terdaftar.');
-            return self::SUCCESS;
-        }
-
-        $created = 0;
-        $skipped = 0;
-
-        DB::beginTransaction();
-
-        try {
-            foreach ($mesins as $mesin) {
-                // Cek apakah sudah ada pengecekan untuk tanggal ini
-                $existingPengecekan = PengecekanMesin::where('mesin_id', $mesin->id)
-                    ->whereDate('tanggal_pengecekan', $date)
-                    ->first();
-
-                if ($existingPengecekan) {
-                    if ($force) {
-                        // Jika force dan status masih dalam_proses, ubah ke tidak_dicek
-                        if ($existingPengecekan->status === 'dalam_proses') {
-                            $existingPengecekan->update(['status' => 'tidak_dicek']);
-                            $this->line("  - {$mesin->nama_mesin}: Status diubah ke 'tidak_dicek'");
-                            $created++;
-                        } else {
-                            $this->line("  - {$mesin->nama_mesin}: Sudah ada (status: {$existingPengecekan->status})");
-                            $skipped++;
-                        }
-                    } else {
-                        $this->line("  - {$mesin->nama_mesin}: Sudah ada data, dilewati");
-                        $skipped++;
-                    }
-                    continue;
-                }
-
-                // Buat record pengecekan dengan status 'tidak_dicek'
-                $pengecekan = PengecekanMesin::create([
-                    'mesin_id' => $mesin->id,
-                    'user_id' => $mesin->user_id, // Operator yang bertanggung jawab
-                    'tanggal_pengecekan' => $date->startOfDay(),
-                    'status' => 'tidak_dicek',
-                ]);
-
-                // Buat detail pengecekan untuk setiap komponen dengan status null/tidak_dicek
-                foreach ($mesin->komponenMesins as $komponen) {
-                    DetailPengecekanMesin::create([
-                        'pengecekan_mesin_id' => $pengecekan->id,
-                        'komponen_mesin_id' => $komponen->id,
-                        'status_sesuai' => 'tidak_dicek',
-                        'keterangan' => null,
-                    ]);
-                }
-
-                $this->line("  ✓ {$mesin->nama_mesin}: Record created (tidak_dicek)");
-                $created++;
-            }
-
-            DB::commit();
-
-            $this->newLine();
-            $this->info("Selesai! Created: {$created}, Skipped: {$skipped}");
-
-            Log::info("GenerateDailyPengecekan: Date {$date->format('Y-m-d')} - Created: {$created}, Skipped: {$skipped}");
-
-            return self::SUCCESS;
-        } catch (\Exception $e) {
-            DB::rollBack();
-            $this->error("Error: {$e->getMessage()}");
-            Log::error("GenerateDailyPengecekan failed: {$e->getMessage()}");
-            return self::FAILURE;
-        }
+        $this->warn('Command ini sudah tidak diperlukan lagi!');
+        $this->info('Status "tidak dicek" sekarang sama dengan "tidak ada data pengecekan".');
+        $this->info('Tidak perlu lagi membuat record pengecekan untuk mesin yang tidak dicek.');
+        
+        return self::SUCCESS;
     }
 }

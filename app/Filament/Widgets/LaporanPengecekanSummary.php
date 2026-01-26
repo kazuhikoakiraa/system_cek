@@ -8,7 +8,7 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 class LaporanPengecekanSummary extends BaseWidget
 {
     /**
-     * @var array{total_mesin?: int, total_pengecekan?: int, total_sesuai?: int, total_tidak_sesuai?: int, total_tidak_dicek?: int}
+     * @var array{total_mesin?: int, total_pengecekan?: int, total_sesuai?: int, total_tidak_sesuai?: int}
      */
     public array $summary = [];
 
@@ -29,7 +29,6 @@ class LaporanPengecekanSummary extends BaseWidget
         $totalPengecekan = (int) ($this->summary['total_pengecekan'] ?? 0);
         $totalSesuai = (int) ($this->summary['total_sesuai'] ?? 0);
         $totalTidakSesuai = (int) ($this->summary['total_tidak_sesuai'] ?? 0);
-        $totalTidakDicek = (int) ($this->summary['total_tidak_dicek'] ?? 0);
 
         return [
             Stat::make('Total Mesin', $totalMesin)
@@ -43,16 +42,13 @@ class LaporanPengecekanSummary extends BaseWidget
 
             Stat::make('Tidak Sesuai (NG)', $totalTidakSesuai)
                 ->color('danger'),
-
-            Stat::make('Tidak Dicek (N/A)', $totalTidakDicek)
-                ->color('warning'),
         ];
     }
 
     protected function getColumns(): int | array | null
     {
         return [
-            '@xl' => 5,
+            '@xl' => 4,
             '@lg' => 4,
             '!@lg' => 2,
         ];

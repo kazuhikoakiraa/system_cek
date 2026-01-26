@@ -145,12 +145,6 @@ class MesinResource extends Resource
                     ->separator(',')
                     ->limit(50),
 
-                TextColumn::make('komponenMesins_count')
-                    ->counts('komponenMesins')
-                    ->label('Jumlah Komponen')
-                    ->alignCenter()
-                    ->sortable(),
-
                 TextColumn::make('created_at')
                     ->label('Dibuat')
                     ->dateTime('d M Y H:i')

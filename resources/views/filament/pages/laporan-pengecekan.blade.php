@@ -98,7 +98,6 @@
                                     @php
                                         $sesuai = 0;
                                         $tidakSesuai = 0;
-                                        $tidakDicek = 0;
 
                                         foreach ($mesin->pengecekan as $pengecekan) {
                                             $detail = $pengecekan->detailPengecekan
@@ -106,7 +105,6 @@
                                             if ($detail) {
                                                 if ($detail->status_sesuai === 'sesuai') $sesuai++;
                                                 elseif ($detail->status_sesuai === 'tidak_sesuai') $tidakSesuai++;
-                                                elseif ($detail->status_sesuai === 'tidak_dicek') $tidakDicek++;
                                             }
                                         }
 
@@ -286,7 +284,6 @@
                 <ul class="list-disc list-inside space-y-1 mb-4">
                     <li><span class="text-green-600 font-semibold">OK</span> = Sesuai/Kondisi Baik</li>
                     <li><span class="text-red-600 font-semibold">NG</span> = Tidak Sesuai/Perlu Perbaikan</li>
-                    <li><span class="text-yellow-600 font-semibold">N/A</span> = Tidak Dicek</li>
                 </ul>
                 <p class="mb-2"><strong>Format Export:</strong></p>
                 <ul class="list-disc list-inside space-y-1">

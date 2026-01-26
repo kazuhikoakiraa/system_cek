@@ -13,13 +13,14 @@ Artisan::command('inspire', function () {
 | Scheduled Tasks
 |--------------------------------------------------------------------------
 |
-| Generate record pengecekan untuk mesin yang tidak dicek setiap hari
-| Berjalan setiap pukul 23:55 untuk menutup hari tersebut
+| CATATAN: Command pengecekan:generate-daily sudah tidak diperlukan lagi
+| karena status "tidak dicek" sekarang sama dengan "tidak ada data pengecekan"
+| Schedule dibawah ini bisa dihapus atau dinonaktifkan
 |
 */
-Schedule::command('pengecekan:generate-daily')
-    ->dailyAt('23:55')
-    ->timezone('Asia/Jakarta')
-    ->withoutOverlapping()
-    ->onOneServer()
-    ->appendOutputTo(storage_path('logs/pengecekan-scheduler.log'));
+// Schedule::command('pengecekan:generate-daily')
+//     ->dailyAt('23:55')
+//     ->timezone('Asia/Jakarta')
+//     ->withoutOverlapping()
+//     ->onOneServer()
+//     ->appendOutputTo(storage_path('logs/pengecekan-scheduler.log'));

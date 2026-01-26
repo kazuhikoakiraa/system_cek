@@ -24,7 +24,7 @@ class StatusPengecekanOverview extends BaseWidget
                 ->where('status', 'dalam_proses');
         })->count();
 
-        $belumDicek = $totalMesin - $sudahDicek - $sedangDicek;
+        $tidakAdaData = $totalMesin - $sudahDicek - $sedangDicek;
 
         $persentaseSelesai = $totalMesin > 0 
             ? round(($sudahDicek / $totalMesin) * 100, 1) 
@@ -46,10 +46,10 @@ class StatusPengecekanOverview extends BaseWidget
                 ->descriptionIcon('heroicon-o-clock')
                 ->color('warning'),
 
-            Stat::make('Belum Dicek', $belumDicek)
-                ->description('Perlu dicek hari ini')
-                ->descriptionIcon('heroicon-o-x-circle')
-                ->color('danger'),
+            Stat::make('Tidak Ada Data/Tidak Dicek', $tidakAdaData)
+                ->description('Belum ada pengecekan')
+                ->descriptionIcon('heroicon-o-minus-circle')
+                ->color('gray'),
         ];
     }
 
