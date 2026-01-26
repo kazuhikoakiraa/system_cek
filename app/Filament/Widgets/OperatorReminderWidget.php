@@ -1,0 +1,56 @@
+<?php
+
+namespace App\Filament\Widgets;
+
+use App\Models\PengecekanMesin;
+use Filament\Widgets\Widget;
+use Illuminate\Support\Facades\Auth;
+use Filament\Support\Enums\IconPosition;
+
+class OperatorReminderWidget extends Widget
+{
+    protected string $view = 'filament.widgets.operator-reminder-simple';
+    
+    protected static ?int $sort = -3;
+    
+    protected int | string | array $columnSpan = 1;
+
+    protected ?string $pollingInterval = '60s';
+
+    public static function canView(): bool
+    {
+        $user = Auth::user();
+        return $user && $user->hasRole('operator');
+    }
+
+    public function getMessage(): array
+    {
+        $user = Auth::user();
+        
+        $sudahMengecek = PengecekanMesin::where('user_id', $user->id)
+            ->whereDate('tanggal_pengecekan', today())
+            ->where('status', 'selesai')
+            ->exists();
+
+        $jumlahDicek = PengecekanMesin::where('user_id', $user->id)
+            ->whereDate('tanggal_pengecekan', today())
+            ->where('status', 'selesai')
+            ->count();
+
+        if ($sudahMengecek) {
+            return [
+                'type' => 'success',
+                'icon' => 'heroicon-o-check-circle',
+                'title' => 'Terima Kasih, ' . $user->name . '!',
+                'message' => "Anda telah menyelesaikan $jumlahDicek pengecekan hari ini. Kerja keras Anda sangat membantu!",
+            ];
+        } else {
+            return [
+                'type' => 'warning',
+                'icon' => 'heroicon-o-clock',
+                'title' => 'Pengingat Pengecekan, ' . $user->name,
+                'message' => 'Anda belum melakukan pengecekan mesin hari ini. Jangan lupa untuk mengecek mesin yang menjadi tanggung jawab Anda.',
+            ];
+        }
+    }
+}
