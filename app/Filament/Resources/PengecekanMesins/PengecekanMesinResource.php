@@ -6,6 +6,7 @@ use App\Filament\Resources\PengecekanMesins\Pages\CreatePengecekanMesin;
 use App\Filament\Resources\PengecekanMesins\Pages\EditPengecekanMesin;
 use App\Filament\Resources\PengecekanMesins\Pages\ListPengecekanMesins;
 use App\Filament\Resources\PengecekanMesins\Pages\MulaiPengecekan;
+use App\Filament\Resources\PengecekanMesins\Pages\ViewPengecekanMesin;
 use App\Filament\Resources\PengecekanMesins\Schemas\PengecekanMesinForm;
 use App\Filament\Resources\PengecekanMesins\Tables\PengecekanMesinsTable;
 use App\Filament\Widgets\StatusPengecekanOverview;
@@ -61,6 +62,7 @@ class PengecekanMesinResource extends Resource
         return [
             'index' => ListPengecekanMesins::route('/'),
             'mulai' => MulaiPengecekan::route('/mulai'),
+            'view' => ViewPengecekanMesin::route('/{record}'),
         ];
     }
 
@@ -72,6 +74,11 @@ class PengecekanMesinResource extends Resource
     public static function canEdit($record): bool
     {
         return false;
+    }
+
+    public static function canView($record): bool
+    {
+        return true;
     }
 
     public static function canDelete($record): bool

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class DetailPengecekanMesin extends Model
 {
@@ -15,6 +16,7 @@ class DetailPengecekanMesin extends Model
         'komponen_mesin_id',
         'status_sesuai',
         'keterangan',
+        'status_komponen', // Untuk backward compatibility jika ada
     ];
 
     protected $casts = [
@@ -30,5 +32,10 @@ class DetailPengecekanMesin extends Model
     public function komponenMesin(): BelongsTo
     {
         return $this->belongsTo(KomponenMesin::class);
+    }
+
+    public function maintenanceReports(): HasMany
+    {
+        return $this->hasMany(MaintenanceReport::class);
     }
 }

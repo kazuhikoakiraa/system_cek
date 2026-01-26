@@ -119,7 +119,7 @@ class PengecekanMesinsTable
                             ->first();
                         
                         if ($pengecekan) {
-                            return route('filament.admin.resources.pengecekan-mesins.index', ['tableSearch' => $record->nama_mesin]);
+                            return route('filament.admin.resources.pengecekan-mesins.view', ['record' => $pengecekan->id]);
                         }
                         
                         return null;
