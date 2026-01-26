@@ -17,6 +17,12 @@ class LaporanPengecekanSummary extends BaseWidget
         $this->summary = $summary;
     }
 
+    public static function canView(): bool
+    {
+        // Widget ini hanya ditampilkan di halaman laporan, tidak di dashboard
+        return false;
+    }
+
     protected function getStats(): array
     {
         $totalMesin = (int) ($this->summary['total_mesin'] ?? 0);
