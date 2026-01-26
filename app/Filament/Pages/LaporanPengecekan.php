@@ -284,4 +284,38 @@ class LaporanPengecekan extends Page implements HasForms
 
         return 'Pilih filter dan klik "Tampilkan Laporan" untuk melihat data';
     }
+
+    public function getSummaryData(): array
+    {
+        if (!$this->showPreview || $this->laporanData->isEmpty()) {
+            return [
+                'total_mesin' => 0,
+                'total_pengecekan' => 0,
+                'total_sesuai' => 0,
+                'total_tidak_sesuai' => 0,
+                'total_tidak_dicek' => 0,
+            ];
+        }
+
+        $totalPengecekan = $this->laporanData->sum(fn($m) => $m->pengecekan->count());
+        $totalSesuai = 0;
+        $totalTidakSesuai = 0;
+        $totalTidakDicek = 0;
+        
+        foreach ($this->laporanData as $mesin) {
+            foreach ($mesin->pengecekan as $p) {
+                $totalSesuai += $p->detailPengecekan->where('status_sesuai', 'sesuai')->count();
+                $totalTidakSesuai += $p->detailPengecekan->where('status_sesuai', 'tidak_sesuai')->count();
+                $totalTidakDicek += $p->detailPengecekan->where('status_sesuai', 'tidak_dicek')->count();
+            }
+        }
+
+        return [
+            'total_mesin' => $this->laporanData->count(),
+            'total_pengecekan' => $totalPengecekan,
+            'total_sesuai' => $totalSesuai,
+            'total_tidak_sesuai' => $totalTidakSesuai,
+            'total_tidak_dicek' => $totalTidakDicek,
+        ];
+    }
 }

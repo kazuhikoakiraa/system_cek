@@ -7,161 +7,273 @@
     {{-- Preview Section --}}
     @if($this->showPreview && $this->laporanData->isNotEmpty())
         @php
-            $totalPengecekan = $this->laporanData->sum(fn($m) => $m->pengecekan->count());
-            $totalSesuai = 0;
-            $totalTidakSesuai = 0;
-            $totalTidakDicek = 0;
-            foreach ($this->laporanData as $mesin) {
-                foreach ($mesin->pengecekan as $p) {
-                    $totalSesuai += $p->detailPengecekan->where('status_sesuai', 'sesuai')->count();
-                    $totalTidakSesuai += $p->detailPengecekan->where('status_sesuai', 'tidak_sesuai')->count();
-                    $totalTidakDicek += $p->detailPengecekan->where('status_sesuai', 'tidak_dicek')->count();
-                }
-            }
+            $summary = $this->getSummaryData();
         @endphp
 
-        {{-- Summary Table --}}
+        {{-- Summary Cards --}}
+        <div wire:key="laporan-summary-{{ $this->tanggalMulai ?? '' }}-{{ $this->tanggalSelesai ?? '' }}-{{ $this->mesinId ?? 'all' }}">
+            @livewire(\App\Filament\Widgets\LaporanPengecekanSummary::class, ['summary' => $summary])
+        </div>
+
+        {{-- Detail Table --}}
         <x-filament::section>
-            <x-slot name="heading">Ringkasan Laporan</x-slot>
-            <x-slot name="description">Periode: {{ \Carbon\Carbon::parse($this->tanggalMulai)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($this->tanggalSelesai)->format('d/m/Y') }}</x-slot>
+            <x-slot name="heading">Detail Laporan Pengecekan</x-slot>
+            <x-slot name="description">
+                Periode: {{ \Carbon\Carbon::parse($this->tanggalMulai)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($this->tanggalSelesai)->format('d/m/Y') }}
+            </x-slot>
 
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm border border-gray-200 dark:border-gray-700">
-                    <thead class="bg-gray-100 dark:bg-gray-800">
-                        <tr>
-                            <th class="px-4 py-2 text-left font-semibold border-b border-gray-200 dark:border-gray-700">Keterangan</th>
-                            <th class="px-4 py-2 text-center font-semibold border-b border-gray-200 dark:border-gray-700">Jumlah</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="border-b border-gray-100 dark:border-gray-700">
-                            <td class="px-4 py-2">Total Mesin</td>
-                            <td class="px-4 py-2 text-center font-bold">{{ $this->laporanData->count() }}</td>
-                        </tr>
-                        <tr class="border-b border-gray-100 dark:border-gray-700">
-                            <td class="px-4 py-2">Total Pengecekan</td>
-                            <td class="px-4 py-2 text-center font-bold text-blue-600 dark:text-blue-400">{{ $totalPengecekan }}</td>
-                        </tr>
-                        <tr class="border-b border-gray-100 dark:border-gray-700">
-                            <td class="px-4 py-2">Total Sesuai (OK)</td>
-                            <td class="px-4 py-2 text-center font-bold text-green-600 dark:text-green-400">{{ $totalSesuai }}</td>
-                        </tr>
-                        <tr class="border-b border-gray-100 dark:border-gray-700">
-                            <td class="px-4 py-2">Total Tidak Sesuai (NG)</td>
-                            <td class="px-4 py-2 text-center font-bold text-red-600 dark:text-red-400">{{ $totalTidakSesuai }}</td>
-                        </tr>
-                        <tr>
-                            <td class="px-4 py-2">Total Tidak Dicek</td>
-                            <td class="px-4 py-2 text-center font-bold text-yellow-600 dark:text-yellow-400">{{ $totalTidakDicek }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </x-filament::section>
+            <div class="fi-ta-ctn divide-y divide-gray-200 overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-950/5 dark:divide-white/10 dark:bg-gray-900 dark:ring-white/10">
+                <div class="fi-ta-content relative divide-y divide-gray-200 dark:divide-white/10 dark:border-t-white/10" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                    <table class="fi-ta-table w-full table-auto divide-y divide-gray-200 text-start dark:divide-white/5" style="min-width: 1000px;">
+                        <thead class="divide-y divide-gray-200 dark:divide-white/5">
+                            <tr class="bg-gray-50 dark:bg-white/5">
+                                <th class="fi-ta-header-cell px-3 py-3.5 sm:first-of-type:ps-6 sm:last-of-type:pe-6">
+                                    <span class="group flex w-full items-center gap-x-1 whitespace-nowrap justify-start">
+                                        <span class="fi-ta-header-cell-label text-sm font-semibold text-gray-950 dark:text-white">
+                                            Nama Mesin
+                                        </span>
+                                    </span>
+                                </th>
+                                <th class="fi-ta-header-cell px-3 py-3.5">
+                                    <span class="group flex w-full items-center gap-x-1 whitespace-nowrap justify-start">
+                                        <span class="fi-ta-header-cell-label text-sm font-semibold text-gray-950 dark:text-white">
+                                            Operator
+                                        </span>
+                                    </span>
+                                </th>
+                                <th class="fi-ta-header-cell px-3 py-3.5">
+                                    <span class="group flex w-full items-center gap-x-1 whitespace-nowrap justify-start">
+                                        <span class="fi-ta-header-cell-label text-sm font-semibold text-gray-950 dark:text-white">
+                                            Komponen
+                                        </span>
+                                    </span>
+                                </th>
+                                <th class="fi-ta-header-cell px-3 py-3.5">
+                                    <span class="group flex w-full items-center gap-x-1 whitespace-nowrap justify-start">
+                                        <span class="fi-ta-header-cell-label text-sm font-semibold text-gray-950 dark:text-white">
+                                            Standar
+                                        </span>
+                                    </span>
+                                </th>
+                                <th class="fi-ta-header-cell px-3 py-3.5">
+                                    <span class="group flex w-full items-center gap-x-1 whitespace-nowrap justify-center">
+                                        <span class="fi-ta-header-cell-label text-sm font-semibold text-gray-950 dark:text-white">
+                                            Frekuensi
+                                        </span>
+                                    </span>
+                                </th>
+                                <th class="fi-ta-header-cell px-3 py-3.5">
+                                    <span class="group flex w-full items-center gap-x-1 whitespace-nowrap justify-center">
+                                        <span class="fi-ta-header-cell-label text-sm font-semibold text-gray-950 dark:text-white">
+                                            OK
+                                        </span>
+                                    </span>
+                                </th>
+                                <th class="fi-ta-header-cell px-3 py-3.5">
+                                    <span class="group flex w-full items-center gap-x-1 whitespace-nowrap justify-center">
+                                        <span class="fi-ta-header-cell-label text-sm font-semibold text-gray-950 dark:text-white">
+                                            NG
+                                        </span>
+                                    </span>
+                                </th>
+                                <th class="fi-ta-header-cell px-3 py-3.5">
+                                    <span class="group flex w-full items-center gap-x-1 whitespace-nowrap justify-center">
+                                        <span class="fi-ta-header-cell-label text-sm font-semibold text-gray-950 dark:text-white">
+                                            N/A
+                                        </span>
+                                    </span>
+                                </th>
+                                <th class="fi-ta-header-cell px-3 py-3.5 sm:first-of-type:ps-6 sm:last-of-type:pe-6">
+                                    <span class="group flex w-full items-center gap-x-1 whitespace-nowrap justify-center">
+                                        <span class="fi-ta-header-cell-label text-sm font-semibold text-gray-950 dark:text-white">
+                                            % OK
+                                        </span>
+                                    </span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 whitespace-nowrap dark:divide-white/5">
+                            @foreach($this->laporanData as $mesin)
+                                @foreach($mesin->komponenMesins as $komponen)
+                                    @php
+                                        $sesuai = 0;
+                                        $tidakSesuai = 0;
+                                        $tidakDicek = 0;
 
-        {{-- Data Per Mesin --}}
-        <x-filament::section>
-            <x-slot name="heading">Detail Per Mesin</x-slot>
-            <x-slot name="description">Menampilkan {{ $this->laporanData->count() }} mesin</x-slot>
-
-            <div class="space-y-6">
-                @foreach($this->laporanData as $mesin)
-                    @php
-                        $mesinSesuai = 0;
-                        $mesinTidakSesuai = 0;
-                        $mesinTidakDicek = 0;
-                        foreach ($mesin->pengecekan as $p) {
-                            $mesinSesuai += $p->detailPengecekan->where('status_sesuai', 'sesuai')->count();
-                            $mesinTidakSesuai += $p->detailPengecekan->where('status_sesuai', 'tidak_sesuai')->count();
-                            $mesinTidakDicek += $p->detailPengecekan->where('status_sesuai', 'tidak_dicek')->count();
-                        }
-                    @endphp
-
-                    <div class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-                        {{-- Mesin Header --}}
-                        <div class="bg-gray-50 dark:bg-gray-800 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-                            <div class="flex items-center justify-between flex-wrap gap-2">
-                                <div>
-                                    <h3 class="font-bold text-gray-900 dark:text-white">{{ $mesin->nama_mesin }}</h3>
-                                    <p class="text-sm text-gray-600 dark:text-gray-400">
-                                        Operator: {{ $mesin->operator?->name ?? '-' }} |
-                                        {{ $mesin->komponenMesins->count() }} komponen |
-                                        {{ $mesin->pengecekan->count() }} pengecekan
-                                    </p>
-                                </div>
-                                <div class="text-sm">
-                                    <span class="text-green-600 dark:text-green-400 font-semibold">OK: {{ $mesinSesuai }}</span> |
-                                    <span class="text-red-600 dark:text-red-400 font-semibold">NG: {{ $mesinTidakSesuai }}</span> |
-                                    <span class="text-yellow-600 dark:text-yellow-400 font-semibold">N/A: {{ $mesinTidakDicek }}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {{-- Komponen Table --}}
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-sm">
-                                <thead class="bg-gray-100 dark:bg-gray-800">
-                                    <tr>
-                                        <th class="px-3 py-2 text-left font-semibold text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 w-10">No</th>
-                                        <th class="px-3 py-2 text-left font-semibold text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700">Komponen</th>
-                                        <th class="px-3 py-2 text-left font-semibold text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700">Standar</th>
-                                        <th class="px-3 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 w-20">Frekuensi</th>
-                                        <th class="px-3 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 w-16">OK</th>
-                                        <th class="px-3 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 w-16">NG</th>
-                                        <th class="px-3 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 w-16">N/A</th>
-                                        <th class="px-3 py-2 text-center font-semibold text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 w-20">%OK</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse($mesin->komponenMesins as $index => $komponen)
-                                        @php
-                                            $sesuai = 0;
-                                            $tidakSesuai = 0;
-                                            $tidakDicek = 0;
-
-                                            foreach ($mesin->pengecekan as $pengecekan) {
-                                                $detail = $pengecekan->detailPengecekan
-                                                    ->first(fn($d) => $d->komponen_mesin_id === $komponen->id);
-                                                if ($detail) {
-                                                    if ($detail->status_sesuai === 'sesuai') $sesuai++;
-                                                    elseif ($detail->status_sesuai === 'tidak_sesuai') $tidakSesuai++;
-                                                    elseif ($detail->status_sesuai === 'tidak_dicek') $tidakDicek++;
-                                                }
+                                        foreach ($mesin->pengecekan as $pengecekan) {
+                                            $detail = $pengecekan->detailPengecekan
+                                                ->first(fn($d) => $d->komponen_mesin_id === $komponen->id);
+                                            if ($detail) {
+                                                if ($detail->status_sesuai === 'sesuai') $sesuai++;
+                                                elseif ($detail->status_sesuai === 'tidak_sesuai') $tidakSesuai++;
+                                                elseif ($detail->status_sesuai === 'tidak_dicek') $tidakDicek++;
                                             }
+                                        }
 
-                                            $total = $sesuai + $tidakSesuai;
-                                            $persentase = $total > 0 ? round(($sesuai / $total) * 100, 1) : 0;
-                                        @endphp
-                                        <tr class="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50">
-                                            <td class="px-3 py-2 text-gray-500 dark:text-gray-400">{{ $index + 1 }}</td>
-                                            <td class="px-3 py-2 font-medium text-gray-900 dark:text-white">{{ $komponen->nama_komponen }}</td>
-                                            <td class="px-3 py-2 text-gray-600 dark:text-gray-400">{{ $komponen->standar ?? '-' }}</td>
-                                            <td class="px-3 py-2 text-center text-gray-600 dark:text-gray-400">{{ ucfirst($komponen->frekuensi ?? 'harian') }}</td>
-                                            <td class="px-3 py-2 text-center font-semibold text-green-600 dark:text-green-400">{{ $sesuai }}</td>
-                                            <td class="px-3 py-2 text-center font-semibold text-red-600 dark:text-red-400">{{ $tidakSesuai }}</td>
-                                            <td class="px-3 py-2 text-center font-semibold text-yellow-600 dark:text-yellow-400">{{ $tidakDicek }}</td>
-                                            <td class="px-3 py-2 text-center">
-                                                @if($total > 0)
-                                                    <span class="font-semibold {{ $persentase >= 80 ? 'text-green-600' : ($persentase >= 50 ? 'text-yellow-600' : 'text-red-600') }}">
-                                                        {{ $persentase }}%
-                                                    </span>
-                                                @else
-                                                    <span class="text-gray-400">-</span>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="8" class="px-3 py-4 text-center text-gray-500 dark:text-gray-400">
-                                                Tidak ada komponen untuk mesin ini
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                @endforeach
+                                        $total = $sesuai + $tidakSesuai;
+                                        $persentase = $total > 0 ? round(($sesuai / $total) * 100, 1) : 0;
+                                    @endphp
+                                    <tr class="fi-ta-row [@media(hover:hover)]:transition [@media(hover:hover)]:duration-75 hover:bg-gray-50 dark:hover:bg-white/5">
+                                        <td class="fi-ta-cell p-0 first-of-type:ps-1 last-of-type:pe-1 sm:first-of-type:ps-3 sm:last-of-type:pe-3">
+                                            <div class="fi-ta-col-wrp">
+                                                <div class="fi-ta-text grid w-full gap-y-1 px-3 py-4">
+                                                    <div class="flex">
+                                                        <div class="flex max-w-max" style="">
+                                                            <div class="fi-ta-text-item inline-flex items-center gap-1.5">
+                                                                <span class="fi-ta-text-item-label text-sm leading-6 text-gray-950 dark:text-white font-semibold">
+                                                                    {{ $mesin->nama_mesin }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="fi-ta-cell p-0 first-of-type:ps-1 last-of-type:pe-1 sm:first-of-type:ps-3 sm:last-of-type:pe-3">
+                                            <div class="fi-ta-col-wrp">
+                                                <div class="fi-ta-text grid w-full gap-y-1 px-3 py-4">
+                                                    <div class="flex">
+                                                        <div class="flex max-w-max" style="">
+                                                            <div class="fi-ta-text-item inline-flex items-center gap-1.5">
+                                                                <span class="fi-ta-text-item-label text-sm leading-6 text-gray-950 dark:text-white">
+                                                                    {{ $mesin->operator?->name ?? '-' }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="fi-ta-cell p-0 first-of-type:ps-1 last-of-type:pe-1 sm:first-of-type:ps-3 sm:last-of-type:pe-3">
+                                            <div class="fi-ta-col-wrp">
+                                                <div class="fi-ta-text grid w-full gap-y-1 px-3 py-4">
+                                                    <div class="flex">
+                                                        <div class="flex max-w-max" style="">
+                                                            <div class="fi-ta-text-item inline-flex items-center gap-1.5">
+                                                                <span class="fi-ta-text-item-label text-sm leading-6 text-gray-950 dark:text-white">
+                                                                    {{ $komponen->nama_komponen }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="fi-ta-cell p-0 first-of-type:ps-1 last-of-type:pe-1 sm:first-of-type:ps-3 sm:last-of-type:pe-3">
+                                            <div class="fi-ta-col-wrp">
+                                                <div class="fi-ta-text grid w-full gap-y-1 px-3 py-4">
+                                                    <div class="flex">
+                                                        <div class="flex max-w-max" style="">
+                                                            <div class="fi-ta-text-item inline-flex items-center gap-1.5">
+                                                                <span class="fi-ta-text-item-label text-sm leading-6 text-gray-500 dark:text-gray-400">
+                                                                    {{ $komponen->standar ?? '-' }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="fi-ta-cell p-0 first-of-type:ps-1 last-of-type:pe-1 sm:first-of-type:ps-3 sm:last-of-type:pe-3">
+                                            <div class="fi-ta-col-wrp">
+                                                <div class="fi-ta-text grid w-full gap-y-1 px-3 py-4">
+                                                    <div class="flex justify-center">
+                                                        <div class="flex max-w-max">
+                                                            <span class="fi-badge flex items-center justify-center gap-x-1 rounded-md text-xs font-medium ring-1 ring-inset px-2 min-w-[theme(spacing.6)] py-1 
+                                                                @if(ucfirst($komponen->frekuensi ?? 'harian') === 'Harian') 
+                                                                    fi-color-success bg-success-50 text-success-600 ring-success-600/10 dark:bg-success-400/10 dark:text-success-400 dark:ring-success-400/30
+                                                                @elseif(ucfirst($komponen->frekuensi ?? 'harian') === 'Mingguan')
+                                                                    fi-color-info bg-info-50 text-info-600 ring-info-600/10 dark:bg-info-400/10 dark:text-info-400 dark:ring-info-400/30
+                                                                @elseif(ucfirst($komponen->frekuensi ?? 'harian') === 'Bulanan')
+                                                                    fi-color-warning bg-warning-50 text-warning-600 ring-warning-600/10 dark:bg-warning-400/10 dark:text-warning-400 dark:ring-warning-400/30
+                                                                @else
+                                                                    fi-color-gray bg-gray-50 text-gray-600 ring-gray-600/10 dark:bg-gray-400/10 dark:text-gray-400 dark:ring-gray-400/20
+                                                                @endif">
+                                                                {{ ucfirst($komponen->frekuensi ?? 'harian') }}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="fi-ta-cell p-0 first-of-type:ps-1 last-of-type:pe-1 sm:first-of-type:ps-3 sm:last-of-type:pe-3">
+                                            <div class="fi-ta-col-wrp">
+                                                <div class="fi-ta-text grid w-full gap-y-1 px-3 py-4">
+                                                    <div class="flex justify-center">
+                                                        <div class="flex max-w-max">
+                                                            <div class="fi-ta-text-item inline-flex items-center gap-1.5">
+                                                                <span class="fi-ta-text-item-label text-sm leading-6 text-success-600 dark:text-success-400 font-semibold">
+                                                                    {{ $sesuai }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="fi-ta-cell p-0 first-of-type:ps-1 last-of-type:pe-1 sm:first-of-type:ps-3 sm:last-of-type:pe-3">
+                                            <div class="fi-ta-col-wrp">
+                                                <div class="fi-ta-text grid w-full gap-y-1 px-3 py-4">
+                                                    <div class="flex justify-center">
+                                                        <div class="flex max-w-max">
+                                                            <div class="fi-ta-text-item inline-flex items-center gap-1.5">
+                                                                <span class="fi-ta-text-item-label text-sm leading-6 text-danger-600 dark:text-danger-400 font-semibold">
+                                                                    {{ $tidakSesuai }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="fi-ta-cell p-0 first-of-type:ps-1 last-of-type:pe-1 sm:first-of-type:ps-3 sm:last-of-type:pe-3">
+                                            <div class="fi-ta-col-wrp">
+                                                <div class="fi-ta-text grid w-full gap-y-1 px-3 py-4">
+                                                    <div class="flex justify-center">
+                                                        <div class="flex max-w-max">
+                                                            <div class="fi-ta-text-item inline-flex items-center gap-1.5">
+                                                                <span class="fi-ta-text-item-label text-sm leading-6 text-warning-600 dark:text-warning-400 font-semibold">
+                                                                    {{ $tidakDicek }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="fi-ta-cell p-0 first-of-type:ps-1 last-of-type:pe-1 sm:first-of-type:ps-3 sm:last-of-type:pe-3">
+                                            <div class="fi-ta-col-wrp">
+                                                <div class="fi-ta-text grid w-full gap-y-1 px-3 py-4">
+                                                    <div class="flex justify-center">
+                                                        <div class="flex max-w-max">
+                                                            @if($total > 0)
+                                                                <div class="fi-ta-text-item inline-flex items-center gap-1.5">
+                                                                    <span class="fi-ta-text-item-label text-sm leading-6 font-bold
+                                                                        @if($persentase >= 80) text-success-600 dark:text-success-400
+                                                                        @elseif($persentase >= 50) text-warning-600 dark:text-warning-400
+                                                                        @else text-danger-600 dark:text-danger-400
+                                                                        @endif">
+                                                                        {{ $persentase }}%
+                                                                    </span>
+                                                                </div>
+                                                            @else
+                                                                <div class="fi-ta-text-item inline-flex items-center gap-1.5">
+                                                                    <span class="fi-ta-text-item-label text-sm leading-6 text-gray-400">
+                                                                        -
+                                                                    </span>
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </x-filament::section>
 
