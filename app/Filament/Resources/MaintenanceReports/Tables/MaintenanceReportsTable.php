@@ -17,11 +17,6 @@ class MaintenanceReportsTable
     {
         return $table
             ->columns([
-                TextColumn::make('id')
-                    ->label('ID')
-                    ->sortable()
-                    ->searchable(),
-
                 TextColumn::make('mesin.nama_mesin')
                     ->label('Mesin')
                     ->searchable()
