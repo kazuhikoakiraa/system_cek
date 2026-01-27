@@ -14,7 +14,7 @@ class ListMesins extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label('New Mesin')
+                ->label('Tambah Daftar Pengecekan')
                 ->icon('heroicon-o-plus'),
         ];
     }

@@ -27,15 +27,15 @@ class MesinResource extends Resource
 {
     protected static ?string $model = Mesin::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedCog;
+    protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentList;
 
-    protected static ?string $navigationLabel = 'Mesin';
+    protected static ?string $navigationLabel = 'Daftar Pengecekan';
 
-    protected static ?string $pluralModelLabel = 'Mesin';
+    protected static ?string $pluralModelLabel = 'Daftar Pengecekan';
 
-    protected static ?string $modelLabel = 'Mesin';
+    protected static ?string $modelLabel = 'Daftar Pengecekan';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Manajemen Mesin';
+    protected static string|\UnitEnum|null $navigationGroup = 'Manajemen Pengecekan';
 
     protected static ?int $navigationSort = 20;
 
@@ -45,15 +45,15 @@ class MesinResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('Informasi Mesin')
+                Section::make('Informasi Daftar Pengecekan')
                     ->schema([
                         Grid::make(2)
                             ->components([
                                 FormTextInput::make('nama_mesin')
-                                    ->label('Nama Mesin')
+                                    ->label('Nama Item Pengecekan')
                                     ->required()
                                     ->maxLength(255)
-                                    ->placeholder('Contoh: Mesin CNC 001')
+                                    ->placeholder('Contoh: Mesin CNC 001, Forklift, dll')
                                     ->columnSpan(2),
 
                                 FormSelect::make('user_id')
@@ -67,9 +67,9 @@ class MesinResource extends Resource
                                     ->columnSpan(2),
 
                                 FormTextarea::make('deskripsi')
-                                    ->label('Deskripsi Mesin')
+                                    ->label('Deskripsi')
                                     ->rows(3)
-                                    ->placeholder('Deskripsi umum tentang mesin ini')
+                                    ->placeholder('Deskripsi umum tentang item pengecekan ini')
                                     ->columnSpan(2),
                             ]),
                     ]),
@@ -129,7 +129,7 @@ class MesinResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('nama_mesin')
-                    ->label('Nama Mesin')
+                    ->label('Nama Item')
                     ->searchable()
                     ->sortable()
                     ->weight('bold'),

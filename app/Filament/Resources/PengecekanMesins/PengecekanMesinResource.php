@@ -23,13 +23,13 @@ class PengecekanMesinResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentCheck;
 
-    protected static ?string $navigationLabel = 'Pengecekan Mesin';
+    protected static ?string $navigationLabel = 'Pengecekan';
 
-    protected static ?string $modelLabel = 'Pengecekan Mesin';
+    protected static ?string $modelLabel = 'Pengecekan';
 
-    protected static ?string $pluralModelLabel = 'Pengecekan Mesin';
+    protected static ?string $pluralModelLabel = 'Pengecekan';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Manajemen Mesin';
+    protected static string|\UnitEnum|null $navigationGroup = 'Manajemen Pengecekan';
 
     protected static ?int $navigationSort = 21;
 
