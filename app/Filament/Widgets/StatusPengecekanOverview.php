@@ -12,7 +12,7 @@ class StatusPengecekanOverview extends BaseWidget
 
     protected function getStats(): array
     {
-        $totalMesin = Mesin::count();
+        $totalDaftarPengecekan = Mesin::count();
         
         $sudahDicek = Mesin::whereHas('pengecekan', function ($query) {
             $query->whereDate('tanggal_pengecekan', today())
@@ -24,15 +24,15 @@ class StatusPengecekanOverview extends BaseWidget
                 ->where('status', 'dalam_proses');
         })->count();
 
-        $tidakAdaData = $totalMesin - $sudahDicek - $sedangDicek;
+        $tidakAdaData = $totalDaftarPengecekan - $sudahDicek - $sedangDicek;
 
-        $persentaseSelesai = $totalMesin > 0 
-            ? round(($sudahDicek / $totalMesin) * 100, 1) 
+        $persentaseSelesai = $totalDaftarPengecekan > 0 
+            ? round(($sudahDicek / $totalDaftarPengecekan) * 100, 1) 
             : 0;
 
         return [
-            Stat::make('Total Mesin', $totalMesin)
-                ->description('Jumlah seluruh mesin')
+            Stat::make('Total Daftar Pengecekan', $totalDaftarPengecekan)
+                ->description('Jumlah daftar pengecekan')
                 ->descriptionIcon('heroicon-o-server')
                 ->color('primary'),
 

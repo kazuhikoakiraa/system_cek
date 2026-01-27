@@ -49,7 +49,7 @@ class OperatorReminderWidget extends Widget
                 'type' => 'warning',
                 'icon' => 'heroicon-o-clock',
                 'title' => 'Pengingat Pengecekan, ' . $user->name,
-                'message' => 'Anda belum melakukan pengecekan mesin hari ini. Jangan lupa untuk mengecek mesin yang menjadi tanggung jawab Anda.',
+                'message' => 'Anda belum melakukan pengecekan hari ini. Jangan lupa untuk mengecek daftar pengecekan yang menjadi tanggung jawab Anda.',
             ];
         }
     }

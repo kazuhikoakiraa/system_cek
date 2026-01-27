@@ -73,7 +73,7 @@ class TeknisiReminderWidget extends Widget
                 'type' => 'warning',
                 'icon' => 'heroicon-o-clock',
                 'title' => 'Pengingat Maintenance, ' . $user->name,
-                'message' => "Anda memiliki $maintenanceBelumSelesai mesin yang belum dimulai. Upload foto kondisi awal untuk memulai perbaikan.",
+                'message' => "Anda memiliki $maintenanceBelumSelesai maintenance yang belum dimulai. Upload foto kondisi awal untuk memulai perbaikan.",
             ];
         } 
         

@@ -105,8 +105,8 @@ class LaporanPengecekan extends Page implements HasForms
                                     ->live(),
 
                                 Select::make('mesin_id')
-                                    ->label('Mesin')
-                                    ->placeholder('Semua Mesin')
+                                    ->label('Daftar Pengecekan')
+                                    ->placeholder('Semua Daftar Pengecekan')
                                     ->options(Mesin::pluck('nama_mesin', 'id'))
                                     ->searchable()
                                     ->preload()
@@ -291,7 +291,7 @@ class LaporanPengecekan extends Page implements HasForms
     {
         if (!$this->showPreview || $this->laporanData->isEmpty()) {
             return [
-                'total_mesin' => 0,
+                'total_daftar_pengecekan' => 0,
                 'total_pengecekan' => 0,
                 'total_sesuai' => 0,
                 'total_tidak_sesuai' => 0,
@@ -310,7 +310,7 @@ class LaporanPengecekan extends Page implements HasForms
         }
 
         return [
-            'total_mesin' => $this->laporanData->count(),
+            'total_daftar_pengecekan' => $this->laporanData->count(),
             'total_pengecekan' => $totalPengecekan,
             'total_sesuai' => $totalSesuai,
             'total_tidak_sesuai' => $totalTidakSesuai,

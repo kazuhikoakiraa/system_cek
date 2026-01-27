@@ -30,7 +30,7 @@
                                 <th class="fi-ta-header-cell px-3 py-3.5 sm:first-of-type:ps-6 sm:last-of-type:pe-6">
                                     <span class="group flex w-full items-center gap-x-1 whitespace-nowrap justify-start">
                                         <span class="fi-ta-header-cell-label text-sm font-semibold text-gray-950 dark:text-white">
-                                            Nama Mesin
+                                            Daftar Pengecekan
                                         </span>
                                     </span>
                                 </th>
@@ -98,6 +98,7 @@
                                     @php
                                         $sesuai = 0;
                                         $tidakSesuai = 0;
+                                        $totalPengecekan = $mesin->pengecekan->count();
 
                                         foreach ($mesin->pengecekan as $pengecekan) {
                                             $detail = $pengecekan->detailPengecekan
@@ -109,6 +110,7 @@
                                         }
 
                                         $total = $sesuai + $tidakSesuai;
+                                        $tidakDicek = $totalPengecekan - $total;
                                         $persentase = $total > 0 ? round(($sesuai / $total) * 100, 1) : 0;
                                     @endphp
                                     <tr class="fi-ta-row [@media(hover:hover)]:transition [@media(hover:hover)]:duration-75 hover:bg-gray-50 dark:hover:bg-white/5">

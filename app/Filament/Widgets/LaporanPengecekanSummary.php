@@ -8,7 +8,7 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 class LaporanPengecekanSummary extends BaseWidget
 {
     /**
-     * @var array{total_mesin?: int, total_pengecekan?: int, total_sesuai?: int, total_tidak_sesuai?: int}
+     * @var array{total_daftar_pengecekan?: int, total_pengecekan?: int, total_sesuai?: int, total_tidak_sesuai?: int}
      */
     public array $summary = [];
 
@@ -25,13 +25,13 @@ class LaporanPengecekanSummary extends BaseWidget
 
     protected function getStats(): array
     {
-        $totalMesin = (int) ($this->summary['total_mesin'] ?? 0);
+        $totalDaftarPengecekan = (int) ($this->summary['total_daftar_pengecekan'] ?? 0);
         $totalPengecekan = (int) ($this->summary['total_pengecekan'] ?? 0);
         $totalSesuai = (int) ($this->summary['total_sesuai'] ?? 0);
         $totalTidakSesuai = (int) ($this->summary['total_tidak_sesuai'] ?? 0);
 
         return [
-            Stat::make('Total Mesin', $totalMesin)
+            Stat::make('Total Daftar Pengecekan', $totalDaftarPengecekan)
                 ->color('primary'),
 
             Stat::make('Total Pengecekan', $totalPengecekan)
