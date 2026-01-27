@@ -129,6 +129,15 @@ class MulaiPengecekan extends Page implements HasForms
                                     ->whereDoesntHave('pengecekan', function ($query) use ($today) {
                                         $query->whereDate('tanggal_pengecekan', $today);
                                     })
+                                    // Filter mesin yang memiliki komponen yang bisa dicek
+                                    ->whereHas('komponenMesins', function ($query) {
+                                        $query->where(function ($q) {
+                                            // Komponen harian selalu bisa dicek
+                                            $q->where('frekuensi', 'harian')
+                                            // Atau komponen yang belum pernah dicek
+                                            ->orWhereDoesntHave('detailPengecekan');
+                                        });
+                                    })
                                     ->pluck('nama_mesin', 'id');
 
                                 return $mesins;
@@ -140,11 +149,21 @@ class MulaiPengecekan extends Page implements HasForms
                                     $komponenList = KomponenMesin::where('mesin_id', $state)
                                         ->get()
                                         ->map(function ($komponen) {
+                                            $isCheckable = $komponen->isCheckable();
+                                            $lastCheck = $komponen->getLastCheck();
+                                            $nextCheckDate = $komponen->getNextCheckDate();
+                                            
                                             return [
                                                 'komponen_mesin_id' => $komponen->id,
                                                 'nama_komponen' => $komponen->nama_komponen,
                                                 'standar' => $komponen->standar,
                                                 'frekuensi' => $komponen->frekuensi,
+                                                'is_checkable' => $isCheckable,
+                                                'last_check_status' => $lastCheck ? $lastCheck->status_sesuai : null,
+                                                'last_check_keterangan' => $lastCheck ? $lastCheck->keterangan : null,
+                                                'last_check_date' => $lastCheck && $lastCheck->pengecekanMesin ? 
+                                                    $lastCheck->pengecekanMesin->tanggal_pengecekan->format('d/m/Y H:i') : null,
+                                                'next_check_date' => $nextCheckDate ? $nextCheckDate->format('d/m/Y') : null,
                                                 'status_sesuai' => null,
                                                 'keterangan' => null,
                                             ];
@@ -173,6 +192,16 @@ class MulaiPengecekan extends Page implements HasForms
                                 
                                 \Filament\Forms\Components\Hidden::make('frekuensi'),
                                 
+                                \Filament\Forms\Components\Hidden::make('is_checkable'),
+                                
+                                \Filament\Forms\Components\Hidden::make('last_check_status'),
+                                
+                                \Filament\Forms\Components\Hidden::make('last_check_keterangan'),
+                                
+                                \Filament\Forms\Components\Hidden::make('last_check_date'),
+                                
+                                \Filament\Forms\Components\Hidden::make('next_check_date'),
+                                
                                 Placeholder::make('info_komponen')
                                     ->label('Komponen')
                                     ->content(fn ($get) => $get('nama_komponen') ?? '-'),
@@ -183,12 +212,57 @@ class MulaiPengecekan extends Page implements HasForms
                                 
                                 Placeholder::make('info_frekuensi')
                                     ->label('Frekuensi')
-                                    ->content(fn ($get) => match($get('frekuensi')) {
-                                        'harian' => 'Harian',
-                                        'mingguan' => 'Mingguan',
-                                        'bulanan' => 'Bulanan',
-                                        default => '-'
+                                    ->content(function ($get) {
+                                        $frekuensi = match($get('frekuensi')) {
+                                            'harian' => 'Harian',
+                                            'mingguan' => 'Mingguan',
+                                            'bulanan' => 'Bulanan',
+                                            default => '-'
+                                        };
+                                        
+                                        $isCheckable = $get('is_checkable');
+                                        $nextCheckDate = $get('next_check_date');
+                                        
+                                        if (!$isCheckable && $nextCheckDate) {
+                                            return new \Illuminate\Support\HtmlString(
+                                                '<div>' . $frekuensi . 
+                                                '<br><span class="text-xs text-orange-600 dark:text-orange-400">Berikutnya: ' . 
+                                                $nextCheckDate . '</span></div>'
+                                            );
+                                        }
+                                        
+                                        return $frekuensi;
                                     }),
+                                
+                                // Tampilkan hasil pengecekan sebelumnya jika tidak bisa dicek
+                                Placeholder::make('last_check_info')
+                                    ->label('Hasil Pengecekan Terakhir')
+                                    ->content(function ($get) {
+                                        $lastStatus = $get('last_check_status');
+                                        $lastKeterangan = $get('last_check_keterangan');
+                                        $lastDate = $get('last_check_date');
+                                        
+                                        if (!$lastStatus) {
+                                            return new \Illuminate\Support\HtmlString(
+                                                '<span class="text-sm text-gray-500">Belum pernah dicek</span>'
+                                            );
+                                        }
+                                        
+                                        $statusColor = $lastStatus === 'sesuai' ? 'green' : 'red';
+                                        $statusText = $lastStatus === 'sesuai' ? 'Sesuai' : 'Tidak Sesuai';
+                                        
+                                        $html = '<div class="space-y-1">';
+                                        $html .= '<div><span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-' . $statusColor . '-100 text-' . $statusColor . '-800 dark:bg-' . $statusColor . '-900 dark:text-' . $statusColor . '-200">' . $statusText . '</span></div>';
+                                        if ($lastKeterangan) {
+                                            $html .= '<div class="text-sm text-gray-600 dark:text-gray-400">' . $lastKeterangan . '</div>';
+                                        }
+                                        $html .= '<div class="text-xs text-gray-500">Dicek: ' . $lastDate . '</div>';
+                                        $html .= '</div>';
+                                        
+                                        return new \Illuminate\Support\HtmlString($html);
+                                    })
+                                    ->visible(fn ($get) => !$get('is_checkable'))
+                                    ->columnSpanFull(),
                                 
                                 Radio::make('status_sesuai')
                                     ->label('Status')
@@ -197,13 +271,16 @@ class MulaiPengecekan extends Page implements HasForms
                                         'tidak_sesuai' => 'Tidak Sesuai',
                                     ])
                                     ->inline()
-                                    ->required()
+                                    ->required(fn ($get) => $get('is_checkable'))
+                                    ->disabled(fn ($get) => !$get('is_checkable'))
+                                    ->visible(fn ($get) => $get('is_checkable'))
                                     ->live(),
 
                                 Textarea::make('keterangan')
                                     ->label('Keterangan')
-                                    ->visible(fn ($get) => $get('status_sesuai') === 'tidak_sesuai')
-                                    ->required(fn ($get) => $get('status_sesuai') === 'tidak_sesuai')
+                                    ->visible(fn ($get) => $get('is_checkable') && $get('status_sesuai') === 'tidak_sesuai')
+                                    ->required(fn ($get) => $get('is_checkable') && $get('status_sesuai') === 'tidak_sesuai')
+                                    ->disabled(fn ($get) => !$get('is_checkable'))
                                     ->rows(3)
                                     ->placeholder('Jelaskan ketidaksesuaian yang ditemukan')
                                     ->columnSpanFull(),
@@ -231,11 +308,21 @@ class MulaiPengecekan extends Page implements HasForms
         $komponenList = KomponenMesin::where('mesin_id', $mesinId)
             ->get()
             ->map(function ($komponen) {
+                $isCheckable = $komponen->isCheckable();
+                $lastCheck = $komponen->getLastCheck();
+                $nextCheckDate = $komponen->getNextCheckDate();
+                
                 return [
                     'komponen_mesin_id' => $komponen->id,
                     'nama_komponen' => $komponen->nama_komponen,
                     'standar' => $komponen->standar,
                     'frekuensi' => $komponen->frekuensi,
+                    'is_checkable' => $isCheckable,
+                    'last_check_status' => $lastCheck ? $lastCheck->status_sesuai : null,
+                    'last_check_keterangan' => $lastCheck ? $lastCheck->keterangan : null,
+                    'last_check_date' => $lastCheck && $lastCheck->pengecekanMesin ? 
+                        $lastCheck->pengecekanMesin->tanggal_pengecekan->format('d/m/Y H:i') : null,
+                    'next_check_date' => $nextCheckDate ? $nextCheckDate->format('d/m/Y') : null,
                     'status_sesuai' => null,
                     'keterangan' => null,
                 ];
@@ -284,6 +371,23 @@ class MulaiPengecekan extends Page implements HasForms
             return;
         }
 
+        // Filter hanya komponen yang checkable dan memiliki status
+        $checkableKomponen = array_filter($data['komponen'], function ($komponen) {
+            return isset($komponen['is_checkable']) && 
+                   $komponen['is_checkable'] && 
+                   isset($komponen['status_sesuai']);
+        });
+
+        // Jika tidak ada komponen yang bisa dicek hari ini
+        if (empty($checkableKomponen)) {
+            Notification::make()
+                ->warning()
+                ->title('Tidak Ada Komponen')
+                ->body('Tidak ada komponen yang perlu dicek hari ini berdasarkan frekuensi masing-masing.')
+                ->send();
+            return;
+        }
+
         // Cek apakah user adalah operator dari mesin ini
         $mesin = Mesin::find($data['mesin_id']);
         if ($mesin && $mesin->user_id !== Auth::id()) {
@@ -295,7 +399,7 @@ class MulaiPengecekan extends Page implements HasForms
             return;
         }
 
-        // Cek apakah sudah ada pengecekan hari ini
+        // Cek apakah sudah ada pengecekan hari ini untuk mesin ini
         $today = Carbon::today();
         $existingCheck = PengecekanMesin::where('mesin_id', $data['mesin_id'])
             ->whereDate('tanggal_pengecekan', $today)
@@ -306,6 +410,25 @@ class MulaiPengecekan extends Page implements HasForms
                 ->warning()
                 ->title('Sudah Dicek')
                 ->body('Mesin ini sudah diperiksa hari ini.')
+                ->send();
+            return;
+        }
+
+        // Cek apakah ada komponen harian yang perlu dicek
+        $hasHarianKomponen = false;
+        foreach ($checkableKomponen as $komponen) {
+            if (isset($komponen['frekuensi']) && $komponen['frekuensi'] === 'harian') {
+                $hasHarianKomponen = true;
+                break;
+            }
+        }
+
+        // Jika tidak ada komponen harian dan semua komponen belum waktunya, berarti tidak perlu buat pengecekan baru
+        if (!$hasHarianKomponen && empty($checkableKomponen)) {
+            Notification::make()
+                ->info()
+                ->title('Belum Waktunya')
+                ->body('Semua komponen belum mencapai waktu pengecekan berikutnya.')
                 ->send();
             return;
         }
@@ -321,9 +444,13 @@ class MulaiPengecekan extends Page implements HasForms
                 'status' => 'selesai',
             ]);
 
-            // Simpan detail pengecekan
+            // Simpan detail pengecekan - hanya untuk komponen yang checkable
+            $savedCount = 0;
             foreach ($data['komponen'] as $komponen) {
-                if (!isset($komponen['status_sesuai'])) {
+                // Skip jika tidak checkable atau tidak ada status
+                if (!isset($komponen['is_checkable']) || 
+                    !$komponen['is_checkable'] || 
+                    !isset($komponen['status_sesuai'])) {
                     continue;
                 }
 
@@ -333,6 +460,8 @@ class MulaiPengecekan extends Page implements HasForms
                     'status_sesuai' => $komponen['status_sesuai'],
                     'keterangan' => $komponen['keterangan'] ?? null,
                 ]);
+                
+                $savedCount++;
             }
 
             DB::commit();
@@ -340,7 +469,7 @@ class MulaiPengecekan extends Page implements HasForms
             Notification::make()
                 ->success()
                 ->title('Berhasil')
-                ->body('Pengecekan mesin berhasil disimpan.')
+                ->body("Pengecekan mesin berhasil disimpan. {$savedCount} komponen dicek.")
                 ->send();
 
             // Reset form dan redirect ke list

@@ -32,6 +32,11 @@ class Mesin extends Model
         return $this->hasMany(KomponenMesin::class);
     }
 
+    public function komponenMesin(): HasMany
+    {
+        return $this->hasMany(KomponenMesin::class);
+    }
+
     public function pengecekan(): HasMany
     {
         return $this->hasMany(PengecekanMesin::class);
