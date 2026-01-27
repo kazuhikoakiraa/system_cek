@@ -45,6 +45,12 @@ class PengecekanJanuari2026Seeder extends Seeder
                     rand(0, 59)   // Second
                 );
 
+                // Skip hari Minggu (Sunday = 0)
+                if ($tanggal->dayOfWeek === Carbon::SUNDAY) {
+                    $this->command->info("  - Melewati tanggal {$tanggal->format('Y-m-d')} (Minggu/Libur)");
+                    continue;
+                }
+
                 // Cek apakah pengecekan sudah ada untuk mesin dan tanggal ini
                 $exists = PengecekanMesin::where('mesin_id', $mesin->id)
                     ->whereDate('tanggal_pengecekan', $tanggal->format('Y-m-d'))

@@ -120,6 +120,12 @@ class LaporanMesinSheet implements FromCollection, WithTitle, WithStyles, WithEv
 
             // Cek status untuk setiap tanggal
             foreach ($this->tanggalRange as $tanggal) {
+                // Skip hari Minggu - kosongkan saja
+                if ($tanggal->dayOfWeek === Carbon::SUNDAY) {
+                    $row[] = '';
+                    continue;
+                }
+
                 $pengecekan = $this->mesin->pengecekan
                     ->first(function ($p) use ($tanggal) {
                         return $p->tanggal_pengecekan->isSameDay($tanggal);
@@ -229,8 +235,8 @@ class LaporanMesinSheet implements FromCollection, WithTitle, WithStyles, WithEv
                 $sheet->setCellValue('A2', 'Departemen: PRODUKSI');
                 $sheet->mergeCells('A2:D2');
 
-                // Nama Mesin
-                $sheet->setCellValue('A3', 'Mesin: ' . $this->mesin->nama_mesin);
+                // Nama Daftar Pengecekan
+                $sheet->setCellValue('A3', 'Daftar Pengecekan: ' . $this->mesin->nama_mesin);
                 $sheet->mergeCells('A3:D3');
                 $sheet->getStyle('A3')->getFont()->setBold(true);
 
@@ -243,7 +249,7 @@ class LaporanMesinSheet implements FromCollection, WithTitle, WithStyles, WithEv
                 $sheet->setCellValue('G3', $this->tanggalMulai->translatedFormat('F Y'));
 
                 // Title Check Sheet
-                $sheet->setCellValue('A5', 'CHECK SHEET PENGECEKAN MESIN');
+                $sheet->setCellValue('A5', 'CHECK SHEET ' . strtoupper($this->mesin->nama_mesin));
                 $sheet->mergeCells('A5:' . $lastCol . '5');
                 $sheet->getStyle('A5')->getFont()->setBold(true)->setSize(12);
                 $sheet->getStyle('A5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
@@ -266,6 +272,21 @@ class LaporanMesinSheet implements FromCollection, WithTitle, WithStyles, WithEv
                 $sheet->getStyle($startDateCol . '8:' . $endDateCol . $lastDataRow)
                     ->getAlignment()
                     ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+                // ===== WARNA KOLOM MINGGU (SUNDAY) =====
+                $colIndex = 5; // Kolom E = kolom tanggal pertama (index 5)
+                foreach ($this->tanggalRange as $tanggal) {
+                    if ($tanggal->dayOfWeek === Carbon::SUNDAY) {
+                        $col = $this->getColumnLetter($colIndex);
+                        // Warna merah muda/pink untuk hari Minggu
+                        $sheet->getStyle($col . '8:' . $col . $lastDataRow)
+                            ->getFill()
+                            ->setFillType(Fill::FILL_SOLID)
+                            ->getStartColor()
+                            ->setRGB('FFE6E6'); // Light red/pink
+                    }
+                    $colIndex++;
+                }
 
                 // ===== KETERANGAN SECTION =====
                 $ketRow = $lastDataRow + 2;

@@ -13,13 +13,13 @@
 
         @page {
             size: A4 landscape;
-            margin: 10mm;
+            margin: 15mm 12mm;
         }
 
         body {
             font-family: 'DejaVu Sans', Arial, sans-serif;
-            font-size: 9px;
-            line-height: 1.3;
+            font-size: 8px;
+            line-height: 1.2;
         }
 
         .page-break {
@@ -34,14 +34,14 @@
         .header {
             display: table;
             width: 100%;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             border: 1px solid #000;
         }
 
         .header-left {
             display: table-cell;
             width: 60%;
-            padding: 8px;
+            padding: 6px;
             vertical-align: middle;
             border-right: 1px solid #000;
         }
@@ -53,13 +53,13 @@
         }
 
         .company-name {
-            font-size: 14px;
+            font-size: 12px;
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
 
         .header-info {
-            font-size: 10px;
+            font-size: 9px;
         }
 
         .header-info table {
@@ -67,8 +67,8 @@
         }
 
         .header-info td {
-            padding: 2px 5px;
-            font-size: 9px;
+            padding: 1px 4px;
+            font-size: 8px;
         }
 
         .header-info td:first-child {
@@ -80,9 +80,9 @@
         }
 
         .doc-info td {
-            padding: 3px 8px;
+            padding: 2px 6px;
             border-bottom: 1px solid #000;
-            font-size: 9px;
+            font-size: 8px;
         }
 
         .doc-info tr:last-child td {
@@ -91,22 +91,22 @@
 
         .doc-info td:first-child {
             border-right: 1px solid #000;
-            width: 90px;
+            width: 85px;
             font-weight: bold;
         }
 
         /* Title */
         .title {
             text-align: center;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
-            margin: 10px 0 5px 0;
+            margin: 8px 0 4px 0;
         }
 
         .subtitle {
             text-align: center;
-            font-size: 10px;
-            margin-bottom: 10px;
+            font-size: 9px;
+            margin-bottom: 8px;
         }
 
         /* Main Table */
@@ -119,9 +119,9 @@
         .check-table th,
         .check-table td {
             border: 1px solid #000;
-            padding: 3px 2px;
+            padding: 2px 1px;
             text-align: center;
-            font-size: 8px;
+            font-size: 7px;
         }
 
         .check-table th {
@@ -130,34 +130,34 @@
         }
 
         .check-table .col-no {
-            width: 25px;
+            width: 20px;
         }
 
         .check-table .col-item {
-            width: 150px;
+            width: 130px;
             text-align: left;
-            padding-left: 5px;
+            padding-left: 4px;
         }
 
         .check-table .col-standar {
-            width: 100px;
+            width: 90px;
             text-align: left;
-            padding-left: 5px;
+            padding-left: 4px;
         }
 
         .check-table .col-frekuensi {
-            width: 60px;
+            width: 50px;
         }
 
         .check-table .col-day {
-            width: 18px;
-            min-width: 18px;
+            width: 16px;
+            min-width: 16px;
         }
 
         .check-table .col-ket {
-            width: 100px;
+            width: 85px;
             text-align: left;
-            padding-left: 5px;
+            padding-left: 4px;
         }
 
         .check-table .day-header {
@@ -179,30 +179,35 @@
             font-weight: bold;
         }
 
+        /* Sunday/Weekend column styling */
+        .col-sunday {
+            background-color: #ffe6e6;
+        }
+
         /* Keterangan Section */
         .keterangan-section {
-            margin-top: 15px;
-            margin-bottom: 20px;
+            margin-top: 10px;
+            margin-bottom: 15px;
         }
 
         .keterangan-section h4 {
-            font-size: 10px;
-            margin-bottom: 5px;
+            font-size: 9px;
+            margin-bottom: 4px;
         }
 
         .keterangan-section ul {
             list-style: none;
-            font-size: 9px;
+            font-size: 8px;
         }
 
         .keterangan-section li {
-            margin-bottom: 2px;
+            margin-bottom: 1px;
         }
 
         /* Signature Section */
         .signature-section {
             width: 100%;
-            margin-top: 30px;
+            margin-top: 20px;
         }
 
         .signature-table {
@@ -213,27 +218,27 @@
             width: 33.33%;
             text-align: center;
             vertical-align: top;
-            padding: 5px 20px;
+            padding: 3px 15px;
         }
 
         .signature-label {
-            font-size: 10px;
-            margin-bottom: 50px;
+            font-size: 9px;
+            margin-bottom: 40px;
         }
 
         .signature-line {
             border-bottom: 1px solid #000;
-            margin: 0 20px;
-            padding-top: 40px;
+            margin: 0 15px;
+            padding-top: 35px;
         }
 
         .signature-name {
-            font-size: 9px;
-            margin-top: 5px;
+            font-size: 8px;
+            margin-top: 4px;
         }
 
         .signature-title {
-            font-size: 9px;
+            font-size: 8px;
             font-weight: bold;
         }
 
@@ -264,7 +269,7 @@
                             <td>: PRODUKSI</td>
                         </tr>
                         <tr>
-                            <td>Bagian</td>
+                            <td>Daftar Pengecekan</td>
                             <td>: {{ strtoupper($mesin->nama_mesin) }}</td>
                         </tr>
                     </table>
@@ -293,7 +298,7 @@
         </div>
 
         <!-- Title -->
-        <div class="title">CHECK SHEET PENGECEKAN MESIN</div>
+        <div class="title">CHECK SHEET {{ strtoupper($mesin->nama_mesin) }}</div>
         <div class="subtitle">
             Periode: {{ $tanggalMulai->translatedFormat('d F Y') }} - {{ $tanggalSelesai->translatedFormat('d F Y') }}
         </div>
@@ -320,7 +325,7 @@
                 </tr>
                 <tr>
                     @foreach($tanggalRange as $tanggal)
-                        <th class="col-day">{{ $tanggal->format('d') }}</th>
+                        <th class="col-day {{ $tanggal->dayOfWeek === 0 ? 'col-sunday' : '' }}">{{ $tanggal->format('d') }}</th>
                     @endforeach
                 </tr>
             </thead>
@@ -334,6 +339,12 @@
 
                         @foreach($tanggalRange as $tanggal)
                             @php
+                                // Skip hari Minggu - kosongkan saja
+                                if ($tanggal->dayOfWeek === 0) {
+                                    echo '<td class="col-day col-sunday"></td>';
+                                    continue;
+                                }
+
                                 $pengecekan = $mesin->pengecekan
                                     ->first(fn($p) => $p->tanggal_pengecekan->isSameDay($tanggal));
 

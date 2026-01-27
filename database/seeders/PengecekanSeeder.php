@@ -35,6 +35,11 @@ class PengecekanSeeder extends Seeder
                     fake()->numberBetween(0, 59)    // Second
                 );
 
+                // Skip hari Minggu (Sunday = 0)
+                if ($tanggal->dayOfWeek === Carbon::SUNDAY) {
+                    continue;
+                }
+
                 // Buat pengecekan
                 $pengecekan = PengecekanMesin::create([
                     'mesin_id' => $mesin->id,
