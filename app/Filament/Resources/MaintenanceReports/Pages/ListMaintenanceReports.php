@@ -14,6 +14,7 @@ class ListMaintenanceReports extends ListRecords
     {
         return [
             CreateAction::make()
+                ->label('Buat Laporan Maintenance')
                 ->icon('heroicon-o-plus'),
         ];
     }

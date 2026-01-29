@@ -45,11 +45,13 @@ class SparePartsTable
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()
+                    ->label('Ubah'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->label('Hapus Suku Cadang Terpilih'),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');

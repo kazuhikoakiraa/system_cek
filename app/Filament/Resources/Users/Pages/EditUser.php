@@ -43,42 +43,19 @@ class EditUser extends EditRecord
                     }
                 }),
 
-            // Toggle active status
-            Action::make('toggle_status')
-                ->label(fn () => $this->record->is_active ? 'Nonaktifkan' : 'Aktifkan')
-                ->icon(fn () => $this->record->is_active ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle')
-                ->color(fn () => $this->record->is_active ? 'danger' : 'success')
-                ->requiresConfirmation()
-                ->modalHeading(fn () => $this->record->is_active ? 'Nonaktifkan User?' : 'Aktifkan User?')
-                ->modalDescription(fn () => 
-                    $this->record->is_active 
-                        ? "User {$this->record->name} tidak akan bisa login setelah dinonaktifkan."
-                        : "User {$this->record->name} akan dapat login setelah diaktifkan."
-                )
-                ->action(function () {
-                    $this->record->update(['is_active' => !$this->record->is_active]);
-                    
-                    Notification::make()
-                        ->success()
-                        ->title('Status Diupdate')
-                        ->body("User berhasil " . ($this->record->is_active ? 'diaktifkan' : 'dinonaktifkan'))
-                        ->send();
-                    
-                    $this->refreshFormData(['is_active']);
-                }),
-
             // Delete action
             DeleteAction::make()
+                ->label('Hapus')
                 ->requiresConfirmation()
-                ->modalHeading('Hapus User?')
-                ->modalDescription(fn () => "User {$this->record->name} dan semua data terkait akan dihapus permanen.")
-                ->successNotificationTitle('User berhasil dihapus'),
+                ->modalHeading('Hapus Pengguna?')
+                ->modalDescription(fn () => "Pengguna {$this->record->name} dan semua data terkait akan dihapus permanen.")
+                ->successNotificationTitle('Pengguna berhasil dihapus'),
         ];
     }
 
     protected function getSavedNotificationTitle(): ?string
     {
-        return 'User berhasil diupdate!';
+        return 'Pengguna berhasil diperbarui!';
     }
 
     protected function mutateFormDataBeforeSave(array $data): array

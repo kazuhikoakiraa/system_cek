@@ -58,9 +58,9 @@ class MaintenanceReportForm
                         Select::make('status')
                             ->label('Status')
                             ->options([
-                                'pending' => 'Pending',
-                                'in_progress' => 'In Progress',
-                                'completed' => 'Completed',
+                                'pending' => 'Menunggu',
+                                'in_progress' => 'Sedang Diproses',
+                                'completed' => 'Selesai',
                             ])
                             ->required()
                             ->default('pending')

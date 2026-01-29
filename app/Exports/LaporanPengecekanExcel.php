@@ -13,6 +13,7 @@ use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
@@ -58,7 +59,7 @@ class LaporanPengecekanExcel implements WithMultipleSheets
     }
 }
 
-class LaporanMesinSheet implements FromCollection, WithTitle, WithStyles, WithEvents, WithColumnWidths, WithCustomStartCell
+class LaporanMesinSheet implements FromCollection, WithTitle, WithStyles, WithEvents, WithColumnWidths, WithCustomStartCell, WithDrawings
 {
     protected $mesin;
     protected Carbon $tanggalMulai;
@@ -226,19 +227,24 @@ class LaporanMesinSheet implements FromCollection, WithTitle, WithStyles, WithEv
                 $lastCol = $this->getColumnLetter(4 + $this->totalDays);
 
                 // ===== HEADER SECTION =====
-                // Title
-                $sheet->setCellValue('A1', 'PT PARMA BINA ENERGI');
-                $sheet->mergeCells('A1:D1');
-                $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
+                // Row height for logo area
+                $sheet->getRowDimension(1)->setRowHeight(40);
+                $sheet->getRowDimension(2)->setRowHeight(18);
+                $sheet->getRowDimension(3)->setRowHeight(18);
+
+                // Title (shifted right to make room for logo in column A)
+                $sheet->setCellValue('B1', 'PT PARMA BINA ENERGI');
+                $sheet->mergeCells('B1:D1');
+                $sheet->getStyle('B1')->getFont()->setBold(true)->setSize(14);
 
                 // Departemen
-                $sheet->setCellValue('A2', 'Departemen: PRODUKSI');
-                $sheet->mergeCells('A2:D2');
+                $sheet->setCellValue('B2', 'Departemen: PRODUKSI');
+                $sheet->mergeCells('B2:D2');
 
                 // Nama Daftar Pengecekan
-                $sheet->setCellValue('A3', 'Daftar Pengecekan: ' . $this->mesin->nama_mesin);
-                $sheet->mergeCells('A3:D3');
-                $sheet->getStyle('A3')->getFont()->setBold(true);
+                $sheet->setCellValue('B3', 'Daftar Pengecekan: ' . $this->mesin->nama_mesin);
+                $sheet->mergeCells('B3:D3');
+                $sheet->getStyle('B3')->getFont()->setBold(true);
 
                 // Info kanan
                 $sheet->setCellValue('F1', 'No. Dokumen:');
@@ -325,6 +331,43 @@ class LaporanMesinSheet implements FromCollection, WithTitle, WithStyles, WithEv
                 }
             },
         ];
+    }
+
+    public function drawings(): array
+    {
+        $logoPath = $this->resolveLogoPath();
+        if (!$logoPath) {
+            return [];
+        }
+
+        $drawing = new Drawing();
+        $drawing->setName('Logo');
+        $drawing->setDescription('Company Logo');
+        $drawing->setPath($logoPath);
+        $drawing->setHeight(50);
+        $drawing->setCoordinates('A1');
+        $drawing->setOffsetX(5);
+        $drawing->setOffsetY(5);
+
+        return [$drawing];
+    }
+
+    protected function resolveLogoPath(): ?string
+    {
+        $candidates = [
+            public_path('images/logo.png'),
+            public_path('images/logo.jpg'),
+            public_path('images/logo.jpeg'),
+            public_path('favicon.png'),
+        ];
+
+        foreach ($candidates as $path) {
+            if (is_string($path) && file_exists($path)) {
+                return $path;
+            }
+        }
+
+        return null;
     }
 
     protected function getColumnLetter(int $columnIndex): string

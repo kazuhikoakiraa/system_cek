@@ -165,12 +165,15 @@ class MesinResource extends Resource
                     ->preload(),
             ])
             ->recordActions([
-                EditAction::make(),
-                DeleteAction::make(),
+                EditAction::make()
+                    ->label('Ubah'),
+                DeleteAction::make()
+                    ->label('Hapus'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->label('Hapus Daftar Pengecekan Terpilih'),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');

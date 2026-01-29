@@ -28,6 +28,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->font('Inter')
             ->colors([
                 'primary' => [
                     50 => '240, 249, 255',   // Biru sangat muda
@@ -75,7 +76,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->plugins([
                 FilamentShieldPlugin::make()
-                    ->navigationGroup('User Management')
+                    ->navigationGroup('Manajemen Pengguna')
                     ->navigationSort(2),
             ])
             ->authMiddleware([

@@ -14,6 +14,7 @@ class ListSpareParts extends ListRecords
     {
         return [
             CreateAction::make()
+                ->label('Tambah Suku Cadang')
                 ->icon('heroicon-o-plus'),
         ];
     }

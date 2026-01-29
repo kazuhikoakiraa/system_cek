@@ -42,9 +42,9 @@ class MaintenanceReportsTable
                         'completed' => 'success',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'pending' => 'Pending',
-                        'in_progress' => 'In Progress',
-                        'completed' => 'Completed',
+                        'pending' => 'Menunggu',
+                        'in_progress' => 'Sedang Diproses',
+                        'completed' => 'Selesai',
                     })
                     ->sortable(),
 
@@ -86,9 +86,9 @@ class MaintenanceReportsTable
                 SelectFilter::make('status')
                     ->label('Status')
                     ->options([
-                        'pending' => 'Pending',
-                        'in_progress' => 'In Progress',
-                        'completed' => 'Completed',
+                        'pending' => 'Menunggu',
+                        'in_progress' => 'Sedang Diproses',
+                        'completed' => 'Selesai',
                     ]),
 
                 SelectFilter::make('mesin_id')
@@ -100,12 +100,15 @@ class MaintenanceReportsTable
                     ->relationship('teknisi', 'name'),
             ])
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
+                ViewAction::make()
+                    ->label('Lihat'),
+                EditAction::make()
+                    ->label('Proses'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->label('Hapus Laporan Maintenance Terpilih'),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');

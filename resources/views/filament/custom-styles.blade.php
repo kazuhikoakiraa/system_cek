@@ -1,3 +1,12 @@
+@php
+    $faviconPng = file_exists(public_path('favicon.png')) ? asset('favicon.png') : null;
+    $faviconIco = asset('favicon.ico');
+@endphp
+
+<link rel="icon" type="image/png" href="{{ $faviconPng ?? $faviconIco }}">
+<link rel="shortcut icon" href="{{ $faviconPng ?? $faviconIco }}">
+<link rel="apple-touch-icon" href="{{ $faviconPng ?? $faviconIco }}">
+
 <style>
     /* Posisikan badge lebih dekat ke icon lonceng */
     .fi-topbar-database-notifications-btn {

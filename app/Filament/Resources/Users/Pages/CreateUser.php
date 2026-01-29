@@ -35,7 +35,7 @@ class CreateUser extends CreateRecord
                 // Notifikasi sukses ke admin
                 Notification::make()
                     ->success()
-                    ->title('User Berhasil Dibuat')
+                    ->title('Pengguna Berhasil Dibuat')
                     ->body("Email verifikasi telah dikirim ke {$user->email}")
                     ->duration(5000)
                     ->icon('heroicon-o-check-circle')
@@ -45,8 +45,8 @@ class CreateUser extends CreateRecord
                 // Notifikasi jika email gagal terkirim
                 Notification::make()
                     ->warning()
-                    ->title('User Dibuat, Email Gagal Terkirim')
-                    ->body("User berhasil dibuat, namun email verifikasi gagal terkirim. Error: {$e->getMessage()}")
+                    ->title('Pengguna Dibuat, Email Gagal Terkirim')
+                    ->body("Pengguna berhasil dibuat, namun email verifikasi gagal terkirim. Error: {$e->getMessage()}")
                     ->duration(8000)
                     ->icon('heroicon-o-exclamation-triangle')
                     ->actions([
@@ -62,12 +62,12 @@ class CreateUser extends CreateRecord
 
     protected function getCreatedNotificationTitle(): ?string
     {
-        return 'User berhasil dibuat!';
+        return 'Pengguna berhasil dibuat!';
     }
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        // Set default values jika belum diisi
+        // Set default active jika belum diisi
         $data['is_active'] = $data['is_active'] ?? true;
         
         return $data;

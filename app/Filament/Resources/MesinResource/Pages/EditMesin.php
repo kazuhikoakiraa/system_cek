@@ -13,8 +13,10 @@ class EditMesin extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\ViewAction::make(),
-            Actions\DeleteAction::make(),
+            Actions\ViewAction::make()
+                ->label('Lihat'),
+            Actions\DeleteAction::make()
+                ->label('Hapus'),
         ];
     }
 

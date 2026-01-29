@@ -58,6 +58,22 @@
             margin-bottom: 4px;
         }
 
+        .header-brand {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .header-brand td {
+            vertical-align: middle;
+        }
+
+        .brand-logo {
+            width: 55px;
+            height: 55px;
+            object-fit: contain;
+            display: block;
+        }
+
         .header-info {
             font-size: 9px;
         }
@@ -256,24 +272,63 @@
     </style>
 </head>
 <body>
+    @php
+        $logoCandidates = [
+            public_path('images/logo.png'),
+            public_path('images/logo.jpg'),
+            public_path('images/logo.jpeg'),
+            public_path('favicon.png'),
+        ];
+        $logoFile = null;
+        foreach ($logoCandidates as $candidate) {
+            if (is_string($candidate) && file_exists($candidate)) {
+                $logoFile = $candidate;
+                break;
+            }
+        }
+
+        $logoDataUri = null;
+        if ($logoFile) {
+            $ext = strtolower(pathinfo($logoFile, PATHINFO_EXTENSION));
+            $mime = match ($ext) {
+                'jpg', 'jpeg' => 'image/jpeg',
+                'png' => 'image/png',
+                default => null,
+            };
+            if ($mime) {
+                $logoDataUri = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($logoFile));
+            }
+        }
+    @endphp
     @foreach($laporanData as $mesin)
     <div class="{{ !$loop->last ? 'page-break' : '' }}">
         <!-- Header -->
         <div class="header">
             <div class="header-left">
-                <div class="company-name">PT PARMA BINA ENERGI</div>
-                <div class="header-info">
-                    <table>
-                        <tr>
-                            <td>Departemen</td>
-                            <td>: PRODUKSI</td>
-                        </tr>
-                        <tr>
-                            <td>Daftar Pengecekan</td>
-                            <td>: {{ strtoupper($mesin->nama_mesin) }}</td>
-                        </tr>
-                    </table>
-                </div>
+                <table class="header-brand">
+                    <tr>
+                        @if($logoDataUri)
+                            <td style="width: 60px; padding-right: 8px;">
+                                <img class="brand-logo" src="{{ $logoDataUri }}" alt="Logo">
+                            </td>
+                        @endif
+                        <td>
+                            <div class="company-name">PT PARMA BINA ENERGI</div>
+                            <div class="header-info">
+                                <table>
+                                    <tr>
+                                        <td>Departemen</td>
+                                        <td>: PRODUKSI</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Daftar Pengecekan</td>
+                                        <td>: {{ strtoupper($mesin->nama_mesin) }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
             </div>
             <div class="header-right">
                 <table class="doc-info">

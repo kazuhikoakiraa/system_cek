@@ -79,14 +79,15 @@ class UsersTable
                     ->falseLabel('Tidak Aktif'),
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()
+                    ->label('Ubah'),
                 Action::make('reset_password')
-                    ->label('Reset Password')
+                    ->label('Reset Kata Sandi')
                     ->icon('heroicon-o-key')
                     ->color('warning')
                     ->requiresConfirmation()
-                    ->modalHeading('Kirim Link Reset Password')
-                    ->modalDescription(fn ($record) => "Link reset password akan dikirim ke email: {$record->email}")
+                    ->modalHeading('Kirim Link Reset Kata Sandi')
+                    ->modalDescription(fn ($record) => "Link reset kata sandi akan dikirim ke email: {$record->email}")
                     ->modalSubmitActionLabel('Kirim Email')
                     ->action(function ($record) {
                         $status = Password::sendResetLink(
@@ -96,7 +97,7 @@ class UsersTable
                         if ($status === Password::RESET_LINK_SENT) {
                             Notification::make()
                                 ->title('Email Terkirim')
-                                ->body("Link reset password berhasil dikirim ke {$record->email}")
+                                ->body("Link reset kata sandi berhasil dikirim ke {$record->email}")
                                 ->success()
                                 ->send();
                         } else {
@@ -110,7 +111,8 @@ class UsersTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->label('Hapus Pengguna Terpilih'),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');
