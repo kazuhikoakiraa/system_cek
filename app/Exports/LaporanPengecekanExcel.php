@@ -233,18 +233,13 @@ class LaporanMesinSheet implements FromCollection, WithTitle, WithStyles, WithEv
                 $sheet->getRowDimension(3)->setRowHeight(18);
 
                 // Title (shifted right to make room for logo in column A)
-                $sheet->setCellValue('B1', 'PT PARMA BINA ENERGI');
+                $sheet->setCellValue('B1', 'PT PARAMA BINA ENERGI');
                 $sheet->mergeCells('B1:D1');
                 $sheet->getStyle('B1')->getFont()->setBold(true)->setSize(14);
 
                 // Departemen
                 $sheet->setCellValue('B2', 'Departemen: PRODUKSI');
                 $sheet->mergeCells('B2:D2');
-
-                // Nama Daftar Pengecekan
-                $sheet->setCellValue('B3', 'Daftar Pengecekan: ' . $this->mesin->nama_mesin);
-                $sheet->mergeCells('B3:D3');
-                $sheet->getStyle('B3')->getFont()->setBold(true);
 
                 // Info kanan
                 $sheet->setCellValue('F1', 'No. Dokumen:');
@@ -304,6 +299,11 @@ class LaporanMesinSheet implements FromCollection, WithTitle, WithStyles, WithEv
 
                 // ===== TANDA TANGAN SECTION =====
                 $ttdRow = $ketRow + 6;
+                // Lokasi dan tanggal
+                $sheet->setCellValue('A' . ($ttdRow - 1), 'PEMATANGSIANTAR, ' . now()->translatedFormat('d F Y'));
+                $sheet->mergeCells('A' . ($ttdRow - 1) . ':' . $lastCol . ($ttdRow - 1));
+                $sheet->getStyle('A' . ($ttdRow - 1))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+                
                 $sheet->setCellValue('A' . $ttdRow, 'Dibuat oleh,');
                 $sheet->setCellValue('C' . $ttdRow, 'Diketahui oleh,');
                 $sheet->setCellValue('E' . $ttdRow, 'Disetujui oleh,');

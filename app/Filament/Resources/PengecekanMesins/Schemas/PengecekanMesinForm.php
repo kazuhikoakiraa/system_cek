@@ -9,6 +9,7 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Auth;
 
 class PengecekanMesinForm
 {
@@ -43,7 +44,10 @@ class PengecekanMesinForm
                                 'dalam_proses' => 'Dalam Proses',
                             ])
                             ->required()
-                            ->disabled(),
+                            ->disabled(function () {
+                                $user = Auth::user();
+                                return !($user && $user->hasAnyRole(['super_admin', 'admin']));
+                            }),
                     ])
                     ->columns(2),
 
@@ -75,12 +79,18 @@ class PengecekanMesinForm
                                         'tidak_sesuai' => 'Tidak Sesuai',
                                     ])
                                     ->required()
-                                    ->disabled(),
+                                    ->disabled(function () {
+                                        $user = Auth::user();
+                                        return !($user && $user->hasAnyRole(['super_admin', 'admin']));
+                                    }),
 
                                 Textarea::make('keterangan')
                                     ->label('Keterangan')
                                     ->rows(2)
-                                    ->disabled()
+                                    ->disabled(function () {
+                                        $user = Auth::user();
+                                        return !($user && $user->hasAnyRole(['super_admin', 'admin']));
+                                    })
                                     ->columnSpanFull(),
                             ])
                             ->columns(3)

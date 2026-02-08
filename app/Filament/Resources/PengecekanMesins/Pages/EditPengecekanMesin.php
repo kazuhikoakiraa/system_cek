@@ -3,16 +3,19 @@
 namespace App\Filament\Resources\PengecekanMesins\Pages;
 
 use App\Filament\Resources\PengecekanMesins\PengecekanMesinResource;
-use Filament\Resources\Pages\ViewRecord;
+use Filament\Actions;
+use Filament\Resources\Pages\EditRecord;
 
-class EditPengecekanMesin extends ViewRecord
+class EditPengecekanMesin extends EditRecord
 {
     protected static string $resource = PengecekanMesinResource::class;
 
-    protected static ?string $title = 'Detail Pengecekan Mesin';
+    protected static ?string $title = 'Edit Pengecekan Mesin';
 
     protected function getHeaderActions(): array
     {
-        return [];
+        return [
+            Actions\ViewAction::make(),
+        ];
     }
 }

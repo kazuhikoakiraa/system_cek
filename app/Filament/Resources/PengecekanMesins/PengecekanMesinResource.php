@@ -11,8 +11,10 @@ use App\Filament\Resources\PengecekanMesins\Schemas\PengecekanMesinForm;
 use App\Filament\Resources\PengecekanMesins\Tables\PengecekanMesinsTable;
 use App\Filament\Widgets\StatusPengecekanOverview;
 use App\Models\PengecekanMesin;
+use App\Models\User;
 use BackedEnum;
 use Filament\Resources\Resource;
+use Filament\Facades\Filament;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
@@ -63,6 +65,7 @@ class PengecekanMesinResource extends Resource
             'index' => ListPengecekanMesins::route('/'),
             'mulai' => MulaiPengecekan::route('/mulai'),
             'view' => ViewPengecekanMesin::route('/{record}'),
+            'edit' => EditPengecekanMesin::route('/{record}/edit'),
         ];
     }
 
@@ -73,7 +76,10 @@ class PengecekanMesinResource extends Resource
 
     public static function canEdit($record): bool
     {
-        return false;
+        // Allow editing only for super_admin and admin roles
+        /** @var User|null $user */
+        $user = Filament::auth()->user();
+        return $user && $user->hasAnyRole(['super_admin', 'admin']);
     }
 
     public static function canView($record): bool

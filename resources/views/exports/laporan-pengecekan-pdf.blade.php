@@ -313,16 +313,12 @@
                             </td>
                         @endif
                         <td>
-                            <div class="company-name">PT PARMA BINA ENERGI</div>
+                            <div class="company-name">PT PARAMA BINA ENERGI</div>
                             <div class="header-info">
                                 <table>
                                     <tr>
                                         <td>Departemen</td>
                                         <td>: PRODUKSI</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Daftar Pengecekan</td>
-                                        <td>: {{ strtoupper($mesin->nama_mesin) }}</td>
                                     </tr>
                                 </table>
                             </div>
@@ -459,6 +455,9 @@
 
         <!-- Signature Section -->
         <div class="signature-section">
+            <div style="text-align: left; font-size: 9px; margin-bottom: 15px;">
+                PEMATANGSIANTAR, {{ now()->translatedFormat('d F Y') }}
+            </div>
             <table class="signature-table">
                 <tr>
                     <td>

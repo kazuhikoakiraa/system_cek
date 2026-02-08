@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\PengecekanMesins\Pages;
 
 use App\Filament\Resources\PengecekanMesins\PengecekanMesinResource;
+use Filament\Actions;
 use Filament\Resources\Pages\ViewRecord;
 
 class ViewPengecekanMesin extends ViewRecord
@@ -13,6 +14,8 @@ class ViewPengecekanMesin extends ViewRecord
 
     protected function getHeaderActions(): array
     {
-        return [];
+        return [
+            Actions\EditAction::make(),
+        ];
     }
 }
