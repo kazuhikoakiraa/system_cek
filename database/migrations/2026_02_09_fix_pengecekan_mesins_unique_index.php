@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -11,30 +12,29 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // First drop foreign key that uses the index
+        // Drop foreign key terlebih dahulu
         Schema::table('pengecekan_mesins', function (Blueprint $table) {
             $table->dropForeign(['mesin_id']);
         });
 
-        // Now drop the unique index
+        // Drop unique index yang bermasalah (jika ada)
+        try {
+            DB::statement('ALTER TABLE pengecekan_mesins DROP INDEX pengecekan_mesins_mesin_id_tanggal_pengecekan_unique');
+        } catch (\Exception $e) {
+            // Index mungkin tidak ada atau sudah dihapus
+        }
+
+        // Tambahkan generated column untuk tanggal saja
+        DB::statement('ALTER TABLE pengecekan_mesins ADD COLUMN tanggal_only DATE AS (DATE(tanggal_pengecekan)) STORED');
+
+        // Buat unique index pada mesin_id dan tanggal_only
         Schema::table('pengecekan_mesins', function (Blueprint $table) {
-            $table->dropUnique(['mesin_id', 'tanggal_pengecekan']);
+            $table->unique(['mesin_id', 'tanggal_only'], 'pengecekan_mesins_mesin_id_date_unique');
         });
 
-        // Change column type from date to datetime
-        Schema::table('pengecekan_mesins', function (Blueprint $table) {
-            $table->dateTime('tanggal_pengecekan')->change();
-        });
-
-        // Re-add foreign key
+        // Tambahkan kembali foreign key
         Schema::table('pengecekan_mesins', function (Blueprint $table) {
             $table->foreign('mesin_id')->references('id')->on('mesins')->onDelete('cascade');
-        });
-
-        // Re-add unique constraint - akan diperbaiki di migration berikutnya
-        // Temporary: unique hanya pada mesin_id saja
-        Schema::table('pengecekan_mesins', function (Blueprint $table) {
-            $table->unique(['mesin_id'], 'pengecekan_mesins_mesin_id_tanggal_pengecekan_unique');
         });
     }
 
@@ -43,27 +43,25 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // First drop foreign key that uses the index
+        // Drop foreign key
         Schema::table('pengecekan_mesins', function (Blueprint $table) {
             $table->dropForeign(['mesin_id']);
         });
 
-        // Drop the unique index
+        // Drop unique index
         Schema::table('pengecekan_mesins', function (Blueprint $table) {
-            $table->dropUnique('pengecekan_mesins_mesin_id_tanggal_pengecekan_unique');
+            $table->dropUnique('pengecekan_mesins_mesin_id_date_unique');
         });
 
-        // Change column back to date
-        Schema::table('pengecekan_mesins', function (Blueprint $table) {
-            $table->date('tanggal_pengecekan')->change();
-        });
+        // Drop generated column
+        DB::statement('ALTER TABLE pengecekan_mesins DROP COLUMN tanggal_only');
 
         // Re-add foreign key
         Schema::table('pengecekan_mesins', function (Blueprint $table) {
             $table->foreign('mesin_id')->references('id')->on('mesins')->onDelete('cascade');
         });
 
-        // Re-add regular unique constraint
+        // Re-add old unique constraint  
         Schema::table('pengecekan_mesins', function (Blueprint $table) {
             $table->unique(['mesin_id', 'tanggal_pengecekan']);
         });
