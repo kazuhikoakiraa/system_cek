@@ -37,7 +37,7 @@
                                 <th class="fi-ta-header-cell px-3 py-3.5">
                                     <span class="group flex w-full items-center gap-x-1 whitespace-nowrap justify-start">
                                         <span class="fi-ta-header-cell-label text-sm font-semibold text-gray-950 dark:text-white">
-                                            Operator
+                                            Operator Mesin
                                         </span>
                                     </span>
                                 </th>

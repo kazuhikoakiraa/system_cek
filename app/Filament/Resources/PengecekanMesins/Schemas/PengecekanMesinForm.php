@@ -27,7 +27,8 @@ class PengecekanMesinForm
                             ->disabled(fn ($record) => $record !== null),
 
                         Select::make('user_id')
-                            ->label('Operator')
+                            ->label('Operator Yang Melakukan Pengecekan')
+                            ->helperText('Operator ini tidak akan berubah meskipun operator mesin diganti')
                             ->relationship('operator', 'name')
                             ->required()
                             ->disabled(fn ($record) => $record !== null),

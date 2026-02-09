@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('pengecekan_mesins', function (Blueprint $table) {
             $table->id();
             $table->foreignId('mesin_id')->constrained('mesins')->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->date('tanggal_pengecekan');
             $table->enum('status', ['selesai', 'dalam_proses'])->default('dalam_proses');
             $table->timestamps();

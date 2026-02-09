@@ -169,7 +169,7 @@ class LaporanPengecekan extends Page implements HasForms
                 $query->whereBetween('tanggal_pengecekan', [
                     $this->tanggalMulai,
                     Carbon::parse($this->tanggalSelesai)->endOfDay(),
-                ])->with('detailPengecekan');
+                ])->with(['detailPengecekan', 'operator']);
             },
         ]);
 

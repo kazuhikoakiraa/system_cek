@@ -8,6 +8,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * Model PengecekanMesin
+ * 
+ * PENTING: Field user_id menyimpan operator yang MELAKUKAN PENGECEKAN, bukan operator yang ditugaskan ke mesin.
+ * - user_id di tabel pengecekan_mesins = Operator yang melakukan pengecekan (authuser saat pengecekan dibuat)
+ * - user_id di tabel mesins = Operator yang ditugaskan/bertanggung jawab pada mesin
+ * 
+ * Ketika operator mesin diganti, user_id di pengecekan TIDAK BERUBAH karena ini adalah data historis.
+ * Data pengecekan harus tetap menunjukkan siapa yang benar-benar melakukan pengecekan tersebut.
+ */
 class PengecekanMesin extends Model
 {
     use HasFactory;
@@ -30,6 +40,12 @@ class PengecekanMesin extends Model
         return $this->belongsTo(Mesin::class);
     }
 
+    /**
+     * Relasi ke User (Operator yang melakukan pengecekan)
+     * 
+     * CATATAN: Ini adalah operator yang MELAKUKAN pengecekan, bukan operator yang ditugaskan ke mesin.
+     * Data ini tidak akan berubah meskipun operator mesin diganti.
+     */
     public function operator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
