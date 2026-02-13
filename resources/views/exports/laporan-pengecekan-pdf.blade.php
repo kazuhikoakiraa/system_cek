@@ -330,11 +330,7 @@
                 <table class="doc-info">
                     <tr>
                         <td>No. Dokumen</td>
-                        <td>{{ $nomorDokumen }}</td>
-                    </tr>
-                    <tr>
-                        <td>Revisi</td>
-                        <td>00</td>
+                        <td></td>
                     </tr>
                     <tr>
                         <td>Periode</td>

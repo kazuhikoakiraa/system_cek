@@ -230,7 +230,6 @@ class LaporanMesinSheet implements FromCollection, WithTitle, WithStyles, WithEv
                 // Row height for logo area
                 $sheet->getRowDimension(1)->setRowHeight(40);
                 $sheet->getRowDimension(2)->setRowHeight(18);
-                $sheet->getRowDimension(3)->setRowHeight(18);
 
                 // Title (shifted right to make room for logo in column A)
                 $sheet->setCellValue('B1', 'PT PARAMA BINA ENERGI');
@@ -243,11 +242,9 @@ class LaporanMesinSheet implements FromCollection, WithTitle, WithStyles, WithEv
 
                 // Info kanan
                 $sheet->setCellValue('F1', 'No. Dokumen:');
-                $sheet->setCellValue('G1', $this->nomorDokumen);
-                $sheet->setCellValue('F2', 'Revisi:');
-                $sheet->setCellValue('G2', '00');
-                $sheet->setCellValue('F3', 'Periode:');
-                $sheet->setCellValue('G3', $this->tanggalMulai->translatedFormat('F Y'));
+                $sheet->setCellValue('G1', '');
+                $sheet->setCellValue('F2', 'Periode:');
+                $sheet->setCellValue('G2', $this->tanggalMulai->translatedFormat('F Y'));
 
                 // Title Check Sheet
                 $sheet->setCellValue('A5', 'CHECK SHEET ' . strtoupper($this->mesin->nama_mesin));
