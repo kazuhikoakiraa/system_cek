@@ -18,7 +18,7 @@ class MaintenanceReportsTable
         return $table
             ->columns([
                 TextColumn::make('mesin.nama_mesin')
-                    ->label('Mesin')
+                    ->label('Daftar Pengecekan')
                     ->searchable()
                     ->sortable(),
 
