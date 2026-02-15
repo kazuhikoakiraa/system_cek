@@ -11,11 +11,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * Model PengecekanMesin
  * 
- * PENTING: Field user_id menyimpan operator yang MELAKUKAN PENGECEKAN, bukan operator yang ditugaskan ke mesin.
+ * PENTING: Field user_id menyimpan operator yang MELAKUKAN PENGECEKAN, bukan operator yang ditugaskan ke daftar pengecekan.
  * - user_id di tabel pengecekan_mesins = Operator yang melakukan pengecekan (authuser saat pengecekan dibuat)
- * - user_id di tabel mesins = Operator yang ditugaskan/bertanggung jawab pada mesin
+ * - user_id di tabel mesins (daftar_pengecekan) = Operator yang ditugaskan/bertanggung jawab pada daftar pengecekan
  * 
- * Ketika operator mesin diganti, user_id di pengecekan TIDAK BERUBAH karena ini adalah data historis.
+ * Ketika operator daftar pengecekan diganti, user_id di pengecekan TIDAK BERUBAH karena ini adalah data historis.
  * Data pengecekan harus tetap menunjukkan siapa yang benar-benar melakukan pengecekan tersebut.
  */
 class PengecekanMesin extends Model
@@ -37,14 +37,22 @@ class PengecekanMesin extends Model
 
     public function mesin(): BelongsTo
     {
-        return $this->belongsTo(Mesin::class);
+        return $this->belongsTo(DaftarPengecekan::class);
+    }
+
+    /**
+     * Alias untuk backward compatibility - gunakan daftarPengecekan() untuk yang baru
+     */
+    public function daftarPengecekan(): BelongsTo
+    {
+        return $this->belongsTo(DaftarPengecekan::class, 'mesin_id');
     }
 
     /**
      * Relasi ke User (Operator yang melakukan pengecekan)
      * 
-     * CATATAN: Ini adalah operator yang MELAKUKAN pengecekan, bukan operator yang ditugaskan ke mesin.
-     * Data ini tidak akan berubah meskipun operator mesin diganti.
+     * CATATAN: Ini adalah operator yang MELAKUKAN pengecekan, bukan operator yang ditugaskan ke daftar pengecekan.
+     * Data ini tidak akan berubah meskipun operator daftar pengecekan diganti.
      */
     public function operator(): BelongsTo
     {

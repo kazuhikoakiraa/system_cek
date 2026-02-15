@@ -38,7 +38,7 @@ class MaintenanceReport extends Model
 
     public function mesin(): BelongsTo
     {
-        return $this->belongsTo(Mesin::class);
+        return $this->belongsTo(DaftarPengecekan::class);
     }
 
     public function komponenMesin(): BelongsTo

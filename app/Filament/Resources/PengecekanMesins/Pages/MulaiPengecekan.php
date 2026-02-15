@@ -5,7 +5,7 @@ namespace App\Filament\Resources\PengecekanMesins\Pages;
 use App\Filament\Resources\PengecekanMesins\PengecekanMesinResource;
 use App\Models\DetailPengecekanMesin;
 use App\Models\KomponenMesin;
-use App\Models\Mesin;
+use App\Models\DaftarPengecekan;
 use App\Models\PengecekanMesin;
 use App\Models\User;
 use Filament\Actions\Action;
@@ -43,7 +43,7 @@ class MulaiPengecekan extends Page implements HasForms
     public function mount(): void
     {
         // Check if user has any machines assigned
-        $userMachinesCount = Mesin::where('user_id', Auth::id())->count();
+        $userMachinesCount = DaftarPengecekan::where('user_id', Auth::id())->count();
         
         if ($userMachinesCount === 0) {
             Notification::make()
@@ -56,7 +56,7 @@ class MulaiPengecekan extends Page implements HasForms
 
         // Check if user has any unchecked machines today
         $today = Carbon::today();
-        $uncheckedMachinesCount = Mesin::where('user_id', Auth::id())
+        $uncheckedMachinesCount = DaftarPengecekan::where('user_id', Auth::id())
             ->whereDoesntHave('pengecekan', function ($query) use ($today) {
                 $query->whereDate('tanggal_pengecekan', $today);
             })
@@ -124,7 +124,7 @@ class MulaiPengecekan extends Page implements HasForms
                                 $today = Carbon::today();
 
                                 // Ambil mesin yang operatornya adalah user yang login
-                                $mesins = Mesin::where('user_id', $user->id)
+                                $mesins = DaftarPengecekan::where('user_id', $user->id)
                                     // Cek mesin yang belum dicek hari ini
                                     ->whereDoesntHave('pengecekan', function ($query) use ($today) {
                                         $query->whereDate('tanggal_pengecekan', $today);
@@ -389,7 +389,7 @@ class MulaiPengecekan extends Page implements HasForms
         }
 
         // Cek apakah user adalah operator dari mesin ini
-        $mesin = Mesin::find($data['mesin_id']);
+        $mesin = DaftarPengecekan::find($data['mesin_id']);
         if ($mesin && $mesin->user_id !== Auth::id()) {
             Notification::make()
                 ->danger()

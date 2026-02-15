@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\LaporanPengecekanExcel;
-use App\Models\Mesin;
+use App\Models\DaftarPengecekan;
 use App\Models\PengecekanMesin;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -92,7 +92,7 @@ class LaporanExportController extends Controller
 
     protected function getLaporanData(Carbon $tanggalMulai, Carbon $tanggalSelesai, ?int $mesinId)
     {
-        $query = Mesin::with([
+        $query = DaftarPengecekan::with([
             'operator',
             'komponenMesins',
             'pengecekan' => function ($query) use ($tanggalMulai, $tanggalSelesai) {

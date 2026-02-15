@@ -11,6 +11,8 @@ class DetailPengecekanMesin extends Model
 {
     use HasFactory;
 
+    protected $table = 'detail_pengecekan_daftar';
+
     protected $fillable = [
         'pengecekan_mesin_id',
         'komponen_mesin_id',

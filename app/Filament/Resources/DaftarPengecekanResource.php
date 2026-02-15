@@ -1,0 +1,221 @@
+<?php
+
+namespace App\Filament\Resources;
+
+use App\Filament\Resources\DaftarPengecekanResource\Pages;
+use App\Models\DaftarPengecekan;
+use App\Models\User;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select as FormSelect;
+use Filament\Forms\Components\Textarea as FormTextarea;
+use Filament\Forms\Components\TextInput as FormTextInput;
+use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
+
+class DaftarPengecekanResource extends Resource
+{
+    protected static ?string $model = DaftarPengecekan::class;
+
+    protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentList;
+
+    protected static ?string $navigationLabel = 'Daftar Pengecekan';
+
+    protected static ?string $pluralModelLabel = 'Daftar Pengecekan';
+
+    protected static ?string $modelLabel = 'Daftar Pengecekan';
+
+    protected static string|\UnitEnum|null $navigationGroup = 'Manajemen Pengecekan';
+
+    protected static ?int $navigationSort = 20;
+
+    protected static ?int $navigationGroupSort = 2;
+
+    public static function form(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                Section::make('Informasi Daftar Pengecekan')
+                    ->schema([
+                        Grid::make(2)
+                            ->components([
+                                FormTextInput::make('nama_mesin')
+                                    ->label('Nama Item Pengecekan')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->placeholder('Contoh: Mesin CNC 001, Forklift, dll')
+                                    ->columnSpan(2),
+
+                                FormSelect::make('user_id')
+                                    ->label('Operator yang Bertanggung Jawab')
+                                    ->options(function ($record) {
+                                        // Dapatkan operator yang belum memiliki daftar pengecekan
+                                        $assignedOperatorIds = DaftarPengecekan::whereNotNull('user_id')
+                                            ->when($record, function ($query) use ($record) {
+                                                // Exclude operator dari daftar pengecekan yang sedang diedit
+                                                return $query->where('id', '!=', $record->id);
+                                            })
+                                            ->pluck('user_id')
+                                            ->toArray();
+
+                                        // Dapatkan semua operator yang belum ditugaskan
+                                        $availableOperators = User::role('operator')
+                                            ->whereNotIn('id', $assignedOperatorIds)
+                                            ->get()
+                                            ->pluck('name', 'id');
+
+                                        // Jika sedang edit dan daftar pengecekan sudah punya operator, tambahkan operator tersebut ke pilihan
+                                        if ($record && $record->user_id) {
+                                            $currentOperator = User::find($record->user_id);
+                                            if ($currentOperator) {
+                                                $availableOperators->put($currentOperator->id, $currentOperator->name);
+                                            }
+                                        }
+
+                                        return $availableOperators;
+                                    })
+                                    ->searchable()
+                                    ->required()
+                                    ->helperText('Hanya operator yang belum bertanggung jawab atas daftar pengecekan lain yang dapat dipilih')
+                                    ->columnSpan(2),
+
+                                FormTextarea::make('deskripsi')
+                                    ->label('Deskripsi')
+                                    ->rows(3)
+                                    ->placeholder('Deskripsi umum tentang item pengecekan ini')
+                                    ->columnSpan(2),
+                            ]),
+                    ]),
+
+                Section::make('Komponen & Pengecekan')
+                    ->schema([
+                        Repeater::make('komponenMesins')
+                            ->relationship()
+                            ->label('Daftar Komponen')
+                            ->schema([
+                                Grid::make(2)
+                                    ->schema([
+                                        FormTextInput::make('nama_komponen')
+                                            ->label('Nama Komponen')
+                                            ->required()
+                                            ->maxLength(255)
+                                            ->placeholder('Contoh: Motor Penggerak, Bearing, dll'),
+
+                                        FormSelect::make('frekuensi')
+                                            ->label('Frekuensi Pengecekan')
+                                            ->options([
+                                                'harian' => 'Harian',
+                                                'mingguan' => 'Mingguan',
+                                                'bulanan' => 'Bulanan',
+                                                'tahunan' => 'Tahunan',
+                                            ])
+                                            ->required()
+                                            ->native(false),
+
+                                        FormTextInput::make('standar')
+                                            ->label('Standar Pengecekan')
+                                            ->required()
+                                            ->maxLength(255)
+                                            ->placeholder('Contoh: Tekanan 5-7 bar, Suhu maksimal 80°C')
+                                            ->columnSpan(2),
+
+                                        FormTextarea::make('catatan')
+                                            ->label('Catatan')
+                                            ->rows(2)
+                                            ->placeholder('Catatan tambahan untuk komponen ini')
+                                            ->columnSpan(2),
+                                    ]),
+                            ])
+                            ->collapsed()
+                            ->itemLabel(fn (array $state): ?string => $state['nama_komponen'] ?? null)
+                            ->addActionLabel('Tambah Komponen')
+                            ->reorderable()
+                            ->collapsible()
+                            ->defaultItems(1)
+                            ->columnSpanFull(),
+                    ]),
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('nama_mesin')
+                    ->label('Nama Item')
+                    ->searchable()
+                    ->sortable()
+                    ->weight('bold'),
+
+                TextColumn::make('operator.name')
+                    ->label('Operator')
+                    ->searchable()
+                    ->sortable(),
+
+                TextColumn::make('komponenMesins.nama_komponen')
+                    ->label('Komponen')
+                    ->badge()
+                    ->separator(',')
+                    ->limit(50),
+
+                TextColumn::make('created_at')
+                    ->label('Dibuat')
+                    ->dateTime('d M Y H:i')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('updated_at')
+                    ->label('Diperbarui')
+                    ->dateTime('d M Y H:i')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                SelectFilter::make('user_id')
+                    ->label('Operator')
+                    ->relationship('operator', 'name')
+                    ->searchable()
+                    ->preload(),
+            ])
+            ->recordActions([
+                EditAction::make()
+                    ->label('Ubah'),
+                DeleteAction::make()
+                    ->label('Hapus'),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
+                        ->label('Hapus Daftar Pengecekan Terpilih'),
+                ]),
+            ])
+            ->defaultSort('created_at', 'desc');
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListDaftarPengecekan::route('/'),
+            'create' => Pages\CreateDaftarPengecekan::route('/create'),
+            'view' => Pages\ViewDaftarPengecekan::route('/{record}'),
+            'edit' => Pages\EditDaftarPengecekan::route('/{record}/edit'),
+        ];
+    }
+}

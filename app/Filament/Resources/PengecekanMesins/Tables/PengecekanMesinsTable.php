@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\PengecekanMesins\Tables;
 
-use App\Models\Mesin;
+use App\Models\DaftarPengecekan;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -14,7 +14,7 @@ class PengecekanMesinsTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->query(Mesin::query())
+            ->query(DaftarPengecekan::query())
             ->columns([
                 TextColumn::make('nama_mesin')
                     ->label('Nama Mesin')
@@ -31,7 +31,7 @@ class PengecekanMesinsTable
                 TextColumn::make('status_pengecekan_hari_ini')
                     ->label('Status Pengecekan')
                     ->badge()
-                    ->state(function (Mesin $record): string {
+                    ->state(function (DaftarPengecekan $record): string {
                         $pengecekanHariIni = $record->pengecekan()
                             ->whereDate('tanggal_pengecekan', today())
                             ->first();
@@ -61,7 +61,7 @@ class PengecekanMesinsTable
 
                 TextColumn::make('waktu_pengecekan')
                     ->label('Waktu Pengecekan')
-                    ->state(function (Mesin $record): ?string {
+                    ->state(function (DaftarPengecekan $record): ?string {
                         $pengecekanHariIni = $record->pengecekan()
                             ->whereDate('tanggal_pengecekan', today())
                             ->first();
@@ -105,7 +105,7 @@ class PengecekanMesinsTable
             ])
             ->recordActions([
                 ViewAction::make()
-                    ->url(function (Mesin $record): ?string {
+                    ->url(function (DaftarPengecekan $record): ?string {
                         $pengecekan = $record->pengecekan()
                             ->whereDate('tanggal_pengecekan', today())
                             ->first();
@@ -116,7 +116,7 @@ class PengecekanMesinsTable
                         
                         return null;
                     })
-                    ->visible(function (Mesin $record): bool {
+                    ->visible(function (DaftarPengecekan $record): bool {
                         return $record->pengecekan()
                             ->whereDate('tanggal_pengecekan', today())
                             ->exists();

@@ -2,7 +2,7 @@
 
 namespace App\Filament\Pages;
 
-use App\Models\Mesin;
+use App\Models\DaftarPengecekan;
 use App\Models\PengecekanMesin;
 use BackedEnum;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
@@ -107,7 +107,7 @@ class LaporanPengecekan extends Page implements HasForms
                                 Select::make('mesin_id')
                                     ->label('Daftar Pengecekan')
                                     ->placeholder('Semua Daftar Pengecekan')
-                                    ->options(Mesin::pluck('nama_mesin', 'id'))
+                                    ->options(DaftarPengecekan::pluck('nama_mesin', 'id'))
                                     ->searchable()
                                     ->preload()
                                     ->live(),
@@ -162,7 +162,7 @@ class LaporanPengecekan extends Page implements HasForms
 
     protected function getLaporanData(): Collection
     {
-        $query = Mesin::with([
+        $query = DaftarPengecekan::with([
             'operator',
             'komponenMesins',
             'pengecekan' => function ($query) {

@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\MaintenanceReports\Schemas;
 
 use App\Models\KomponenMesin;
-use App\Models\Mesin;
+use App\Models\DaftarPengecekan;
 use App\Models\SparePart;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
-class KomponenMesin extends Model
+class KomponenDaftarPengecekan extends Model
 {
     use HasFactory;
 
@@ -27,9 +27,15 @@ class KomponenMesin extends Model
         'updated_at' => 'datetime',
     ];
 
+    public function daftarPengecekan(): BelongsTo
+    {
+        return $this->belongsTo(DaftarPengecekan::class, 'mesin_id');
+    }
+
+    // Alias untuk backward compatibility
     public function mesin(): BelongsTo
     {
-        return $this->belongsTo(DaftarPengecekan::class);
+        return $this->belongsTo(DaftarPengecekan::class, 'mesin_id');
     }
 
     public function detailPengecekan(): HasMany

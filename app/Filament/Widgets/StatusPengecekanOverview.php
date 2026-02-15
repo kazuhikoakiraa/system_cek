@@ -2,7 +2,7 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\Mesin;
+use App\Models\DaftarPengecekan;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -12,14 +12,14 @@ class StatusPengecekanOverview extends BaseWidget
 
     protected function getStats(): array
     {
-        $totalDaftarPengecekan = Mesin::count();
+        $totalDaftarPengecekan = DaftarPengecekan::count();
         
-        $sudahDicek = Mesin::whereHas('pengecekan', function ($query) {
+        $sudahDicek = DaftarPengecekan::whereHas('pengecekan', function ($query) {
             $query->whereDate('tanggal_pengecekan', today())
                 ->where('status', 'selesai');
         })->count();
 
-        $sedangDicek = Mesin::whereHas('pengecekan', function ($query) {
+        $sedangDicek = DaftarPengecekan::whereHas('pengecekan', function ($query) {
             $query->whereDate('tanggal_pengecekan', today())
                 ->where('status', 'dalam_proses');
         })->count();

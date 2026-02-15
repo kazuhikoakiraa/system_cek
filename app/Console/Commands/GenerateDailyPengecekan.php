@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\DetailPengecekanMesin;
-use App\Models\Mesin;
+use App\Models\DaftarPengecekan;
 use App\Models\PengecekanMesin;
 use Carbon\Carbon;
 use Illuminate\Console\Command;

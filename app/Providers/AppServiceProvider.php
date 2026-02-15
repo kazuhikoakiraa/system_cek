@@ -2,11 +2,13 @@
 
 namespace App\Providers;
 
+use App\Models\DaftarPengecekan;
 use App\Models\DetailPengecekanMesin;
 use App\Models\MaintenanceReport;
 use App\Models\Mesin;
 use App\Models\SparePartTransaction;
 use App\Models\SparePartStockOpname;
+use App\Observers\DaftarPengecekanObserver;
 use App\Observers\DetailPengecekanMesinObserver;
 use App\Observers\MaintenanceReportObserver;
 use App\Observers\MesinObserver;
@@ -29,6 +31,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        DaftarPengecekan::observe(DaftarPengecekanObserver::class);
         Mesin::observe(MesinObserver::class);
         MaintenanceReport::observe(MaintenanceReportObserver::class);
         DetailPengecekanMesin::observe(DetailPengecekanMesinObserver::class);
