@@ -27,7 +27,7 @@ class Mesin extends Model
         'harga_pengadaan',
         'nomor_invoice',
         'tanggal_waranty_expired',
-        'umur_ekonomis_tahun',
+        'umur_ekonomis_bulan',
         'estimasi_penggantian',
         'status',
         'kondisi_terakhir',

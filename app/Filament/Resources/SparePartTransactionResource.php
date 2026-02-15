@@ -41,6 +41,8 @@ class SparePartTransactionResource extends Resource
     protected static ?string $modelLabel = 'Transaksi';
 
     protected static ?int $navigationSort = 73;
+
+    protected static ?int $navigationGroupSort = 5;
     
     // Read-only resource untuk laporan
     public static function canCreate(): bool

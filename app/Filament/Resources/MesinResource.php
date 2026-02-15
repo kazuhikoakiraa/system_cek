@@ -21,6 +21,7 @@ use Filament\Forms\Components\TextInput as FormTextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\ImageColumn;
@@ -42,204 +43,226 @@ class MesinResource extends Resource
 
     protected static string|\UnitEnum|null $navigationGroup = 'Manajemen Mesin';
 
-    protected static ?int $navigationSort = 10;
+    protected static ?int $navigationSort = 1;
+
+    protected static ?int $navigationGroupSort = 2;
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('Identitas Mesin')
-                    ->description('Data identifikasi dan informasi dasar mesin')
-                    ->icon('heroicon-o-identification')
-                    ->schema([
-                        Grid::make(3)
-                            ->components([
-                                FormTextInput::make('kode_mesin')
-                                    ->label('Kode Mesin')
-                                    ->required()
-                                    ->maxLength(100)
-                                    ->unique(ignoreRecord: true)
-                                    ->placeholder('Contoh: MSN-001')
-                                    ->helperText('Kode unik untuk identifikasi mesin')
-                                    ->columnSpan(1),
+                Tabs::make('Tabs')
+                    ->columnSpanFull()
+                    ->tabs([
+                        // Tab 1: Informasi Dasar
+                        Tabs\Tab::make('Informasi Dasar')
+                            ->schema([
+                                Section::make('Identitas Mesin')
+                                    ->schema([
+                                        Grid::make(2)
+                                            ->schema([
+                                                FormTextInput::make('kode_mesin')
+                                                    ->label('Kode Mesin')
+                                                    ->required()
+                                                    ->maxLength(100)
+                                                    ->unique(ignoreRecord: true)
+                                                    ->placeholder('Contoh: MSN-001')
+                                                    ->helperText('Kode unik untuk identifikasi mesin'),
 
-                                FormTextInput::make('serial_number')
-                                    ->label('Serial Number')
-                                    ->maxLength(100)
-                                    ->placeholder('SN dari manufaktur')
-                                    ->columnSpan(1),
+                                                FormTextInput::make('serial_number')
+                                                    ->label('Serial Number')
+                                                    ->maxLength(100)
+                                                    ->placeholder('SN dari manufaktur'),
 
-                                FormSelect::make('status')
-                                    ->label('Status')
-                                    ->options([
-                                        'aktif' => '✅ Aktif',
-                                        'nonaktif' => '⏸️ Non-Aktif',
-                                        'maintenance' => '🔧 Maintenance',
-                                        'rusak' => '❌ Rusak',
-                                    ])
-                                    ->default('aktif')
-                                    ->required()
-                                    ->native(false)
-                                    ->columnSpan(1),
+                                                FormTextInput::make('nama_mesin')
+                                                    ->label('Nama Mesin')
+                                                    ->required()
+                                                    ->maxLength(255)
+                                                    ->placeholder('Contoh: Mesin CNC 001')
+                                                    ->columnSpan(2),
+
+                                                FormTextInput::make('manufacturer')
+                                                    ->label('Manufaktur/Pabrikan')
+                                                    ->maxLength(255)
+                                                    ->placeholder('Contoh: Siemens, Fanuc, dll'),
+
+                                                FormTextInput::make('model_number')
+                                                    ->label('Model/Tipe')
+                                                    ->maxLength(255)
+                                                    ->placeholder('Model atau tipe mesin'),
+
+                                                FormTextInput::make('jenis_mesin')
+                                                    ->label('Jenis Mesin')
+                                                    ->maxLength(100)
+                                                    ->placeholder('Contoh: CNC, Forklift, dll'),
+
+                                                FormTextInput::make('tahun_pembuatan')
+                                                    ->label('Tahun Pembuatan')
+                                                    ->numeric()
+                                                    ->minValue(1900)
+                                                    ->maxValue(date('Y'))
+                                                    ->placeholder('YYYY'),
+
+                                                FormTextInput::make('lokasi_instalasi')
+                                                    ->label('Lokasi Instalasi')
+                                                    ->maxLength(255)
+                                                    ->placeholder('Contoh: Lantai 2, Area Produksi')
+                                                    ->columnSpan(2),
+
+                                                FormSelect::make('status')
+                                                    ->label('Status')
+                                                    ->options([
+                                                        'aktif' => '✅ Aktif',
+                                                        'nonaktif' => '⏸️ Non-Aktif',
+                                                        'maintenance' => '🔧 Maintenance',
+                                                        'rusak' => '❌ Rusak',
+                                                    ])
+                                                    ->default('aktif')
+                                                    ->required()
+                                                    ->native(false),
+
+                                                FormTextInput::make('kondisi_terakhir')
+                                                    ->label('Kondisi Terakhir')
+                                                    ->maxLength(100)
+                                                    ->placeholder('Contoh: Baik, Perlu Perhatian'),
+
+                                                FormSelect::make('user_id')
+                                                    ->label('Penanggung Jawab')
+                                                    ->options(
+                                                        User::all()->pluck('name', 'id')
+                                                    )
+                                                    ->searchable()
+                                                    ->preload()
+                                                    ->nullable()
+                                                    ->helperText('Operator atau teknisi yang bertanggung jawab')
+                                                    ->columnSpan(2),
+                                            ]),
+                                    ]),
                             ]),
 
-                        Grid::make(2)
-                            ->components([
-                                FormTextInput::make('nama_mesin')
-                                    ->label('Nama Mesin')
-                                    ->required()
-                                    ->maxLength(255)
-                                    ->placeholder('Contoh: Mesin CNC 001')
-                                    ->columnSpan(2),
+                        // Tab 2: Pengadaan & Keuangan
+                        Tabs\Tab::make('Pengadaan & Keuangan')
+                            ->schema([
+                                Section::make('Informasi Pengadaan')
+                                    ->schema([
+                                        Grid::make(3)
+                                            ->schema([
+                                                DatePicker::make('tanggal_pengadaan')
+                                                    ->label('Tanggal Pengadaan')
+                                                    ->native(false)
+                                                    ->displayFormat('d/m/Y')
+                                                    ->reactive()
+                                                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                                        if ($state && $get('umur_ekonomis_bulan')) {
+                                                            $bulan = $get('umur_ekonomis_bulan');
+                                                            $estimasi = \Carbon\Carbon::parse($state)->addMonths($bulan);
+                                                            $set('estimasi_penggantian', $estimasi->format('Y-m-d'));
+                                                        }
+                                                    }),
 
-                                FormTextInput::make('manufacturer')
-                                    ->label('Manufaktur/Pabrikan')
-                                    ->maxLength(255)
-                                    ->placeholder('Contoh: Siemens, Fanuc, dll'),
+                                                FormTextInput::make('harga_pengadaan')
+                                                    ->label('Harga Pengadaan')
+                                                    ->numeric()
+                                                    ->prefix('Rp')
+                                                    ->placeholder('0'),
 
-                                FormTextInput::make('model_number')
-                                    ->label('Model/Tipe')
-                                    ->maxLength(255)
-                                    ->placeholder('Model atau tipe mesin'),
+                                                FormTextInput::make('nomor_invoice')
+                                                    ->label('Nomor Invoice/PO')
+                                                    ->maxLength(255)
+                                                    ->placeholder('INV-XXXX'),
 
-                                FormTextInput::make('jenis_mesin')
-                                    ->label('Jenis Mesin')
-                                    ->maxLength(100)
-                                    ->placeholder('Contoh: CNC, Forklift, dll'),
+                                                FormTextInput::make('supplier')
+                                                    ->label('Supplier/Vendor')
+                                                    ->maxLength(255)
+                                                    ->placeholder('Nama perusahaan supplier')
+                                                    ->columnSpan(3),
+                                            ]),
+                                    ]),
 
-                                FormTextInput::make('tahun_pembuatan')
-                                    ->label('Tahun Pembuatan')
-                                    ->numeric()
-                                    ->minValue(1900)
-                                    ->maxValue(date('Y'))
-                                    ->placeholder('YYYY'),
+                                Section::make('Umur Ekonomis')
+                                    ->schema([
+                                        Grid::make(2)
+                                            ->schema([
+                                                FormTextInput::make('umur_ekonomis_bulan')
+                                                    ->label('Umur Ekonomis')
+                                                    ->numeric()
+                                                    ->minValue(1)
+                                                    ->suffix('bulan')
+                                                    ->helperText('Estimasi umur pakai mesin dalam bulan')
+                                                    ->reactive()
+                                                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                                        if ($state && $get('tanggal_pengadaan')) {
+                                                            $tanggal = \Carbon\Carbon::parse($get('tanggal_pengadaan'));
+                                                            $estimasi = $tanggal->copy()->addMonths($state);
+                                                            $set('estimasi_penggantian', $estimasi->format('Y-m-d'));
+                                                        }
+                                                    }),
 
-                                FormTextInput::make('lokasi_instalasi')
-                                    ->label('Lokasi Instalasi')
-                                    ->maxLength(255)
-                                    ->placeholder('Contoh: Lantai 2, Area Produksi')
-                                    ->columnSpan(2),
-
-                                FormSelect::make('user_id')
-                                    ->label('Penanggung Jawab')
-                                    ->options(
-                                        User::all()->pluck('name', 'id')
-                                    )
-                                    ->searchable()
-                                    ->preload()
-                                    ->nullable()
-                                    ->helperText('Operator atau teknisi yang bertanggung jawab'),
-
-                                FormTextInput::make('kondisi_terakhir')
-                                    ->label('Kondisi Terakhir')
-                                    ->maxLength(100)
-                                    ->placeholder('Contoh: Baik, Perlu Perhatian'),
+                                                DatePicker::make('estimasi_penggantian')
+                                                    ->label('Estimasi Penggantian')
+                                                    ->native(false)
+                                                    ->displayFormat('d/m/Y')
+                                                    ->helperText('Otomatis dihitung dari tanggal pengadaan + umur ekonomis'),
+                                            ]),
+                                    ]),
                             ]),
-                    ])
-                    ->collapsible(),
 
-                Section::make('Informasi Pengadaan & Keuangan')
-                    ->description('Data pembelian, supplier, dan garansi mesin')
-                    ->icon('heroicon-o-shopping-cart')
-                    ->schema([
-                        Grid::make(3)
-                            ->components([
-                                DatePicker::make('tanggal_pengadaan')
-                                    ->label('Tanggal Pengadaan')
-                                    ->native(false)
-                                    ->displayFormat('d/m/Y')
-                                    ->reactive()
-                                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                                        if ($state && $get('umur_ekonomis_tahun')) {
-                                            $tahun = $get('umur_ekonomis_tahun');
-                                            $estimasi = \Carbon\Carbon::parse($state)->addYears($tahun);
-                                            $set('estimasi_penggantian', $estimasi->format('Y-m-d'));
-                                        }
-                                    }),
-
-                                DatePicker::make('tanggal_waranty_expired')
-                                    ->label('Tanggal Berakhir Garansi')
-                                    ->native(false)
-                                    ->displayFormat('d/m/Y'),
-
-                                FormTextInput::make('umur_ekonomis_tahun')
-                                    ->label('Umur Ekonomis (Tahun)')
-                                    ->numeric()
-                                    ->minValue(1)
-                                    ->helperText('Estimasi umur pakai mesin')
-                                    ->reactive()
-                                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                                        if ($state && $get('tanggal_pengadaan')) {
-                                            $tanggal = \Carbon\Carbon::parse($get('tanggal_pengadaan'));
-                                            $estimasi = $tanggal->copy()->addYears($state);
-                                            $set('estimasi_penggantian', $estimasi->format('Y-m-d'));
-                                        }
-                                    }),
-
-                                DatePicker::make('estimasi_penggantian')
-                                    ->label('Estimasi Penggantian')
-                                    ->native(false)
-                                    ->displayFormat('d/m/Y')
-                                    ->helperText('Otomatis dihitung dari tanggal pengadaan + umur ekonomis')
-                                    ->columnSpan(3),
-
-                                FormTextInput::make('harga_pengadaan')
-                                    ->label('Harga Pengadaan')
-                                    ->numeric()
-                                    ->prefix('Rp')
-                                    ->placeholder('0'),
-
-                                FormTextInput::make('nomor_invoice')
-                                    ->label('Nomor Invoice/PO')
-                                    ->maxLength(255)
-                                    ->placeholder('INV-XXXX'),
-
-                                FormTextInput::make('supplier')
-                                    ->label('Supplier/Vendor')
-                                    ->maxLength(255)
-                                    ->placeholder('Nama perusahaan supplier'),
+                        // Tab 3: Garansi
+                        Tabs\Tab::make('Garansi')
+                            ->schema([
+                                Section::make('Informasi Garansi')
+                                    ->schema([
+                                        DatePicker::make('tanggal_waranty_expired')
+                                            ->label('Tanggal Berakhir Garansi')
+                                            ->native(false)
+                                            ->displayFormat('d/m/Y')
+                                            ->helperText('Tanggal berakhirnya masa garansi mesin'),
+                                    ]),
                             ]),
-                    ])
-                    ->collapsible(),
 
-                Section::make('Spesifikasi & Dokumentasi')
-                    ->description('Detail spesifikasi teknis dan dokumentasi')
-                    ->icon('heroicon-o-cog')
-                    ->schema([
-                        FormTextarea::make('spesifikasi_teknis')
-                            ->label('Spesifikasi Teknis')
-                            ->rows(4)
-                            ->placeholder('Spesifikasi teknis lengkap mesin...')
-                            ->columnSpanFull(),
+                        // Tab 4: Spesifikasi & Dokumentasi
+                        Tabs\Tab::make('Spesifikasi & Dokumentasi')
+                            ->schema([
+                                Section::make('Spesifikasi')
+                                    ->schema([
+                                        FormTextarea::make('spesifikasi_teknis')
+                                            ->label('Spesifikasi Teknis')
+                                            ->rows(4)
+                                            ->placeholder('Spesifikasi teknis lengkap mesin...')
+                                            ->columnSpanFull(),
 
-                        FormTextarea::make('catatan')
-                            ->label('Catatan Tambahan')
-                            ->rows(3)
-                            ->placeholder('Catatan penting tentang mesin...')
-                            ->columnSpanFull(),
+                                        FormTextarea::make('catatan')
+                                            ->label('Catatan Tambahan')
+                                            ->rows(3)
+                                            ->placeholder('Catatan penting tentang mesin...')
+                                            ->columnSpanFull(),
+                                    ]),
 
-                        FileUpload::make('foto')
-                            ->label('Foto Mesin')
-                            ->image()
-                            ->imageEditor()
-                            ->imageEditorAspectRatios([
-                                '16:9',
-                                '4:3',
-                                '1:1',
-                            ])
-                            ->directory('mesin-photos')
-                            ->maxSize(5120)
-                            ->helperText('Format: JPG, PNG. Max 5MB')
-                            ->columnSpanFull(),
+                                Section::make('Dokumentasi')
+                                    ->schema([
+                                        FileUpload::make('foto')
+                                            ->label('Foto Mesin')
+                                            ->image()
+                                            ->imageEditor()
+                                            ->imageEditorAspectRatios([
+                                                '16:9',
+                                                '4:3',
+                                                '1:1',
+                                            ])
+                                            ->directory('mesin-photos')
+                                            ->maxSize(5120)
+                                            ->helperText('Format: JPG, PNG. Max 5MB')
+                                            ->columnSpanFull(),
 
-                        FormTextarea::make('dokumen_pendukung')
-                            ->label('Dokumen Pendukung')
-                            ->rows(3)
-                            ->placeholder('Link atau deskripsi dokumen pendukung (Manual, Sertifikat, SOP, dll)...')
-                            ->helperText('Anda dapat menyimpan link Google Drive atau deskripsi lokasi dokumen fisik')
-                            ->columnSpanFull(),
-                    ])
-                    ->collapsible(),
+                                        FormTextarea::make('dokumen_pendukung')
+                                            ->label('Dokumen Pendukung')
+                                            ->rows(3)
+                                            ->placeholder('Link atau deskripsi dokumen pendukung (Manual, Sertifikat, SOP, dll)...')
+                                            ->helperText('Anda dapat menyimpan link Google Drive atau deskripsi lokasi dokumen fisik')
+                                            ->columnSpanFull(),
+                                    ]),
+                            ]),
+                    ]),
             ]);
     }
 

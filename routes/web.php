@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\LaporanExportController;
 use App\Http\Controllers\SparePartTransactionPdfController;
+use App\Http\Controllers\MesinPdfController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -24,6 +25,12 @@ Route::middleware(['auth'])->prefix('laporan')->name('laporan.')->group(function
 // Spare Part Transaction Export
 Route::middleware(['auth'])->group(function () {
     Route::get('/spare-part-transactions/pdf', [SparePartTransactionPdfController::class, 'download'])->name('spare-part-transactions.pdf');
+});
+
+// Mesin Export Routes
+Route::middleware(['auth'])->prefix('mesin/export')->name('mesin.export.')->group(function () {
+    Route::get('/pdf', [MesinPdfController::class, 'download'])->name('pdf');
+    Route::get('/pdf/{id}', [MesinPdfController::class, 'downloadDetail'])->name('pdf.detail');
 });
 
 // Email Verification Handler - Tidak butuh auth karena signed URL

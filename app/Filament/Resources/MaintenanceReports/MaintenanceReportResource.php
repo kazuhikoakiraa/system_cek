@@ -31,6 +31,8 @@ class MaintenanceReportResource extends Resource
 
     protected static ?int $navigationSort = 70;
 
+    protected static ?int $navigationGroupSort = 4;
+
     public static function form(Schema $schema): Schema
     {
         return MaintenanceReportForm::configure($schema);

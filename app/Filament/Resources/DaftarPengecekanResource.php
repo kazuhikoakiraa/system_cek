@@ -39,7 +39,7 @@ class DaftarPengecekanResource extends Resource
 
     protected static ?int $navigationSort = 20;
 
-    protected static ?int $navigationGroupSort = 2;
+    protected static ?int $navigationGroupSort = 3;
 
     public static function form(Schema $schema): Schema
     {

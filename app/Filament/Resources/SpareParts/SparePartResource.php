@@ -33,6 +33,8 @@ class SparePartResource extends Resource
 
     protected static ?int $navigationSort = 72;
 
+    protected static ?int $navigationGroupSort = 5;
+
     public static function form(Schema $schema): Schema
     {
         return SparePartForm::configure($schema);

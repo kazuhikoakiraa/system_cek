@@ -35,6 +35,8 @@ class PengecekanMesinResource extends Resource
 
     protected static ?int $navigationSort = 21;
 
+    protected static ?int $navigationGroupSort = 3;
+
     public static function form(Schema $schema): Schema
     {
         return PengecekanMesinForm::configure($schema);

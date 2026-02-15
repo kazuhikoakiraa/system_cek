@@ -29,6 +29,8 @@ class MLogResource extends Resource
 
     protected static ?int $navigationSort = 3;
 
+    protected static ?int $navigationGroupSort = 2;
+
     protected static ?string $recordTitleAttribute = 'id';
 
     public static function form(Schema $schema): Schema

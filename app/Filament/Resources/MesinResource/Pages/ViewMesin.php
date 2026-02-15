@@ -15,8 +15,16 @@ class ViewMesin extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\Action::make('export_laporan')
-                ->label('Export Laporan Lengkap')
+            Actions\Action::make('export_pdf')
+                ->label('Export PDF')
+                ->icon('heroicon-o-document-arrow-down')
+                ->color('danger')
+                ->url(fn () => route('mesin.export.pdf.detail', ['id' => $this->record->id]))
+                ->openUrlInNewTab()
+                ->tooltip('Export detail mesin ke PDF'),
+            
+            Actions\Action::make('export_excel')
+                ->label('Export Excel')
                 ->icon('heroicon-o-document-arrow-down')
                 ->color('success')
                 ->action(function () {
@@ -24,8 +32,10 @@ class ViewMesin extends ViewRecord
                     return Excel::download(new MesinLengkapExport($this->record->id), $fileName);
                 })
                 ->tooltip('Export laporan lengkap mesin dengan semua riwayat'),
+            
             Actions\EditAction::make()
                 ->label('Ubah'),
+            
             Actions\DeleteAction::make()
                 ->label('Hapus'),
         ];
