@@ -61,7 +61,7 @@ class MRequestObserver
             MAudit::create([
                 'mesin_id' => $mRequest->mesin_id,
                 'm_request_id' => $mRequest->id,
-                'action_type' => 'maintenance_completed',
+                'action_type' => 'teknisi_completed',
                 'user_id' => Auth::id(),
                 'deskripsi_perubahan' => "Maintenance {$mRequest->request_number} selesai",
                 'perubahan_data' => [
