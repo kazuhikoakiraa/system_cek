@@ -23,7 +23,7 @@ class SparePartResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'nama_suku_cadang';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Maintenance';
+    protected static string|\UnitEnum|null $navigationGroup = 'Manajemen Suku Cadang';
 
     protected static ?string $navigationLabel = 'Suku Cadang';
 

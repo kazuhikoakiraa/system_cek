@@ -21,7 +21,7 @@ class MaintenanceReportResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedWrenchScrewdriver;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Maintenance';
+    protected static string|\UnitEnum|null $navigationGroup = 'Laporan';
 
     protected static ?string $navigationLabel = 'Laporan Maintenance';
 

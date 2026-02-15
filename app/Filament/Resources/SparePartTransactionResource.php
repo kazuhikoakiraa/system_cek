@@ -32,11 +32,11 @@ class SparePartTransactionResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'nomor_transaksi';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Maintenance';
+    protected static string|\UnitEnum|null $navigationGroup = 'Manajemen Suku Cadang';
 
-    protected static ?string $navigationLabel = 'Laporan Transaksi';
+    protected static ?string $navigationLabel = 'Transaksi Suku Cadang';
 
-    protected static ?string $pluralModelLabel = 'Laporan Transaksi';
+    protected static ?string $pluralModelLabel = 'Transaksi Suku Cadang';
 
     protected static ?string $modelLabel = 'Transaksi';
 
