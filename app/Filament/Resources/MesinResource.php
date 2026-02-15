@@ -58,12 +58,35 @@ class MesinResource extends Resource
 
                                 FormSelect::make('user_id')
                                     ->label('Operator yang Bertanggung Jawab')
-                                    ->options(function () {
-                                        return User::role('operator')->get()->pluck('name', 'id');
+                                    ->options(function ($record) {
+                                        // Dapatkan operator yang belum memiliki mesin
+                                        $assignedOperatorIds = Mesin::whereNotNull('user_id')
+                                            ->when($record, function ($query) use ($record) {
+                                                // Exclude operator dari mesin yang sedang diedit
+                                                return $query->where('id', '!=', $record->id);
+                                            })
+                                            ->pluck('user_id')
+                                            ->toArray();
+
+                                        // Dapatkan semua operator yang belum ditugaskan
+                                        $availableOperators = User::role('operator')
+                                            ->whereNotIn('id', $assignedOperatorIds)
+                                            ->get()
+                                            ->pluck('name', 'id');
+
+                                        // Jika sedang edit dan mesin sudah punya operator, tambahkan operator tersebut ke pilihan
+                                        if ($record && $record->user_id) {
+                                            $currentOperator = User::find($record->user_id);
+                                            if ($currentOperator) {
+                                                $availableOperators->put($currentOperator->id, $currentOperator->name);
+                                            }
+                                        }
+
+                                        return $availableOperators;
                                     })
                                     ->searchable()
                                     ->required()
-                                    ->helperText('Hanya user dengan role Operator yang dapat dipilih')
+                                    ->helperText('Hanya operator yang belum bertanggung jawab atas daftar pengecekan lain yang dapat dipilih')
                                     ->columnSpan(2),
 
                                 FormTextarea::make('deskripsi')

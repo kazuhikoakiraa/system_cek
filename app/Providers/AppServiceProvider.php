@@ -4,8 +4,10 @@ namespace App\Providers;
 
 use App\Models\DetailPengecekanMesin;
 use App\Models\MaintenanceReport;
+use App\Models\Mesin;
 use App\Observers\DetailPengecekanMesinObserver;
 use App\Observers\MaintenanceReportObserver;
+use App\Observers\MesinObserver;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +25,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Mesin::observe(MesinObserver::class);
         MaintenanceReport::observe(MaintenanceReportObserver::class);
         DetailPengecekanMesin::observe(DetailPengecekanMesinObserver::class);
     }
