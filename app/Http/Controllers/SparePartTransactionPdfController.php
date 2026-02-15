@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\SparePartTransaction;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Blade;
 
 class SparePartTransactionPdfController extends Controller
 {
@@ -23,31 +26,40 @@ class SparePartTransactionPdfController extends Controller
             $query->where('spare_part_id', $request->spare_part_id);
         }
 
-        if ($request->has('dari_tanggal') && $request->dari_tanggal) {
-            $query->whereDate('tanggal_transaksi', '>=', $request->dari_tanggal);
+        if ($request->has('tanggal_mulai') && $request->tanggal_mulai) {
+            $query->whereDate('tanggal_transaksi', '>=', $request->tanggal_mulai);
         }
 
-        if ($request->has('sampai_tanggal') && $request->sampai_tanggal) {
-            $query->whereDate('tanggal_transaksi', '<=', $request->sampai_tanggal);
+        if ($request->has('tanggal_selesai') && $request->tanggal_selesai) {
+            $query->whereDate('tanggal_transaksi', '<=', $request->tanggal_selesai);
         }
 
         $transactions = $query->get();
 
-        // Hitung statistik
-        $totalMasuk = $transactions->where('tipe_transaksi', 'IN')->sum('jumlah');
-        $totalKeluar = $transactions->where('tipe_transaksi', 'OUT')->sum('jumlah');
-        $totalRetur = $transactions->where('tipe_transaksi', 'RETURN')->sum('jumlah');
+        $tanggalMulai = $request->tanggal_mulai ? Carbon::parse($request->tanggal_mulai) : null;
+        $tanggalSelesai = $request->tanggal_selesai ? Carbon::parse($request->tanggal_selesai) : null;
 
-        $pdf = Pdf::loadView('pdf.spare-part-transactions', [
+        $html = Blade::render('pdf.spare-part-transactions', [
             'transactions' => $transactions,
-            'totalMasuk' => $totalMasuk,
-            'totalKeluar' => $totalKeluar,
-            'totalRetur' => $totalRetur,
-            'filters' => $request->all(),
+            'tanggalMulai' => $tanggalMulai,
+            'tanggalSelesai' => $tanggalSelesai,
         ]);
 
-        $pdf->setPaper('a4', 'landscape');
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', true);
+        $options->set('defaultFont', 'DejaVu Sans');
 
-        return $pdf->download('laporan-transaksi-suku-cadang-' . now()->format('Y-m-d') . '.pdf');
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'landscape');
+        $dompdf->render();
+
+        $fileName = 'Laporan_Transaksi_Suku_Cadang_' . now()->format('Y-m-d_His') . '.pdf';
+
+        return response()->streamDownload(
+            fn () => print($dompdf->output()),
+            $fileName
+        );
     }
 }

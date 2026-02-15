@@ -1,182 +1,470 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Laporan Transaksi Suku Cadang</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            font-size: 10px;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-            border-bottom: 3px solid #333;
-            padding-bottom: 10px;
-        }
-        .header h2 {
-            margin: 5px 0;
-            font-size: 18px;
-        }
-        .header p {
-            margin: 3px 0;
-            color: #666;
-        }
-        .info-box {
-            background: #f5f5f5;
-            padding: 10px;
-            margin-bottom: 15px;
-            border-radius: 5px;
-        }
-        .info-box table {
-            width: 100%;
-        }
-        .info-box td {
-            padding: 3px 5px;
-        }
-        .summary {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-        }
-        .summary-box {
-            background: #f0f0f0;
-            padding: 10px;
-            text-align: center;
-            border-radius: 5px;
-            flex: 1;
-            margin: 0 5px;
-        }
-        .summary-box h3 {
+        * {
             margin: 0;
-            font-size: 20px;
-            color: #333;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .summary-box p {
-            margin: 5px 0 0 0;
-            color: #666;
-            font-size: 11px;
+
+        @page {
+            size: A4 landscape;
+            margin: 15mm 12mm;
         }
-        table {
+
+        body {
+            font-family: 'DejaVu Sans', Arial, sans-serif;
+            font-size: 8px;
+            line-height: 1.2;
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
+
+        .page-break:last-child {
+            page-break-after: avoid;
+        }
+
+        /* Header Section */
+        .header {
+            display: table;
+            width: 100%;
+            margin-bottom: 8px;
+            border: 1px solid #000;
+        }
+
+        .header-left {
+            display: table-cell;
+            width: 60%;
+            padding: 6px;
+            vertical-align: middle;
+            border-right: 1px solid #000;
+        }
+
+        .header-right {
+            display: table-cell;
+            width: 40%;
+            vertical-align: top;
+        }
+
+        .company-name {
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .header-brand {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
         }
-        th {
-            background-color: #4a5568;
-            color: white;
-            padding: 8px;
-            text-align: left;
+
+        .header-brand td {
+            vertical-align: middle;
+        }
+
+        .brand-logo {
+            width: 55px;
+            height: 55px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .header-info {
             font-size: 9px;
         }
-        td {
-            padding: 6px 8px;
-            border-bottom: 1px solid #ddd;
-            font-size: 9px;
+
+        .header-info table {
+            width: 100%;
         }
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        .badge {
-            padding: 3px 8px;
-            border-radius: 3px;
-            font-weight: bold;
+
+        .header-info td {
+            padding: 1px 4px;
             font-size: 8px;
         }
-        .badge-in {
-            background-color: #d4edda;
-            color: #155724;
+
+        .header-info td:first-child {
+            width: 80px;
         }
-        .badge-out {
-            background-color: #f8d7da;
-            color: #721c24;
+
+        .doc-info {
+            width: 100%;
         }
-        .badge-return {
-            background-color: #fff3cd;
-            color: #856404;
+
+        .doc-info td {
+            padding: 2px 6px;
+            border-bottom: 1px solid #000;
+            font-size: 8px;
         }
-        .footer {
-            margin-top: 30px;
-            text-align: right;
-            font-size: 9px;
-            color: #666;
+
+        .doc-info tr:last-child td {
+            border-bottom: none;
         }
-        .no-data {
+
+        .doc-info td:first-child {
+            width: 80px;
+            font-weight: 600;
+        }
+
+        /* Title */
+        .title {
             text-align: center;
-            padding: 40px;
-            color: #999;
+            font-size: 13px;
+            font-weight: bold;
+            margin: 8px 0 4px 0;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 9px;
+            margin-bottom: 8px;
+        }
+
+        /* Table */
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+
+        .report-table th,
+        .report-table td {
+            border: 1px solid #000;
+            padding: 3px;
+            text-align: left;
+            vertical-align: top;
+            font-size: 7px;
+        }
+
+        .report-table th {
+            background-color: #d9d9d9;
+            font-weight: bold;
+            text-align: center;
+            font-size: 7px;
+        }
+
+        .col-no {
+            width: 3%;
+            text-align: center;
+        }
+
+        .col-nomor {
+            width: 10%;
+        }
+
+        .col-date {
+            width: 10%;
+        }
+
+        .col-kode {
+            width: 9%;
+        }
+
+        .col-nama {
+            width: 15%;
+        }
+
+        .col-tipe {
+            width: 7%;
+            text-align: center;
+        }
+
+        .col-jumlah {
+            width: 8%;
+            text-align: center;
+        }
+
+        .col-stok {
+            width: 8%;
+            text-align: center;
+        }
+
+        .col-keterangan {
+            width: 18%;
+        }
+
+        .col-user {
+            width: 10%;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 7px;
+            font-weight: bold;
+        }
+
+        .tipe-in {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .tipe-out {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .tipe-return {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        /* Summary */
+        .summary {
+            margin-top: 8px;
+            padding: 5px;
+            background-color: #f3f4f6;
+            border: 1px solid #d1d5db;
+            font-size: 7px;
+        }
+
+        .summary-title {
+            font-weight: bold;
+            margin-bottom: 3px;
+            font-size: 8px;
+        }
+
+        .summary-item {
+            margin: 2px 0;
+        }
+
+        /* Signature Section */
+        .signature-section {
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .signature-location {
+            text-align: left;
+            font-size: 8px;
+            margin-bottom: 10px;
+        }
+
+        .signature-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .signature-table td {
+            width: 33.33%;
+            text-align: center;
+            vertical-align: top;
+            padding: 5px;
+        }
+
+        .signature-title {
+            font-size: 8px;
+            font-weight: bold;
+            margin-bottom: 40px;
+        }
+
+        .signature-name {
+            font-size: 8px;
+            border-bottom: 1px solid #000;
+            display: inline-block;
+            min-width: 150px;
+            margin-bottom: 3px;
+        }
+
+        .signature-position {
+            font-size: 7px;
+        }
+
+        /* Footer notes */
+        .footer-notes {
+            margin-top: 10px;
+            font-size: 7px;
+        }
+
+        .footer-notes-title {
+            font-weight: bold;
+            margin-bottom: 3px;
         }
     </style>
 </head>
 <body>
+    @php
+        $logoPath = public_path('favicon.png');
+        $logoDataUri = null;
+        if (file_exists($logoPath)) {
+            $imageData = base64_encode(file_get_contents($logoPath));
+            $mimeType = mime_content_type($logoPath);
+            $logoDataUri = "data:{$mimeType};base64,{$imageData}";
+        }
+    @endphp
+
+    <!-- Header -->
     <div class="header">
-        <h2>LAPORAN TRANSAKSI SUKU CADANG</h2>
-        <p>Periode: {{ isset($filters['dari_tanggal']) && $filters['dari_tanggal'] ? date('d/m/Y', strtotime($filters['dari_tanggal'])) : 'Semua' }} - {{ isset($filters['sampai_tanggal']) && $filters['sampai_tanggal'] ? date('d/m/Y', strtotime($filters['sampai_tanggal'])) : 'Semua' }}</p>
-        <p>Dicetak: {{ now()->format('d/m/Y H:i') }}</p>
+        <div class="header-left">
+            <table class="header-brand">
+                <tr>
+                    @if($logoDataUri)
+                        <td style="width: 60px; padding-right: 8px;">
+                            <img class="brand-logo" src="{{ $logoDataUri }}" alt="Logo">
+                        </td>
+                    @endif
+                    <td>
+                        <div class="company-name">PT PARAMA BINA ENERGI</div>
+                        <div class="header-info">
+                            <table>
+                                <tr>
+                                    <td>Departemen</td>
+                                    <td>: PRODUKSI</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="header-right">
+            <table class="doc-info">
+                <tr>
+                    <td>No. Dokumen</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Periode</td>
+                    <td>
+                        @if($tanggalMulai && $tanggalSelesai)
+                            {{ $tanggalMulai->format('d/m/Y') }} - {{ $tanggalSelesai->format('d/m/Y') }}
+                        @elseif($tanggalMulai)
+                            Sejak {{ $tanggalMulai->format('d/m/Y') }}
+                        @elseif($tanggalSelesai)
+                            Sampai {{ $tanggalSelesai->format('d/m/Y') }}
+                        @else
+                            Semua Data
+                        @endif
+                    </td>
+                </tr>
+                <tr>
+                    <td>Halaman</td>
+                    <td>1 / 1</td>
+                </tr>
+            </table>
+        </div>
     </div>
 
-    <div class="info-box">
-        <table>
+    <!-- Title -->
+    <div class="title">LAPORAN TRANSAKSI SUKU CADANG</div>
+    <div class="subtitle">
+        Periode: 
+        @if($tanggalMulai && $tanggalSelesai)
+            {{ $tanggalMulai->translatedFormat('d F Y') }} - {{ $tanggalSelesai->translatedFormat('d F Y') }}
+        @elseif($tanggalMulai)
+            Sejak {{ $tanggalMulai->translatedFormat('d F Y') }}
+        @elseif($tanggalSelesai)
+            Sampai {{ $tanggalSelesai->translatedFormat('d F Y') }}
+        @else
+            Semua Data
+        @endif
+    </div>
+
+    <!-- Data Table -->
+    <table class="report-table">
+        <thead>
             <tr>
-                <td width="20%"><strong>Total Transaksi</strong></td>
-                <td width="30%">: {{ $transactions->count() }} transaksi</td>
-                <td width="20%"><strong>Total Masuk</strong></td>
-                <td width="30%">: {{ number_format($totalMasuk) }} unit</td>
+                <th class="col-no">No</th>
+                <th class="col-nomor">No. Transaksi</th>
+                <th class="col-date">Tanggal</th>
+                <th class="col-kode">Kode</th>
+                <th class="col-nama">Nama Suku Cadang</th>
+                <th class="col-tipe">Tipe</th>
+                <th class="col-jumlah">Jumlah</th>
+                <th class="col-stok">Stok Sebelum</th>
+                <th class="col-stok">Stok Sesudah</th>
+                <th class="col-keterangan">Keterangan</th>
+                <th class="col-user">Diinput Oleh</th>
             </tr>
+        </thead>
+        <tbody>
+            @forelse($transactions as $index => $transaction)
+                <tr>
+                    <td class="col-no">{{ $index + 1 }}</td>
+                    <td class="col-nomor">{{ $transaction->nomor_transaksi }}</td>
+                    <td class="col-date">{{ $transaction->tanggal_transaksi->format('d/m/y H:i') }}</td>
+                    <td class="col-kode">{{ $transaction->sparePart->kode_suku_cadang }}</td>
+                    <td class="col-nama">{{ $transaction->sparePart->nama_suku_cadang }}</td>
+                    <td class="col-tipe">
+                        @php
+                            $tipeClass = match($transaction->tipe_transaksi) {
+                                'IN' => 'tipe-in',
+                                'OUT' => 'tipe-out',
+                                'RETURN' => 'tipe-return',
+                                default => ''
+                            };
+                            $tipeLabel = match($transaction->tipe_transaksi) {
+                                'IN' => 'Masuk',
+                                'OUT' => 'Keluar',
+                                'RETURN' => 'Retur',
+                                default => '-'
+                            };
+                        @endphp
+                        <span class="status-badge {{ $tipeClass }}">{{ $tipeLabel }}</span>
+                    </td>
+                    <td class="col-jumlah">{{ number_format($transaction->jumlah) }} {{ $transaction->sparePart->satuan }}</td>
+                    <td class="col-stok">{{ number_format($transaction->stok_sebelum) }}</td>
+                    <td class="col-stok">{{ number_format($transaction->stok_sesudah) }}</td>
+                    <td class="col-keterangan">{{ $transaction->keterangan ?? '-' }}</td>
+                    <td class="col-user">{{ $transaction->user->name ?? '-' }}</td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="11" style="text-align: center; padding: 15px;">Tidak ada data transaksi</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+
+    <!-- Summary -->
+    <div class="summary">
+        <div class="summary-title">Ringkasan Laporan:</div>
+        <div class="summary-item">Total Transaksi: {{ $transactions->count() }}</div>
+        @php
+            $totalMasuk = $transactions->where('tipe_transaksi', 'IN')->sum('jumlah');
+            $totalKeluar = $transactions->where('tipe_transaksi', 'OUT')->sum('jumlah');
+            $totalRetur = $transactions->where('tipe_transaksi', 'RETURN')->sum('jumlah');
+        @endphp
+        <div class="summary-item">- Total Masuk: {{ number_format($totalMasuk) }} unit</div>
+        <div class="summary-item">- Total Keluar: {{ number_format($totalKeluar) }} unit</div>
+        <div class="summary-item">- Total Retur: {{ number_format($totalRetur) }} unit</div>
+    </div>
+
+    <!-- Signature Section -->
+    <div class="signature-section">
+        <div class="signature-location">PEMATANGSIANTAR, {{ now()->translatedFormat('d F Y') }}</div>
+        <table class="signature-table">
             <tr>
-                <td><strong>Total Keluar</strong></td>
-                <td>: {{ number_format($totalKeluar) }} unit</td>
-                <td><strong>Total Retur</strong></td>
-                <td>: {{ number_format($totalRetur) }} unit</td>
+                <td>
+                    <div class="signature-title">Dibuat oleh,</div>
+                    <div class="signature-name">&nbsp;</div>
+                    <div class="signature-position">Staff Gudang</div>
+                </td>
+                <td>
+                    <div class="signature-title">Diketahui oleh,</div>
+                    <div class="signature-name">&nbsp;</div>
+                    <div class="signature-position">Kepala Gudang</div>
+                </td>
+                <td>
+                    <div class="signature-title">Disetujui oleh,</div>
+                    <div class="signature-name">&nbsp;</div>
+                    <div class="signature-position">Manager</div>
+                </td>
             </tr>
         </table>
     </div>
 
-    @if($transactions->count() > 0)
-    <table>
-        <thead>
-            <tr>
-                <th width="8%">No. Transaksi</th>
-                <th width="10%">Tanggal</th>
-                <th width="10%">Kode</th>
-                <th width="20%">Nama Suku Cadang</th>
-                <th width="7%">Tipe</th>
-                <th width="7%">Jumlah</th>
-                <th width="7%">Stok Sebelum</th>
-                <th width="7%">Stok Sesudah</th>
-                <th width="17%">Keterangan</th>
-                <th width="7%">Oleh</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($transactions as $transaction)
-            <tr>
-                <td>{{ $transaction->nomor_transaksi }}</td>
-                <td>{{ $transaction->tanggal_transaksi->format('d/m/Y H:i') }}</td>
-                <td>{{ $transaction->sparePart->kode_suku_cadang }}</td>
-                <td>{{ $transaction->sparePart->nama_suku_cadang }}</td>
-                <td>
-                    <span class="badge badge-{{ $transaction->tipe_transaksi === 'IN' ? 'in' : ($transaction->tipe_transaksi === 'OUT' ? 'out' : 'return') }}">
-                        {{ $transaction->tipe_transaksi === 'IN' ? 'MASUK' : ($transaction->tipe_transaksi === 'OUT' ? 'KELUAR' : 'RETUR') }}
-                    </span>
-                </td>
-                <td>{{ number_format($transaction->jumlah) }} {{ $transaction->sparePart->satuan }}</td>
-                <td>{{ number_format($transaction->stok_sebelum) }}</td>
-                <td>{{ number_format($transaction->stok_sesudah) }}</td>
-                <td>{{ $transaction->keterangan ?? '-' }}</td>
-                <td>{{ $transaction->user->name ?? '-' }}</td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-    @else
-    <div class="no-data">
-        <p>Tidak ada data transaksi untuk periode yang dipilih</p>
-    </div>
-    @endif
-
-    <div class="footer">
-        <p>Laporan ini digenerate secara otomatis oleh sistem</p>
+    <!-- Footer Notes -->
+    <div class="footer-notes">
+        <div class="footer-notes-title">Keterangan:</div>
+        <div>• Data ini dihasilkan secara otomatis dari sistem</div>
+        <div>• Untuk informasi lebih detail, silakan cek pada sistem</div>
     </div>
 </body>
 </html>
