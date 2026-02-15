@@ -6,12 +6,16 @@ use App\Models\DaftarPengecekan;
 use App\Models\DetailPengecekanMesin;
 use App\Models\MaintenanceReport;
 use App\Models\Mesin;
+use App\Models\MRequest;
+use App\Models\MLog;
 use App\Models\SparePartTransaction;
 use App\Models\SparePartStockOpname;
 use App\Observers\DaftarPengecekanObserver;
 use App\Observers\DetailPengecekanMesinObserver;
 use App\Observers\MaintenanceReportObserver;
 use App\Observers\MesinObserver;
+use App\Observers\MRequestObserver;
+use App\Observers\MLogObserver;
 use App\Observers\SparePartTransactionObserver;
 use App\Observers\SparePartStockOpnameObserver;
 use Illuminate\Support\ServiceProvider;
@@ -37,5 +41,9 @@ class AppServiceProvider extends ServiceProvider
         DetailPengecekanMesin::observe(DetailPengecekanMesinObserver::class);
         SparePartTransaction::observe(SparePartTransactionObserver::class);
         SparePartStockOpname::observe(SparePartStockOpnameObserver::class);
+        
+        // Machine Management Observers
+        MRequest::observe(MRequestObserver::class);
+        MLog::observe(MLogObserver::class);
     }
 }

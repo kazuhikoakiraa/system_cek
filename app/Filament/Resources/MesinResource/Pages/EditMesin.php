@@ -27,6 +27,6 @@ class EditMesin extends EditRecord
 
     protected function getSavedNotificationTitle(): ?string
     {
-        return 'Data daftar pengecekan berhasil diperbarui';
+        return 'Mesin berhasil diperbarui';
     }
 }

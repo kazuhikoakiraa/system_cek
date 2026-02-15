@@ -16,6 +16,6 @@ class CreateMesin extends CreateRecord
 
     protected function getCreatedNotificationTitle(): ?string
     {
-        return 'Data daftar pengecekan berhasil ditambahkan';
+        return 'Mesin berhasil ditambahkan';
     }
 }
