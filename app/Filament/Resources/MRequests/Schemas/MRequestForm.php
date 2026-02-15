@@ -6,9 +6,10 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Hidden;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Auth;
 
 class MRequestForm
 {
@@ -18,8 +19,6 @@ class MRequestForm
             ->columns(3)
             ->components([
                 Section::make('Informasi Request')
-                    ->description('Detail permintaan maintenance mesin')
-                    ->icon('heroicon-o-clipboard-document-list')
                     ->columns(2)
                     ->schema([
                         TextInput::make('request_number')
@@ -61,7 +60,7 @@ class MRequestForm
                             ->native(false),
                         
                         Hidden::make('created_by')
-                            ->default(fn () => auth()->user()?->id),
+                            ->default(fn () => Auth::user()?->id),
                         
                         DateTimePicker::make('requested_at')
                             ->label('Tanggal Request')
@@ -80,8 +79,6 @@ class MRequestForm
                     ])->columnSpan(2),
 
                 Section::make('Status & Approval')
-                    ->description('Status persetujuan')
-                    ->icon('heroicon-o-shield-check')
                     ->columns(1)
                     ->schema([
                         Select::make('status')
