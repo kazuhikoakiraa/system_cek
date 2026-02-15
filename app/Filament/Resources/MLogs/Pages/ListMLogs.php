@@ -16,5 +16,7 @@ class ListMLogs extends ListRecords
             CreateAction::make()
                 ->label('Buat Log Perawatan')
                 ->icon('heroicon-o-plus'),
-        ];    }
+        ];
+    }
 }
+

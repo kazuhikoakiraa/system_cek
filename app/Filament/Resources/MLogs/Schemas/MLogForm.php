@@ -62,12 +62,6 @@ class MLogForm
                                                     ->seconds(false)
                                                     ->after('tanggal_mulai'),
                                                 
-                                                TextInput::make('biaya_service')
-                                                    ->label('Biaya Service (Rp)')
-                                                    ->numeric()
-                                                    ->prefix('Rp')
-                                                    ->placeholder('0'),
-                                                
                                                 Select::make('status')
                                                     ->label('Status Pekerjaan')
                                                     ->options([
@@ -129,17 +123,18 @@ class MLogForm
                                     ->description('Daftar spare parts yang dipakai dalam pekerjaan ini')
                                     ->icon('heroicon-o-cube')
                                     ->schema([
-                                        Repeater::make('spareParts')
+                                        Repeater::make('spare_parts_data')
                                             ->label('')
-                                            ->relationship('spareParts')
                                             ->schema([
                                                 Select::make('spare_part_id')
                                                     ->label('Nama Suku Cadang')
-                                                    ->relationship('spare_part', 'nama_suku_cadang')
+                                                    ->options(function () {
+                                                        return \App\Models\SparePart::query()
+                                                            ->pluck('nama_suku_cadang', 'id');
+                                                    })
                                                     ->searchable()
-                                                    ->preload()
                                                     ->required()
-                                                    ->reactive()
+                                                    ->live()
                                                     ->afterStateUpdated(function ($state, callable $set) {
                                                         if ($state) {
                                                             $sparePart = \App\Models\SparePart::find($state);
@@ -147,7 +142,8 @@ class MLogForm
                                                                 $set('harga_satuan', $sparePart->harga_satuan);
                                                             }
                                                         }
-                                                    }),
+                                                    })
+                                                    ->columnSpan(2),
                                                 
                                                 TextInput::make('jumlah_digunakan')
                                                     ->label('Jumlah')

@@ -11,27 +11,44 @@ class MRequestInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('request_number'),
-                TextEntry::make('mesin.id')
-                    ->numeric(),
-                TextEntry::make('komponen.id')
-                    ->numeric(),
-                TextEntry::make('created_by')
-                    ->numeric(),
+                TextEntry::make('request_number')
+                    ->label('Nomor Request')
+                    ->badge()
+                    ->color('primary'),
+                TextEntry::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'pending' => 'warning',
+                        'in_progress' => 'info',
+                        'completed' => 'success',
+                        default => 'gray',
+                    }),
+                TextEntry::make('mesin.nama_mesin')
+                    ->label('Mesin')
+                    ->icon('heroicon-o-cog-6-tooth'),
+                TextEntry::make('komponen.nama_komponen')
+                    ->label('Komponen')
+                    ->default('-'),
+                TextEntry::make('problema_deskripsi')
+                    ->label('Deskripsi Masalah')
+                    ->columnSpanFull(),
+                TextEntry::make('urgency_level')
+                    ->label('Tingkat Urgensi')
+                    ->badge()
+                    ->formatStateUsing(fn (string $state): string => ucfirst($state)),
+                TextEntry::make('creator.name')
+                    ->label('Dibuat Oleh')
+                    ->icon('heroicon-o-user'),
                 TextEntry::make('requested_at')
-                    ->dateTime(),
-                TextEntry::make('urgency_level'),
-                TextEntry::make('status'),
-                TextEntry::make('approved_by')
-                    ->numeric(),
-                TextEntry::make('approved_at')
-                    ->dateTime(),
-                TextEntry::make('rejected_at')
-                    ->dateTime(),
+                    ->label('Tanggal Request')
+                    ->dateTime('d M Y H:i'),
                 TextEntry::make('created_at')
-                    ->dateTime(),
+                    ->label('Dibuat Pada')
+                    ->dateTime('d M Y H:i'),
                 TextEntry::make('updated_at')
-                    ->dateTime(),
+                    ->label('Diperbarui Pada')
+                    ->dateTime('d M Y H:i'),
             ]);
     }
 }

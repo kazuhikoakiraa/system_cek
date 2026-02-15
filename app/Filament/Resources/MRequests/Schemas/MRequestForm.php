@@ -78,6 +78,19 @@ class MRequestForm
                                                     ->native(false)
                                                     ->columnSpan(2),
                                                 
+                                                Select::make('status')
+                                                    ->label('Status')
+                                                    ->options([
+                                                        'pending' => '⏳ Pending',
+                                                        'in_progress' => '🔧 In Progress',
+                                                        'completed' => '✓ Completed',
+                                                    ])
+                                                    ->default('pending')
+                                                    ->required()
+                                                    ->native(false)
+                                                    ->disabled(fn ($record) => $record === null)
+                                                    ->columnSpan(2),
+                                                
                                                 Hidden::make('created_by')
                                                     ->default(fn () => Auth::user()?->id),
                                                 
@@ -89,88 +102,6 @@ class MRequestForm
                                                     ->columnSpan(2),
                                             ]),
                                     ]),
-                            ]),
-
-                        // Tab 2: Status & Approval
-                        Tabs\Tab::make('Status & Approval')
-                            ->schema([
-                                Section::make('Status Permintaan')
-                                    ->description('Status dan approval dari admin')
-                                    ->icon('heroicon-o-check-circle')
-                                    ->schema([
-                                        Grid::make(2)
-                                            ->schema([
-                                                Select::make('status')
-                                                    ->label('Status')
-                                                    ->options([
-                                                        'pending' => '⏳ Pending',
-                                                        'approved' => '✅ Approved',
-                                                        'rejected' => '❌ Rejected',
-                                                        'in_progress' => '🔧 In Progress',
-                                                        'completed' => '✓ Completed',
-                                                    ])
-                                                    ->default('pending')
-                                                    ->required()
-                                                    ->native(false)
-                                                    ->disabled(fn ($record) => $record === null)
-                                                    ->columnSpan(2),
-                                            ]),
-                                    ]),
-
-                                Section::make('Approval')
-                                    ->description('Detail persetujuan request')
-                                    ->icon('heroicon-o-document-check')
-                                    ->schema([
-                                        Grid::make(2)
-                                            ->schema([
-                                                Select::make('approved_by')
-                                                    ->label('Disetujui Oleh')
-                                                    ->relationship('approver', 'name')
-                                                    ->searchable()
-                                                    ->preload()
-                                                    ->disabled(fn ($record) => $record === null)
-                                                    ->visible(fn ($get) => in_array($get('status'), ['approved', 'rejected'])),
-                                                
-                                                DateTimePicker::make('approved_at')
-                                                    ->label('Tanggal Approval')
-                                                    ->native(false)
-                                                    ->displayFormat('d/m/Y H:i')
-                                                    ->seconds(false)
-                                                    ->disabled(fn ($record) => $record === null)
-                                                    ->visible(fn ($get) => $get('status') === 'approved'),
-                                                
-                                                Textarea::make('approval_notes')
-                                                    ->label('Catatan Approval')
-                                                    ->rows(3)
-                                                    ->placeholder('Catatan dari admin/approver...')
-                                                    ->visible(fn ($get) => $get('status') === 'approved')
-                                                    ->columnSpan(2),
-                                            ]),
-                                    ])
-                                    ->visible(fn ($get) => $get('status') === 'approved'),
-
-                                Section::make('Penolakan')
-                                    ->description('Detail penolakan request')
-                                    ->icon('heroicon-o-x-circle')
-                                    ->schema([
-                                        Grid::make(2)
-                                            ->schema([
-                                                DateTimePicker::make('rejected_at')
-                                                    ->label('Tanggal Rejection')
-                                                    ->native(false)
-                                                    ->displayFormat('d/m/Y H:i')
-                                                    ->seconds(false)
-                                                    ->visible(fn ($get) => $get('status') === 'rejected'),
-                                                
-                                                Textarea::make('rejection_reason')
-                                                    ->label('Alasan Penolakan')
-                                                    ->rows(3)
-                                                    ->placeholder('Alasan penolakan request...')
-                                                    ->visible(fn ($get) => $get('status') === 'rejected')
-                                                    ->columnSpan(2),
-                                            ]),
-                                    ])
-                                    ->visible(fn ($get) => $get('status') === 'rejected'),
                             ]),
                     ]),
             ]);

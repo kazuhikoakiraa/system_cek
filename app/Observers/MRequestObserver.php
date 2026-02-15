@@ -9,6 +9,7 @@ use App\Notifications\MaintenanceRequestCreated;
 use App\Notifications\MaintenanceRequestApproved;
 use App\Notifications\MaintenanceRequestRejected;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Auth;
 
 class MRequestObserver
 {
@@ -34,8 +35,19 @@ class MRequestObserver
         ]);
 
         // Notifikasi ke Admin & Super Admin
-        $admins = User::role(['super_admin', 'panel_user'])->get();
+        $admins = User::role(['super_admin', 'admin'])->get();
         Notification::send($admins, new MaintenanceRequestCreated($mRequest));
+        
+        // Notifikasi langsung ke Teknisi (tidak perlu approval)
+        $teknisi = User::role(['supervisor', 'operator'])->get();
+        if ($teknisi->isNotEmpty()) {
+            Notification::send($teknisi, new MaintenanceRequestCreated($mRequest));
+        }
+        
+        // Update status mesin ke maintenance
+        if ($mRequest->mesin) {
+            $mRequest->mesin->update(['status' => 'maintenance']);
+        }
     }
 
     /**
@@ -43,51 +55,37 @@ class MRequestObserver
      */
     public function updated(MRequest $mRequest): void
     {
-        // Check if status approved
-        if ($mRequest->isDirty('status') && $mRequest->status === 'approved') {
+        // Check if status changed to completed
+        if ($mRequest->isDirty('status') && $mRequest->status === 'completed') {
             // Record audit trail
             MAudit::create([
                 'mesin_id' => $mRequest->mesin_id,
                 'm_request_id' => $mRequest->id,
-                'action_type' => 'admin_approved',
-                'user_id' => $mRequest->approved_by,
-                'deskripsi_perubahan' => "Request {$mRequest->request_number} disetujui",
+                'action_type' => 'maintenance_completed',
+                'user_id' => Auth::id(),
+                'deskripsi_perubahan' => "Maintenance {$mRequest->request_number} selesai",
                 'perubahan_data' => [
-                    'approved_by' => $mRequest->approver->name ?? null,
-                    'approved_at' => $mRequest->approved_at,
-                    'notes' => $mRequest->approval_notes,
+                    'status' => 'completed',
                 ],
                 'ip_address' => request()->ip(),
                 'user_agent' => request()->userAgent(),
             ]);
 
-            // Notifikasi ke Teknisi (role teknisi)
-            $teknisi = User::role('teknisi')->get();
-            Notification::send($teknisi, new MaintenanceRequestApproved($mRequest));
-        }
-
-        // Check if status rejected
-        if ($mRequest->isDirty('status') && $mRequest->status === 'rejected') {
-            // Record audit trail
-            MAudit::create([
-                'mesin_id' => $mRequest->mesin_id,
-                'm_request_id' => $mRequest->id,
-                'action_type' => 'admin_rejected',
-                'user_id' => $mRequest->approved_by,
-                'deskripsi_perubahan' => "Request {$mRequest->request_number} ditolak",
-                'perubahan_data' => [
-                    'rejected_by' => $mRequest->approver->name ?? null,
-                    'rejected_at' => $mRequest->rejected_at,
-                    'reason' => $mRequest->rejection_reason,
-                ],
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
-            ]);
-
-            // Notifikasi ke creator (operator yang buat request)
+            // Update status mesin kembali ke aktif
+            if ($mRequest->mesin) {
+                $mRequest->mesin->update(['status' => 'aktif']);
+            }
+            
+            // Notifikasi ke Admin & Super Admin bahwa pekerjaan selesai
+            $admins = User::role(['super_admin', 'admin'])->get();
+            if ($admins->isNotEmpty()) {
+                Notification::send($admins, new MaintenanceRequestApproved($mRequest));
+            }
+            
+            // Notifikasi ke creator (yang buat request)
             $creator = $mRequest->creator;
             if ($creator) {
-                $creator->notify(new MaintenanceRequestRejected($mRequest));
+                $creator->notify(new MaintenanceRequestApproved($mRequest));
             }
         }
     }

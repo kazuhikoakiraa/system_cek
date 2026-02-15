@@ -80,32 +80,11 @@ class MRequestsTable
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'pending' => 'warning',
-                        'approved' => 'success',
-                        'rejected' => 'danger',
                         'in_progress' => 'info',
                         'completed' => 'success',
                         default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => str_replace('_', ' ', ucwords($state, '_'))),
-                    
-                TextColumn::make('approver.name')
-                    ->label('Disetujui Oleh')
-                    ->searchable()
-                    ->default('-')
-                    ->icon('heroicon-o-check-badge')
-                    ->toggleable(),
-                    
-                TextColumn::make('approved_at')
-                    ->label('Tgl Approval')
-                    ->dateTime('d M Y H:i')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                    
-                TextColumn::make('rejected_at')
-                    ->label('Tgl Ditolak')
-                    ->dateTime('d M Y H:i')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
                     
                 TextColumn::make('created_at')
                     ->label('Dibuat')
@@ -117,8 +96,6 @@ class MRequestsTable
                 SelectFilter::make('status')
                     ->options([
                         'pending' => 'Pending',
-                        'approved' => 'Approved',
-                        'rejected' => 'Rejected',
                         'in_progress' => 'In Progress',
                         'completed' => 'Completed',
                     ])
@@ -143,40 +120,6 @@ class MRequestsTable
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
-                Action::make('approve')
-                    ->label('Approve')
-                    ->icon('heroicon-o-check-circle')
-                    ->color('success')
-                    ->visible(fn ($record) => $record->status === 'pending')
-                    ->requiresConfirmation()
-                    ->action(function ($record) {
-                        $record->update([
-                            'status' => 'approved',
-                            'approved_by' => auth()->user()?->id,
-                            'approved_at' => now(),
-                        ]);
-                    }),
-                    
-                Action::make('reject')
-                    ->label('Tolak')
-                    ->icon('heroicon-o-x-circle')
-                    ->color('danger')
-                    ->visible(fn ($record) => $record->status === 'pending')
-                    ->requiresConfirmation()
-                    ->form([
-                        \Filament\Forms\Components\Textarea::make('rejection_reason')
-                            ->label('Alasan Penolakan')
-                            ->required()
-                            ->rows(3),
-                    ])
-                    ->action(function ($record, array $data) {
-                        $record->update([
-                            'status' => 'rejected',
-                            'approved_by' => auth()->user()?->id,
-                            'rejected_at' => now(),
-                            'rejection_reason' => $data['rejection_reason'],
-                        ]);
-                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

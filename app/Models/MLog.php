@@ -22,7 +22,6 @@ class MLog extends Model
         'catatan_teknisi',
         'foto_sebelum',
         'foto_sesudah',
-        'biaya_service',
         'status',
     ];
 

@@ -18,4 +18,47 @@ class EditMLog extends EditRecord
             DeleteAction::make(),
         ];
     }
+
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        // Load spare parts pivot data
+        $sparePartsData = [];
+        foreach ($this->record->spareParts as $sparePart) {
+            $sparePartsData[] = [
+                'spare_part_id' => $sparePart->id,
+                'jumlah_digunakan' => $sparePart->pivot->jumlah_digunakan,
+                'harga_satuan' => $sparePart->pivot->harga_satuan,
+                'catatan' => $sparePart->pivot->catatan,
+            ];
+        }
+        $data['spare_parts_data'] = $sparePartsData;
+        
+        return $data;
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        // Remove spare_parts_data from main data
+        unset($data['spare_parts_data']);
+        return $data;
+    }
+
+    protected function afterSave(): void
+    {
+        // Handle spare parts pivot data
+        $sparePartsData = $this->data['spare_parts_data'] ?? [];
+        
+        $syncData = [];
+        foreach ($sparePartsData as $sparePart) {
+            if (!empty($sparePart['spare_part_id'])) {
+                $syncData[$sparePart['spare_part_id']] = [
+                    'jumlah_digunakan' => $sparePart['jumlah_digunakan'] ?? 1,
+                    'harga_satuan' => $sparePart['harga_satuan'] ?? 0,
+                    'catatan' => $sparePart['catatan'] ?? null,
+                ];
+            }
+        }
+        
+        $this->record->spareParts()->sync($syncData);
+    }
 }

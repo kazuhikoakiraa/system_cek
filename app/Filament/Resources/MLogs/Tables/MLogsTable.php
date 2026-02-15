@@ -47,7 +47,7 @@ class MLogsTable
                     ->label('Selesai')
                     ->dateTime('d M Y H:i')
                     ->sortable()
-                    ->default('-')
+                    ->placeholder('Belum selesai')
                     ->icon('heroicon-o-flag'),
                     
                 TextColumn::make('durasi')
@@ -58,13 +58,6 @@ class MLogsTable
                         $end = \Carbon\Carbon::parse($record->tanggal_selesai);
                         return $start->diffForHumans($end, true);
                     })
-                    ->toggleable(),
-                    
-                TextColumn::make('biaya_service')
-                    ->label('Biaya Service')
-                    ->money('IDR')
-                    ->sortable()
-                    ->icon('heroicon-o-banknotes')
                     ->toggleable(),
                     
                 TextColumn::make('spareParts')

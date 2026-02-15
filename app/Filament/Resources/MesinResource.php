@@ -18,6 +18,9 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select as FormSelect;
 use Filament\Forms\Components\Textarea as FormTextarea;
 use Filament\Forms\Components\TextInput as FormTextInput;
+use Filament\Infolists\Components\ImageEntry;
+use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -43,7 +46,7 @@ class MesinResource extends Resource
 
     protected static string|\UnitEnum|null $navigationGroup = 'Manajemen Mesin';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 10;
 
     protected static ?int $navigationGroupSort = 2;
 
@@ -263,6 +266,123 @@ class MesinResource extends Resource
                                     ]),
                             ]),
                     ]),
+            ]);
+    }
+
+    public static function infolist(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                Section::make('Informasi Mesin')
+                    ->description('Detail lengkap mesin')
+                    ->icon('heroicon-o-cog-6-tooth')
+                    ->schema([
+                        Grid::make(3)
+                            ->schema([
+                                ImageEntry::make('foto')
+                                    ->label('Foto Mesin')
+                                    ->height(150)
+                                    ->columnSpan(1),
+                                TextEntry::make('kode_mesin')
+                                    ->label('Kode Mesin')
+                                    ->badge()
+                                    ->color('primary')
+                                    ->icon('heroicon-o-qr-code'),
+                                TextEntry::make('nama_mesin')
+                                    ->label('Nama Mesin')
+                                    ->weight('bold')
+                                    ->size('lg'),
+                                TextEntry::make('serial_number')
+                                    ->label('Serial Number')
+                                    ->icon('heroicon-o-hashtag'),
+                                TextEntry::make('status')
+                                    ->label('Status')
+                                    ->badge()
+                                    ->color(fn (string $state): string => match ($state) {
+                                        'aktif' => 'success',
+                                        'nonaktif' => 'gray',
+                                        'maintenance' => 'warning',
+                                        'rusak' => 'danger',
+                                        default => 'gray',
+                                    }),
+                                TextEntry::make('lokasi_instalasi')
+                                    ->label('Lokasi Instalasi')
+                                    ->icon('heroicon-o-map-pin'),
+                                TextEntry::make('pemilik.name')
+                                    ->label('Penanggung Jawab')
+                                    ->icon('heroicon-o-user'),
+                            ]),
+                    ])
+                    ->collapsed(false),
+
+                Section::make('Daftar Komponen (' . fn ($record) => $record->komponens->count() . ' Komponen)')
+                    ->description('Komponen-komponen yang terpasang pada mesin ini')
+                    ->icon('heroicon-o-cube')
+                    ->schema([
+                        RepeatableEntry::make('komponens')
+                            ->label('')
+                            ->schema([
+                                TextEntry::make('nama_komponen')
+                                    ->label('Nama Komponen')
+                                    ->weight('bold')
+                                    ->icon('heroicon-o-wrench'),
+                                TextEntry::make('part_number')
+                                    ->label('Part Number')
+                                    ->placeholder('-'),
+                                TextEntry::make('lokasi_pemasangan')
+                                    ->label('Lokasi Pemasangan')
+                                    ->placeholder('-'),
+                                TextEntry::make('condition_status')
+                                    ->label('Kondisi')
+                                    ->badge()
+                                    ->color(fn (?string $state): string => match ($state) {
+                                        'baik' => 'success',
+                                        'perlu_perhatian' => 'warning',
+                                        'rusak' => 'danger',
+                                        default => 'gray',
+                                    })
+                                    ->placeholder('-'),
+                                TextEntry::make('tanggal_perawatan_terakhir')
+                                    ->label('Perawatan Terakhir')
+                                    ->date('d M Y')
+                                    ->placeholder('-'),
+                                TextEntry::make('jadwal_ganti_bulan')
+                                    ->label('Jadwal Ganti')
+                                    ->suffix(' bulan')
+                                    ->placeholder('-'),
+                            ])
+                            ->columns(3)
+                            ->contained(false)
+                            ->columnSpanFull(),
+                    ])
+                    ->collapsed(false)
+                    ->visible(fn ($record) => $record->komponens()->count() > 0),
+
+                Section::make('Spesifikasi Teknis')
+                    ->description('Detail teknis dan dokumentasi')
+                    ->icon('heroicon-o-document-text')
+                    ->schema([
+                        Grid::make(2)
+                            ->schema([
+                                TextEntry::make('manufacturer')
+                                    ->label('Manufaktur'),
+                                TextEntry::make('model_number')
+                                    ->label('Model/Tipe'),
+                                TextEntry::make('jenis_mesin')
+                                    ->label('Jenis Mesin'),
+                                TextEntry::make('tahun_pembuatan')
+                                    ->label('Tahun Pembuatan'),
+                            ]),
+                        TextEntry::make('spesifikasi_teknis')
+                            ->label('Spesifikasi Teknis')
+                            ->columnSpanFull()
+                            ->placeholder('Tidak ada spesifikasi'),
+                        TextEntry::make('catatan')
+                            ->label('Catatan')
+                            ->columnSpanFull()
+                            ->placeholder('Tidak ada catatan'),
+                    ])
+                    ->collapsed(true),
             ]);
     }
 

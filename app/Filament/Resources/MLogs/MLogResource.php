@@ -27,7 +27,7 @@ class MLogResource extends Resource
 
     protected static string|\UnitEnum|null $navigationGroup = 'Manajemen Mesin';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 11;
 
     protected static ?int $navigationGroupSort = 2;
 

@@ -5,6 +5,9 @@ namespace App\Observers;
 use App\Models\MLog;
 use App\Models\MAudit;
 use App\Models\SparePartTransaction;
+use App\Models\User;
+use App\Notifications\MaintenanceRequestApproved;
+use Illuminate\Support\Facades\Notification;
 
 class MLogObserver
 {
@@ -48,7 +51,6 @@ class MLogObserver
                 'perubahan_data' => [
                     'teknisi' => $mLog->teknisi->name ?? null,
                     'tanggal_selesai' => $mLog->tanggal_selesai,
-                    'biaya' => $mLog->biaya_service,
                     'status' => $mLog->status,
                 ],
                 'ip_address' => request()->ip(),
@@ -61,6 +63,17 @@ class MLogObserver
             // Update request status jika completed
             if ($mLog->status === 'completed' && $mLog->request) {
                 $mLog->request->update(['status' => 'completed']);
+                
+                // Update status mesin kembali ke aktif
+                if ($mLog->request->mesin) {
+                    $mLog->request->mesin->update(['status' => 'aktif']);
+                }
+                
+                // Notifikasi ke Admin & Super Admin bahwa pekerjaan selesai
+                $admins = User::role(['super_admin', 'admin'])->get();
+                if ($admins->isNotEmpty()) {
+                    Notification::send($admins, new MaintenanceRequestApproved($mLog->request));
+                }
             }
         }
     }
@@ -82,7 +95,7 @@ class MLogObserver
             SparePartTransaction::create([
                 'nomor_transaksi' => 'TRX-MAINT-' . date('Ymd') . '-' . $mLog->id,
                 'spare_part_id' => $sparePart->id,
-                'tipe_transaksi' => 'keluar',
+                'tipe_transaksi' => 'OUT',
                 'tanggal_transaksi' => now(),
                 'user_id' => $mLog->teknisi_id,
                 'jumlah' => $jumlahDigunakan,

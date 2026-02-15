@@ -36,10 +36,28 @@ class DatabaseSeeder extends Seeder
         $this->command->info('  Email: admin@system-cek.com');
         $this->command->info('  Password: password');
 
-        // Seed mesin dan pengecekan (optional, uncomment jika ingin seed data)
-        // $this->call([
-        //     MesinSeeder::class,
-        //     PengecekanSeeder::class,
-        // ]);
+        // Create sample supervisor (teknisi maintenance)
+        $supervisor = User::firstOrCreate(
+            ['email' => 'supervisor@system-cek.com'],
+            [
+                'name' => 'Supervisor Maintenance',
+                'password' => Hash::make('password'),
+                'employee_id' => 'SPV001',
+                'department' => 'Maintenance',
+                'is_active' => true,
+                'email_verified_at' => now(),
+            ]
+        );
+        $supervisor->assignRole('supervisor');
+
+        $this->command->info('✓ Sample Supervisor created!');
+        $this->command->info('  Email: supervisor@system-cek.com');
+        $this->command->info('  Password: password');
+
+        // Seed data master (includes 5 operators)
+        $this->call([
+            SparePartCategorySeeder::class,
+            SimpleDataSeeder::class,
+        ]);
     }
 }
