@@ -13,7 +13,9 @@ class ListMRequests extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make()
+                ->label('Buat Permintaan')
+                ->icon('heroicon-o-plus'),
         ];
     }
 }

@@ -13,7 +13,8 @@ class ListMLogs extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
-        ];
-    }
+            CreateAction::make()
+                ->label('Buat Log Perawatan')
+                ->icon('heroicon-o-plus'),
+        ];    }
 }

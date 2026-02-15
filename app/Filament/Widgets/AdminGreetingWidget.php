@@ -9,7 +9,7 @@ class AdminGreetingWidget extends Widget
 {
     protected string $view = 'filament.widgets.admin-greeting';
     
-    protected static ?int $sort = -3;
+    protected static ?int $sort = -5;
     
     protected int | string | array $columnSpan = 1;
 

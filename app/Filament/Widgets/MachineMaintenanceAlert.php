@@ -11,7 +11,7 @@ use Filament\Widgets\TableWidget as BaseWidget;
 
 class MachineMaintenanceAlert extends BaseWidget
 {
-    protected static ?int $sort = 1;
+    protected static ?int $sort = 5;
 
     protected static ?string $heading = '⚠️ Mesin & Komponen Perlu Perhatian';
 
@@ -134,13 +134,6 @@ class MachineMaintenanceAlert extends BaseWidget
                     ->label('Harga')
                     ->money('IDR')
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->actions([
-                Tables\Actions\Action::make('view_machine')
-                    ->label('Lihat Mesin')
-                    ->icon('heroicon-o-eye')
-                    ->url(fn (MComponent $record): string => "/admin/mesins/{$record->mesin_id}")
-                    ->openUrlInNewTab(),
             ])
             ->emptyStateHeading('Tidak ada komponen yang perlu perhatian')
             ->emptyStateDescription('Semua komponen dalam kondisi baik')

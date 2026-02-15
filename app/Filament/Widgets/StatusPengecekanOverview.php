@@ -8,6 +8,8 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class StatusPengecekanOverview extends BaseWidget
 {
+    protected static ?int $sort = 2;
+    
     protected ?string $pollingInterval = '30s';
 
     protected function getStats(): array

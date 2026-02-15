@@ -19,11 +19,11 @@ class MRequestResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentList;
 
-    protected static ?string $navigationLabel = 'Request Maintenance';
+    protected static ?string $navigationLabel = 'Permintaan Maintenance';
 
-    protected static ?string $modelLabel = 'Request Maintenance';
+    protected static ?string $modelLabel = 'Permintaan Maintenance';
 
-    protected static ?string $pluralModelLabel = 'Request Maintenance';
+    protected static ?string $pluralModelLabel = 'Permintaan Maintenance';
 
     protected static string|\UnitEnum|null $navigationGroup = 'Manajemen Mesin';
 

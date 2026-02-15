@@ -10,7 +10,7 @@ class TrenPengecekanChart extends ChartWidget
 {
     protected ?string $heading = 'Tren Pengecekan 7 Hari Terakhir';
     
-    protected static ?int $sort = 2;
+    protected static ?int $sort = 6;
 
     protected ?string $pollingInterval = '60s';
 

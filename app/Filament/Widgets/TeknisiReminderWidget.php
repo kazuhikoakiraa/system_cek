@@ -10,7 +10,7 @@ class TeknisiReminderWidget extends Widget
 {
     protected string $view = 'filament.widgets.teknisi-reminder-simple';
     
-    protected static ?int $sort = -3;
+    protected static ?int $sort = -4;
     
     protected int | string | array $columnSpan = 1;
 

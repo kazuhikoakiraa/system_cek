@@ -11,7 +11,7 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class MachineStatsOverview extends BaseWidget
 {
-    protected static ?int $sort = 0;
+    protected static ?int $sort = 1;
 
     protected function getStats(): array
     {
