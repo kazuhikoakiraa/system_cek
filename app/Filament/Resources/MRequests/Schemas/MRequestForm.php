@@ -53,6 +53,8 @@ class MRequestForm
                                                     ->searchable()
                                                     ->preload()
                                                     ->required()
+                                                    ->reactive()
+                                                    ->afterStateUpdated(fn (callable $set) => $set('komponen_id', null))
                                                     ->createOptionForm([
                                                         TextInput::make('kode_mesin')->required(),
                                                         TextInput::make('nama_mesin')->required(),
@@ -60,10 +62,11 @@ class MRequestForm
                                                 
                                                 Select::make('komponen_id')
                                                     ->label('Komponen (Opsional)')
-                                                    ->relationship('komponen', 'nama_komponen')
+                                                    ->relationship('komponen', 'nama_komponen', fn ($query, $get) => $query->where('mesin_id', $get('mesin_id')))
                                                     ->searchable()
                                                     ->preload()
-                                                    ->helperText('Pilih komponen spesifik jika ada'),
+                                                    ->disabled(fn ($get) => ! $get('mesin_id'))
+                                                    ->helperText('Pilih mesin terlebih dahulu untuk melihat komponen yang tersedia'),
                                                 
                                                 Select::make('urgency_level')
                                                     ->label('Tingkat Urgensi')
