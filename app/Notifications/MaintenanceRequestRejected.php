@@ -37,9 +37,9 @@ class MaintenanceRequestRejected extends Notification
             ->subject('Request Maintenance Ditolak - ' . $this->request->request_number)
             ->line('Request maintenance Anda telah ditolak.')
             ->line('**Nomor Request:** ' . $this->request->request_number)
-            ->line('**Mesin:** ' . $this->request->mesin->nama_mesin)
-            ->line('**Ditolak oleh:** ' . $this->request->approver->name)
-            ->line('**Alasan Penolakan:** ' . $this->request->rejection_reason)
+            ->line('**Mesin:** ' . ($this->request->mesin?->nama_mesin ?? 'N/A'))
+            ->line('**Ditolak oleh:** ' . ($this->request->approver?->name ?? 'N/A'))
+            ->line('**Alasan Penolakan:** ' . ($this->request->rejection_reason ?? 'Tidak ada alasan'))
             ->action('Lihat Detail', url('/admin/m-requests/' . $this->request->id))
             ->line('Silakan hubungi admin untuk informasi lebih lanjut.');
     }
@@ -54,8 +54,8 @@ class MaintenanceRequestRejected extends Notification
         return [
             'request_id' => $this->request->id,
             'request_number' => $this->request->request_number,
-            'mesin_name' => $this->request->mesin->nama_mesin,
-            'rejector_name' => $this->request->approver->name,
+            'mesin_name' => $this->request->mesin?->nama_mesin ?? 'N/A',
+            'rejector_name' => $this->request->approver?->name ?? 'N/A',
             'rejection_reason' => $this->request->rejection_reason,
         ];
     }

@@ -154,7 +154,7 @@ class TransactionsRelationManager extends RelationManager
                     ->visible(fn (Model $record) => $record->created_at->diffInHours(now()) < 24),
                 DeleteAction::make()
                     ->label('Hapus')
-                    ->visible(fn (Model $record) => Auth::user()?->hasRole('super_admin')),
+                    ->visible(fn (Model $record) => Auth::user()?->hasRole('Super Admin')),
             ])
             ->headerActions([
                 CreateAction::make()

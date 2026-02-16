@@ -35,11 +35,11 @@ class MRequestObserver
         ]);
 
         // Notifikasi ke Admin & Super Admin
-        $admins = User::role(['super_admin', 'admin'])->get();
+        $admins = User::role(['Super Admin', 'admin'])->get();
         Notification::send($admins, new MaintenanceRequestCreated($mRequest));
         
         // Notifikasi langsung ke Teknisi (tidak perlu approval)
-        $teknisi = User::role(['supervisor', 'operator'])->get();
+        $teknisi = User::role(['Teknisi', 'Operator'])->get();
         if ($teknisi->isNotEmpty()) {
             Notification::send($teknisi, new MaintenanceRequestCreated($mRequest));
         }
@@ -77,7 +77,7 @@ class MRequestObserver
             }
             
             // Notifikasi ke Admin & Super Admin bahwa pekerjaan selesai
-            $admins = User::role(['super_admin', 'admin'])->get();
+            $admins = User::role(['Super Admin', 'admin'])->get();
             if ($admins->isNotEmpty()) {
                 Notification::send($admins, new MaintenanceRequestApproved($mRequest));
             }

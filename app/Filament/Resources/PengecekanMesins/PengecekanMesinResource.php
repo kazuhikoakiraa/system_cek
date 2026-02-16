@@ -81,7 +81,7 @@ class PengecekanMesinResource extends Resource
         // Allow editing only for super_admin and admin roles
         /** @var User|null $user */
         $user = Filament::auth()->user();
-        return $user && $user->hasAnyRole(['super_admin', 'admin']);
+        return $user && $user->hasAnyRole(['Super Admin', 'admin']);
     }
 
     public static function canView($record): bool

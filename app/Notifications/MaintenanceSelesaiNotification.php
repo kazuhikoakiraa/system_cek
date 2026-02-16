@@ -30,7 +30,7 @@ class MaintenanceSelesaiNotification extends Notification
         return [
             'format' => 'filament',
             'title' => '✅ Maintenance Selesai',
-            'body' => "Perbaikan {$mesin->nama_mesin} - {$komponen->nama_komponen} telah diselesaikan oleh {$teknisi?->name}",
+            'body' => "Perbaikan " . ($mesin?->nama_mesin ?? 'N/A') . " - " . ($komponen?->nama_komponen ?? 'N/A') . " telah diselesaikan oleh " . ($teknisi?->name ?? 'N/A'),
             'duration' => 'persistent',
             'actions' => [
                 [
@@ -42,8 +42,8 @@ class MaintenanceSelesaiNotification extends Notification
             ],
             'data' => [
                 'teknisi' => $teknisi?->name,
-                'mesin' => $mesin->nama_mesin,
-                'komponen' => $komponen->nama_komponen,
+                'mesin' => $mesin?->nama_mesin ?? 'N/A',
+                'komponen' => $komponen?->nama_komponen ?? 'N/A',
                 'catatan' => $this->maintenanceReport->catatan_teknisi,
                 'maintenance_report_id' => $this->maintenanceReport->id,
             ],

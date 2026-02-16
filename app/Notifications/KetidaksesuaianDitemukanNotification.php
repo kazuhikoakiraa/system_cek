@@ -31,7 +31,7 @@ class KetidaksesuaianDitemukanNotification extends Notification
         return [
             'format' => 'filament',
             'title' => '⚠️ Ketidaksesuaian Ditemukan',
-            'body' => "Ketidaksesuaian pada {$mesin->nama_mesin} - {$komponen->nama_komponen}",
+            'body' => "Ketidaksesuaian pada " . ($mesin?->nama_mesin ?? 'N/A') . " - " . ($komponen?->nama_komponen ?? 'N/A'),
             'duration' => 'persistent',
             'actions' => [
                 [
@@ -43,8 +43,8 @@ class KetidaksesuaianDitemukanNotification extends Notification
             ],
             'data' => [
                 'operator' => $operator?->name,
-                'mesin' => $mesin->nama_mesin,
-                'komponen' => $komponen->nama_komponen,
+                'mesin' => $mesin?->nama_mesin ?? 'N/A',
+                'komponen' => $komponen?->nama_komponen ?? 'N/A',
                 'issue' => $this->maintenanceReport->issue_description,
                 'maintenance_report_id' => $this->maintenanceReport->id,
             ],

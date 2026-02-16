@@ -36,8 +36,8 @@ class MaintenanceRequestApproved extends Notification
             ->subject('Request Maintenance Disetujui - ' . $this->request->request_number)
             ->line('Request maintenance telah disetujui dan dapat dikerjakan.')
             ->line('**Nomor Request:** ' . $this->request->request_number)
-            ->line('**Mesin:** ' . $this->request->mesin->nama_mesin)
-            ->line('**Disetujui oleh:** ' . $this->request->approver->name)
+            ->line('**Mesin:** ' . ($this->request->mesin?->nama_mesin ?? 'N/A'))
+            ->line('**Disetujui oleh:** ' . ($this->request->approver?->name ?? 'N/A'))
             ->line('**Tingkat Urgensi:** ' . ucfirst($this->request->urgency_level))
             ->line('**Deskripsi Problema:** ' . $this->request->problema_deskripsi)
             ->when($this->request->approval_notes, function ($mail) {
@@ -57,8 +57,8 @@ class MaintenanceRequestApproved extends Notification
         return [
             'request_id' => $this->request->id,
             'request_number' => $this->request->request_number,
-            'mesin_name' => $this->request->mesin->nama_mesin,
-            'approver_name' => $this->request->approver->name,
+            'mesin_name' => $this->request->mesin?->nama_mesin ?? 'N/A',
+            'approver_name' => $this->request->approver?->name ?? 'N/A',
             'urgency_level' => $this->request->urgency_level,
             'approval_notes' => $this->request->approval_notes,
         ];

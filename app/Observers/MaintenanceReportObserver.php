@@ -75,7 +75,7 @@ class MaintenanceReportObserver
     private function sendMaintenanceSelesaiNotification(MaintenanceReport $maintenanceReport): void
     {
         // Admin dan Manager mendapat notifikasi
-        $adminsAndManagers = User::role(['super_admin', 'admin'])
+        $adminsAndManagers = User::role(['Super Admin', 'admin'])
             ->get();
 
         // Operator yang melakukan pengecekan mendapat notifikasi

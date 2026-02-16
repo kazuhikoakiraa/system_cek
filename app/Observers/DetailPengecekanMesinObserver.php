@@ -59,7 +59,7 @@ class DetailPengecekanMesinObserver
     private function sendKetidaksesuaianNotification(MaintenanceReport $maintenanceReport): void
     {
         // Admin dan Manager mendapat notifikasi
-        $adminsAndManagers = User::role(['super_admin', 'admin'])
+        $adminsAndManagers = User::role(['Super Admin', 'admin'])
             ->get();
 
         // Teknisi mendapat notifikasi

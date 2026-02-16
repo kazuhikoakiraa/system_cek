@@ -70,7 +70,7 @@ class MLogObserver
                 }
                 
                 // Notifikasi ke Admin & Super Admin bahwa pekerjaan selesai
-                $admins = User::role(['super_admin', 'admin'])->get();
+                $admins = User::role(['Super Admin', 'admin'])->get();
                 if ($admins->isNotEmpty()) {
                     Notification::send($admins, new MaintenanceRequestApproved($mLog->request));
                 }
@@ -92,6 +92,7 @@ class MLogObserver
             $sparePart->refresh();
 
             // Create spare part transaction
+            $maintenanceDescription = $mLog->request?->problema_deskripsi ?? 'Maintenance';
             SparePartTransaction::create([
                 'nomor_transaksi' => 'TRX-MAINT-' . date('Ymd') . '-' . $mLog->id,
                 'spare_part_id' => $sparePart->id,
@@ -103,7 +104,7 @@ class MLogObserver
                 'stok_sesudah' => $sparePart->stok,
                 'reference_type' => 'App\\Models\\MLog',
                 'reference_id' => $mLog->id,
-                'keterangan' => "Penggunaan untuk maintenance - Log ID: {$mLog->id}",
+                'keterangan' => "Penggunaan untuk maintenance - {$maintenanceDescription} (Log ID: {$mLog->id})",
                 'status_approval' => 'approved',
             ]);
 

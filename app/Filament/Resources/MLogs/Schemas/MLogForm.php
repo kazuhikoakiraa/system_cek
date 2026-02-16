@@ -34,7 +34,11 @@ class MLogForm
                                             ->schema([
                                                 Select::make('m_request_id')
                                                     ->label('Request Maintenance')
-                                                    ->relationship('request', 'request_number')
+                                                    ->relationship(
+                                                        'request',
+                                                        'request_number',
+                                                        fn ($query) => $query->where('status', '!=', 'completed')
+                                                    )
                                                     ->searchable()
                                                     ->preload()
                                                     ->required()
@@ -46,8 +50,7 @@ class MLogForm
                                                         'teknisi',
                                                         'name',
                                                         fn ($query) => $query->where(function ($q) {
-                                                            $q->whereHas('roles', fn ($roleQuery) => $roleQuery->where('name', 'Teknisi'))
-                                                              ->orWhereHas('roles', fn ($roleQuery) => $roleQuery->where('name', 'Super Admin'));
+                                                            $q->whereHas('roles', fn ($roleQuery) => $roleQuery->whereIn('name', ['Teknisi', 'Super Admin']));
                                                         })
                                                     )
                                                     ->searchable()

@@ -36,8 +36,8 @@ class MaintenanceRequestCreated extends Notification
             ->subject('Request Maintenance Baru - ' . $this->request->request_number)
             ->line('Request maintenance baru telah dibuat dan memerlukan persetujuan Anda.')
             ->line('**Nomor Request:** ' . $this->request->request_number)
-            ->line('**Mesin:** ' . $this->request->mesin->nama_mesin)
-            ->line('**Dibuat oleh:** ' . $this->request->creator->name)
+            ->line('**Mesin:** ' . ($this->request->mesin?->nama_mesin ?? 'N/A'))
+            ->line('**Dibuat oleh:** ' . ($this->request->creator?->name ?? 'N/A'))
             ->line('**Tingkat Urgensi:** ' . ucfirst($this->request->urgency_level))
             ->line('**Deskripsi Problema:** ' . $this->request->problema_deskripsi)
             ->action('Lihat Detail & Approve', url('/admin/m-requests/' . $this->request->id))
@@ -54,8 +54,8 @@ class MaintenanceRequestCreated extends Notification
         return [
             'request_id' => $this->request->id,
             'request_number' => $this->request->request_number,
-            'mesin_name' => $this->request->mesin->nama_mesin,
-            'creator_name' => $this->request->creator->name,
+            'mesin_name' => $this->request->mesin?->nama_mesin ?? 'N/A',
+            'creator_name' => $this->request->creator?->name ?? 'N/A',
             'urgency_level' => $this->request->urgency_level,
             'problema_deskripsi' => $this->request->problema_deskripsi,
         ];
