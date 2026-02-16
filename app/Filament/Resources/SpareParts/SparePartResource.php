@@ -48,7 +48,7 @@ class SparePartResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\TransactionsRelationManager::class,
+            //
         ];
     }
 

@@ -5,6 +5,7 @@ namespace App\Filament\Resources\SpareParts\Tables;
 use App\Models\SparePartTransaction;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
@@ -183,6 +184,8 @@ class SparePartsTable
                     ->label('Lihat'),
                 EditAction::make()
                     ->label('Ubah'),
+                DeleteAction::make()
+                    ->label('Hapus'),
                 Action::make('tambah_stok')
                     ->label('Tambah Stok')
                     ->icon('heroicon-o-plus-circle')

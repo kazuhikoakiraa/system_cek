@@ -42,7 +42,14 @@ class MLogForm
                                                 
                                                 Select::make('teknisi_id')
                                                     ->label('Teknisi')
-                                                    ->relationship('teknisi', 'name')
+                                                    ->relationship(
+                                                        'teknisi',
+                                                        'name',
+                                                        fn ($query) => $query->where(function ($q) {
+                                                            $q->whereHas('roles', fn ($roleQuery) => $roleQuery->where('name', 'Teknisi'))
+                                                              ->orWhereHas('roles', fn ($roleQuery) => $roleQuery->where('name', 'Super Admin'));
+                                                        })
+                                                    )
                                                     ->searchable()
                                                     ->preload()
                                                     ->required()
