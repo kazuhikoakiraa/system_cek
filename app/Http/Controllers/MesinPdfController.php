@@ -8,6 +8,7 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Str;
 
 class MesinPdfController extends Controller
 {
@@ -32,7 +33,7 @@ class MesinPdfController extends Controller
 
         $mesins = $query->get();
 
-        $html = Blade::render('pdf.mesin-list', [
+        $html = Blade::render('exports.mesin-master-pdf', [
             'mesins' => $mesins,
             'tanggalCetak' => now(),
         ]);
@@ -44,10 +45,10 @@ class MesinPdfController extends Controller
 
         $dompdf = new Dompdf($options);
         $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'landscape');
+        $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
 
-        $fileName = 'Daftar_Master_Mesin_' . now()->format('Y-m-d_His') . '.pdf';
+        $fileName = 'Master_Mesin_' . now()->format('Y-m-d_His') . '.pdf';
 
         return response()->streamDownload(
             fn () => print($dompdf->output()),
