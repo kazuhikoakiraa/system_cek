@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\MLog;
 use App\Models\MAudit;
+use App\Models\MRequest;
 use App\Models\SparePartTransaction;
 use App\Models\User;
 use App\Notifications\MaintenanceRequestApproved;
@@ -39,7 +40,7 @@ class MLogObserver
     public function updated(MLog $mLog): void
     {
         // Check if status changed to completed atau submitted
-        if ($mLog->isDirty('status') && in_array($mLog->status, ['completed', 'submitted'])) {
+        if ($mLog->wasChanged('status') && in_array($mLog->status, ['completed', 'submitted'])) {
             // Record audit trail - pekerjaan selesai
             MAudit::create([
                 'mesin_id' => $mLog->request->mesin_id ?? null,
@@ -63,18 +64,17 @@ class MLogObserver
             // Update request status jika completed
             if ($mLog->status === 'completed' && $mLog->request) {
                 $mLog->request->update(['status' => 'completed']);
-                
-                // Update status mesin kembali ke aktif
-                if ($mLog->request->mesin) {
-                    $mLog->request->mesin->update(['status' => 'aktif']);
-                }
-                
+
                 // Notifikasi ke Admin & Super Admin bahwa pekerjaan selesai
                 $admins = User::role(['Super Admin', 'admin'])->get();
                 if ($admins->isNotEmpty()) {
                     Notification::send($admins, new MaintenanceRequestApproved($mLog->request));
                 }
             }
+        }
+
+        if ($mLog->request?->mesin_id) {
+            MRequest::syncMachineStatus($mLog->request->mesin_id);
         }
     }
 

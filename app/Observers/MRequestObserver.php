@@ -44,10 +44,8 @@ class MRequestObserver
             Notification::send($teknisi, new MaintenanceRequestCreated($mRequest));
         }
         
-        // Update status mesin ke maintenance
-        if ($mRequest->mesin) {
-            $mRequest->mesin->update(['status' => 'maintenance']);
-        }
+        // Sinkronkan status mesin berdasarkan request aktif.
+        MRequest::syncMachineStatus($mRequest->mesin_id);
     }
 
     /**
@@ -56,7 +54,7 @@ class MRequestObserver
     public function updated(MRequest $mRequest): void
     {
         // Check if status changed to completed
-        if ($mRequest->isDirty('status') && $mRequest->status === 'completed') {
+        if ($mRequest->wasChanged('status') && $mRequest->status === 'completed') {
             // Record audit trail
             MAudit::create([
                 'mesin_id' => $mRequest->mesin_id,
@@ -71,11 +69,6 @@ class MRequestObserver
                 'user_agent' => request()->userAgent(),
             ]);
 
-            // Update status mesin kembali ke aktif
-            if ($mRequest->mesin) {
-                $mRequest->mesin->update(['status' => 'aktif']);
-            }
-            
             // Notifikasi ke Admin & Super Admin bahwa pekerjaan selesai
             $admins = User::role(['Super Admin', 'admin'])->get();
             if ($admins->isNotEmpty()) {
@@ -88,6 +81,8 @@ class MRequestObserver
                 $creator->notify(new MaintenanceRequestApproved($mRequest));
             }
         }
+
+        MRequest::syncMachineStatus($mRequest->mesin_id);
     }
 
     /**
@@ -95,7 +90,7 @@ class MRequestObserver
      */
     public function deleted(MRequest $mRequest): void
     {
-        //
+        MRequest::syncMachineStatus($mRequest->mesin_id);
     }
 
     /**
@@ -103,7 +98,7 @@ class MRequestObserver
      */
     public function restored(MRequest $mRequest): void
     {
-        //
+        MRequest::syncMachineStatus($mRequest->mesin_id);
     }
 
     /**
@@ -111,6 +106,6 @@ class MRequestObserver
      */
     public function forceDeleted(MRequest $mRequest): void
     {
-        //
+        MRequest::syncMachineStatus($mRequest->mesin_id);
     }
 }

@@ -6,10 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Builder;
 
 class MRequest extends Model
 {
     use HasFactory;
+
+    public const ACTIVE_MACHINE_STATUSES = ['pending', 'approved', 'in_progress'];
 
     protected $table = 'm_requests';
 
@@ -65,5 +68,30 @@ class MRequest extends Model
     public function audits(): HasMany
     {
         return $this->hasMany(MAudit::class, 'm_request_id');
+    }
+
+    public function scopeActiveForMachineStatus(Builder $query): Builder
+    {
+        return $query->whereIn('status', self::ACTIVE_MACHINE_STATUSES);
+    }
+
+    public static function syncMachineStatus(int $mesinId): void
+    {
+        $mesin = Mesin::query()->find($mesinId);
+
+        if (! $mesin) {
+            return;
+        }
+
+        $hasActiveRequest = static::query()
+            ->where('mesin_id', $mesinId)
+            ->activeForMachineStatus()
+            ->exists();
+
+        $targetStatus = $hasActiveRequest ? 'maintenance' : 'aktif';
+
+        if ($mesin->status !== $targetStatus) {
+            $mesin->update(['status' => $targetStatus]);
+        }
     }
 }

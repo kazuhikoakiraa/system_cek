@@ -24,3 +24,10 @@ Artisan::command('inspire', function () {
 //     ->withoutOverlapping()
 //     ->onOneServer()
 //     ->appendOutputTo(storage_path('logs/pengecekan-scheduler.log'));
+
+Schedule::command('machine:sync-status')
+    ->dailyAt('00:10')
+    ->timezone('Asia/Jakarta')
+    ->withoutOverlapping()
+    ->onOneServer()
+    ->appendOutputTo(storage_path('logs/machine-sync-status.log'));
