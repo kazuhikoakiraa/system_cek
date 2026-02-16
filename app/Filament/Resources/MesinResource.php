@@ -315,7 +315,7 @@ class MesinResource extends Resource
                     ])
                     ->collapsed(false),
 
-                Section::make('Daftar Komponen (' . fn ($record) => $record->komponens->count() . ' Komponen)')
+                Section::make(fn ($record) => 'Daftar Komponen (' . $record->komponens->count() . ' Komponen)')
                     ->description('Komponen-komponen yang terpasang pada mesin ini')
                     ->icon('heroicon-o-cube')
                     ->schema([
