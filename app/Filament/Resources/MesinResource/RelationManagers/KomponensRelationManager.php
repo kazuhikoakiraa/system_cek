@@ -58,6 +58,7 @@ class KomponensRelationManager extends RelationManager
                     ->label('Tanggal Pengadaan')
                     ->native(false)
                     ->displayFormat('d/m/Y')
+                    ->required()
                     ->columnSpan(1),
 
                 TextInput::make('jadwal_ganti_bulan')
@@ -135,7 +136,6 @@ class KomponensRelationManager extends RelationManager
                         'rusak' => '❌ Rusak',
                     ])
                     ->default('normal')
-                    ->required()
                     ->native(false)
                     ->columnSpan(2),
 

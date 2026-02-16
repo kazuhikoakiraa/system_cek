@@ -259,6 +259,7 @@ class MesinResource extends Resource
                                                     ->label('Tanggal Pengadaan')
                                                     ->native(false)
                                                     ->displayFormat('d/m/Y')
+                                                    ->required()
                                                     ->columnSpan(1),
 
                                                 FormTextInput::make('jadwal_ganti_bulan')
@@ -320,7 +321,6 @@ class MesinResource extends Resource
                                                         'rusak' => '❌ Rusak',
                                                     ])
                                                     ->default('normal')
-                                                    ->required()
                                                     ->native(false)
                                                     ->columnSpan(2),
 
