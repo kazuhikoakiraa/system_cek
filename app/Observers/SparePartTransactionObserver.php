@@ -17,19 +17,24 @@ class SparePartTransactionObserver
     {
         $sparePart = SparePart::findOrFail($transaction->spare_part_id);
         
-        // Set stok sebelum
-        $transaction->stok_sebelum = $sparePart->stok;
-        
-        // Calculate stok sesudah
-        if (in_array($transaction->tipe_transaksi, ['IN', 'RETURN'])) {
-            // Transaksi masuk: tambah stok
-            $transaction->stok_sesudah = $sparePart->stok + abs($transaction->jumlah);
-        } elseif ($transaction->tipe_transaksi === 'OUT') {
-            // Transaksi keluar: kurangi stok
-            $transaction->stok_sesudah = $sparePart->stok - abs($transaction->jumlah);
-        } elseif ($transaction->tipe_transaksi === 'ADJUSTMENT') {
-            // Adjustment: bisa + atau -
-            $transaction->stok_sesudah = $sparePart->stok + $transaction->jumlah;
+        // Gunakan nilai stok yang sudah dikirim dari caller jika ada
+        // (mis. alur maintenance yang sudah menghitung stok sebelum/sesudah).
+        if ($transaction->stok_sebelum === null) {
+            $transaction->stok_sebelum = $sparePart->stok;
+        }
+
+        if ($transaction->stok_sesudah === null) {
+            // Calculate stok sesudah
+            if (in_array($transaction->tipe_transaksi, ['IN', 'RETURN'])) {
+                // Transaksi masuk: tambah stok
+                $transaction->stok_sesudah = $transaction->stok_sebelum + abs($transaction->jumlah);
+            } elseif ($transaction->tipe_transaksi === 'OUT') {
+                // Transaksi keluar: kurangi stok
+                $transaction->stok_sesudah = $transaction->stok_sebelum - abs($transaction->jumlah);
+            } elseif ($transaction->tipe_transaksi === 'ADJUSTMENT') {
+                // Adjustment: bisa + atau -
+                $transaction->stok_sesudah = $transaction->stok_sebelum + $transaction->jumlah;
+            }
         }
         
         // Set user_id jika belum diset
@@ -69,7 +74,7 @@ class SparePartTransactionObserver
     public function updated(SparePartTransaction $transaction): void
     {
         // Jika status approval berubah menjadi approved
-        if ($transaction->isDirty('status_approval') && $transaction->status_approval === 'approved') {
+        if ($transaction->wasChanged('status_approval') && $transaction->status_approval === 'approved') {
             $this->updateStok($transaction);
         }
     }
