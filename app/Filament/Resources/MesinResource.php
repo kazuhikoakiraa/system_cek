@@ -3,9 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\MesinResource\Pages;
-use App\Filament\Resources\MesinResource\RelationManagers\KomponensRelationManager;
-use App\Filament\Resources\MesinResource\RelationManagers\RequestsRelationManager;
-use App\Filament\Resources\MesinResource\RelationManagers\AuditsRelationManager;
 use App\Models\Mesin;
 use App\Models\User;
 use Filament\Actions\BulkActionGroup;
@@ -15,6 +12,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select as FormSelect;
 use Filament\Forms\Components\Textarea as FormTextarea;
 use Filament\Forms\Components\TextInput as FormTextInput;
@@ -223,7 +221,129 @@ class MesinResource extends Resource
                                     ]),
                             ]),
 
-                        // Tab 4: Spesifikasi & Dokumentasi
+                        // Tab 4: Komponen Mesin
+                        Tabs\Tab::make('Komponen Mesin')
+                            ->schema([
+                                Repeater::make('komponens')
+                                    ->label('Daftar Komponen')
+                                    ->relationship('komponens')
+                                    ->schema([
+                                        Grid::make(2)
+                                            ->schema([
+                                                FormTextInput::make('nama_komponen')
+                                                    ->label('Nama Komponen')
+                                                    ->required()
+                                                    ->maxLength(255)
+                                                    ->placeholder('Contoh: Motor Listrik, Bearing, dll')
+                                                    ->columnSpan(1),
+
+                                                FormTextInput::make('manufacturer')
+                                                    ->label('Manufaktur/Merek')
+                                                    ->maxLength(255)
+                                                    ->placeholder('Contoh: Siemens, SKF, dll')
+                                                    ->columnSpan(1),
+
+                                                FormTextInput::make('part_number')
+                                                    ->label('Part Number')
+                                                    ->maxLength(255)
+                                                    ->placeholder('Contoh: ABC-123-XYZ')
+                                                    ->columnSpan(1),
+
+                                                FormTextInput::make('lokasi_pemasangan')
+                                                    ->label('Lokasi Pemasangan')
+                                                    ->maxLength(255)
+                                                    ->placeholder('Contoh: Bagian Motor Kiri')
+                                                    ->columnSpan(1),
+
+                                                DatePicker::make('tanggal_pengadaan')
+                                                    ->label('Tanggal Pengadaan')
+                                                    ->native(false)
+                                                    ->displayFormat('d/m/Y')
+                                                    ->columnSpan(1),
+
+                                                FormTextInput::make('jadwal_ganti_bulan')
+                                                    ->label('Jadwal Ganti (Bulan)')
+                                                    ->numeric()
+                                                    ->minValue(1)
+                                                    ->suffix('bulan')
+                                                    ->helperText('Interval penggantian dalam bulan')
+                                                    ->columnSpan(1),
+
+                                                DatePicker::make('tanggal_perawatan_terakhir')
+                                                    ->label('Tanggal Perawatan Terakhir')
+                                                    ->native(false)
+                                                    ->displayFormat('d/m/Y')
+                                                    ->columnSpan(1),
+
+                                                DatePicker::make('estimasi_tanggal_ganti_berikutnya')
+                                                    ->label('Estimasi Tanggal Ganti Berikutnya')
+                                                    ->native(false)
+                                                    ->displayFormat('d/m/Y')
+                                                    ->helperText('Otomatis dihitung')
+                                                    ->columnSpan(1),
+
+                                                FormTextInput::make('nama_supplier')
+                                                    ->label('Nama Supplier')
+                                                    ->maxLength(255)
+                                                    ->placeholder('Nama perusahaan supplier')
+                                                    ->columnSpan(1),
+
+                                                FormTextInput::make('harga_komponen')
+                                                    ->label('Harga Komponen')
+                                                    ->numeric()
+                                                    ->prefix('Rp')
+                                                    ->placeholder('0')
+                                                    ->columnSpan(1),
+
+                                                FormTextInput::make('jumlah_terpasang')
+                                                    ->label('Jumlah Terpasang')
+                                                    ->numeric()
+                                                    ->default(1)
+                                                    ->minValue(1)
+                                                    ->required()
+                                                    ->columnSpan(1),
+
+                                                FormTextInput::make('stok_minimal')
+                                                    ->label('Stok Minimal')
+                                                    ->numeric()
+                                                    ->default(1)
+                                                    ->minValue(1)
+                                                    ->required()
+                                                    ->helperText('Minimal stok spare part yang harus tersedia')
+                                                    ->columnSpan(1),
+
+                                                FormSelect::make('status_komponen')
+                                                    ->label('Status Komponen')
+                                                    ->options([
+                                                        'normal' => '✅ Normal',
+                                                        'perlu_ganti' => '⚠️ Perlu Ganti',
+                                                        'rusak' => '❌ Rusak',
+                                                    ])
+                                                    ->default('normal')
+                                                    ->required()
+                                                    ->native(false)
+                                                    ->columnSpan(2),
+
+                                                FormTextarea::make('spesifikasi_teknis')
+                                                    ->label('Spesifikasi Teknis')
+                                                    ->rows(2)
+                                                    ->placeholder('Detail spesifikasi teknis komponen...')
+                                                    ->columnSpan(2),
+
+                                                FormTextarea::make('catatan')
+                                                    ->label('Catatan')
+                                                    ->rows(2)
+                                                    ->placeholder('Catatan tambahan komponen...')
+                                                    ->columnSpan(2),
+                                            ]),
+                                    ])
+                                    ->addActionLabel('Tambah Komponen')
+                                    ->defaultItems(0)
+                                    ->collapsible()
+                                    ->columnSpanFull(),
+                            ]),
+
+                        // Tab 5: Spesifikasi & Dokumentasi
                         Tabs\Tab::make('Spesifikasi & Dokumentasi')
                             ->schema([
                                 Section::make('Spesifikasi')
@@ -489,9 +609,6 @@ class MesinResource extends Resource
     public static function getRelations(): array
     {
         return [
-            KomponensRelationManager::class,
-            RequestsRelationManager::class,
-            AuditsRelationManager::class,
         ];
     }
 
