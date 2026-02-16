@@ -1,59 +1,227 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# System Cek - Monitoring, Maintenance, dan Manajemen Mesin
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistem berbasis Laravel + Filament untuk mengelola:
+- master mesin dan komponen,
+- pengecekan harian mesin,
+- workflow maintenance,
+- stok dan transaksi suku cadang,
+- audit trail dan pelaporan (PDF/Excel).
 
-## About Laravel
+## Fitur Utama
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Manajemen master mesin lengkap (identitas, pengadaan, kondisi, dokumen).
+- Manajemen komponen mesin dan jadwal penggantian.
+- Pengecekan mesin harian oleh operator.
+- Monitoring status pengecekan real-time.
+- Maintenance request dan maintenance log.
+- Sinkronisasi status mesin otomatis berdasarkan request aktif.
+- Manajemen suku cadang dan transaksi stok (IN/OUT/RETURN/ADJUSTMENT).
+- Audit dan repair konsistensi stok/transaksi suku cadang via Artisan command.
+- Export laporan ke PDF dan Excel.
+- Notifikasi in-app (database notifications).
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Teknologi
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.2+
+- Laravel 12
+- Filament 4
+- MySQL/MariaDB
+- Tailwind CSS 4 + Vite
+- Spatie Permission + Filament Shield
+- Laravel Excel (Maatwebsite)
+- DomPDF (barryvdh/laravel-dompdf)
 
-## Learning Laravel
+## Arsitektur Modul
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+Resource utama Filament:
+- `MesinResource`
+- `DaftarPengecekanResource`
+- `PengecekanMesins`
+- `MaintenanceReports`
+- `MRequests`
+- `MLogs`
+- `SpareParts`
+- `SparePartTransactionResource`
+- `Users`, `Roles`
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Model/domain utama:
+- Mesin: `mesins`
+- Komponen: `m_components`
+- Request maintenance: `m_requests`
+- Log maintenance: `m_logs`
+- Audit maintenance: `m_audits`
+- Laporan maintenance: `maintenance_reports`
+- Suku cadang: `spare_parts`
+- Transaksi suku cadang: `spare_part_transactions`
 
-## Laravel Sponsors
+## Persyaratan Sistem
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- PHP 8.2 atau lebih baru
+- Composer 2+
+- Node.js 18+ dan npm
+- MySQL/MariaDB aktif
 
-### Premium Partners
+## Instalasi Cepat
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+git clone <repo-url>
+cd system_cek
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+php artisan storage:link
+npm install
+npm run build
+```
 
-## Contributing
+Alternatif setup otomatis:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+composer run setup
+```
 
-## Code of Conduct
+Jalankan development mode:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+composer run dev
+```
 
-## Security Vulnerabilities
+## Konfigurasi `.env`
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Minimal yang wajib diisi:
 
-## License
+```env
+APP_NAME="System Cek"
+APP_URL=http://localhost
+APP_TIMEZONE=Asia/Jakarta
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=system_cek
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+Disarankan untuk production:
+- Set `APP_ENV=production`
+- Set `APP_DEBUG=false`
+- Konfigurasikan `MAIL_*`
+- Jalankan queue worker dan scheduler
+
+## Akun Default Seeder
+
+Setelah `php artisan migrate --seed`, akun default:
+
+- Super Admin
+  - Email: `admin@system-cek.com`
+  - Password: `password`
+- Supervisor
+  - Email: `supervisor@system-cek.com`
+  - Password: `password`
+
+Penting: ubah password default sebelum dipakai di environment non-local.
+
+## Role dan Akses
+
+Role yang disediakan oleh `RoleSeeder`:
+- `super_admin`
+- `admin`
+- `supervisor`
+- `operator`
+- `viewer`
+
+Permission dikelola melalui Filament Shield.
+
+## URL Aplikasi
+
+- Root: `/` (redirect ke `/admin`)
+- Panel admin Filament: `/admin`
+
+## Workflow Kritis
+
+### 1. Sinkronisasi status mesin vs request maintenance
+
+Status master mesin otomatis:
+- `maintenance` jika ada request aktif (`pending`, `approved`, `in_progress`).
+- `aktif` jika tidak ada request aktif.
+
+Sinkronisasi berjalan saat request/log maintenance berubah dan bisa dijalankan manual via command.
+
+### 2. Stok suku cadang
+
+- Penggunaan suku cadang dari maintenance dicatat sebagai transaksi `OUT`.
+- Observer transaksi menjaga konsistensi nilai `stok_sebelum` dan `stok_sesudah`.
+- Tersedia command audit/repair untuk koreksi data historis yang mismatch.
+
+## Artisan Commands Penting
+
+```bash
+# Sinkronisasi status mesin berdasarkan request maintenance aktif
+php artisan machine:sync-status
+php artisan machine:sync-status --dry-run
+
+# Audit konsistensi transaksi dan stok suku cadang
+php artisan sparepart:audit-stock
+php artisan sparepart:audit-stock --fix
+php artisan sparepart:audit-stock --spare-part-id=1
+php artisan sparepart:audit-stock --include-pending
+
+# Cek komponen/mesin yang mendekati jadwal penggantian
+php artisan machine:check-replacement
+php artisan machine:check-replacement --days=60
+```
+
+## Scheduler
+
+Saat ini jadwal yang sudah dikonfigurasi:
+- `machine:sync-status` harian jam `00:10` (timezone `Asia/Jakarta`).
+
+Agar scheduler berjalan, atur cron/task scheduler:
+
+```bash
+* * * * * cd /path/to/system_cek && php artisan schedule:run >> /dev/null 2>&1
+```
+
+## Queue Worker
+
+Untuk notifikasi dan proses async lain:
+
+```bash
+php artisan queue:work
+```
+
+## Testing dan Quality Check
+
+```bash
+php artisan test
+php artisan config:clear
+php artisan optimize:clear
+```
+
+## Export Laporan
+
+Sistem menyediakan export:
+- Laporan pengecekan (PDF/Excel)
+- Laporan maintenance (PDF/Excel)
+- Master/detail mesin (PDF/Excel)
+- Transaksi suku cadang (PDF)
+
+Route export tersedia dalam middleware `auth`.
+
+## Troubleshooting Cepat
+
+- Perubahan kode tidak terbaca:
+  - `php artisan optimize:clear`
+- Halaman admin kosong/error asset:
+  - `npm run build`
+- Notifikasi tidak masuk:
+  - pastikan queue worker berjalan
+- Data stok terasa tidak konsisten:
+  - jalankan `php artisan sparepart:audit-stock`
+  - lanjutkan `--fix` jika ada mismatch
+
+## Lisensi
+
+Project ini mengikuti lisensi dari dependensi Laravel (MIT) kecuali ditentukan lain oleh organisasi pemilik source code.
