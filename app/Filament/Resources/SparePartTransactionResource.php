@@ -42,7 +42,7 @@ class SparePartTransactionResource extends Resource
 
     protected static ?int $navigationSort = 73;
 
-    protected static ?int $navigationGroupSort = 5;
+    protected static ?int $navigationGroupSort = 99;
     
     // Read-only resource untuk laporan
     public static function canCreate(): bool

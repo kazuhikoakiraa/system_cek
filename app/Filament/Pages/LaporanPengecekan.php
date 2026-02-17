@@ -35,7 +35,7 @@ class LaporanPengecekan extends Page implements HasForms
 
     protected static ?int $navigationSort = 50;
 
-    protected static ?int $navigationGroupSort = 3;
+    protected static ?int $navigationGroupSort = 99;
 
     public ?array $data = [];
 

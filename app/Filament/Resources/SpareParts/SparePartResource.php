@@ -31,9 +31,7 @@ class SparePartResource extends Resource
 
     protected static ?string $modelLabel = 'Suku Cadang';
 
-    protected static ?int $navigationSort = 72;
-
-    protected static ?int $navigationGroupSort = 5;
+    protected static ?int $navigationSort = 42;
 
     public static function form(Schema $schema): Schema
     {

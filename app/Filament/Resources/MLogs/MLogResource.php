@@ -29,7 +29,7 @@ class MLogResource extends Resource
 
     protected static ?int $navigationSort = 71;
 
-    protected static ?int $navigationGroupSort = 4;
+    protected static ?int $navigationGroupSort = 99;
 
     protected static ?string $recordTitleAttribute = 'id';
 

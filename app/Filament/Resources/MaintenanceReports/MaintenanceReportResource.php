@@ -31,7 +31,7 @@ class MaintenanceReportResource extends Resource
 
     protected static ?int $navigationSort = 70;
 
-    protected static ?int $navigationGroupSort = 4;
+    protected static ?int $navigationGroupSort = 99;
 
     public static function form(Schema $schema): Schema
     {
