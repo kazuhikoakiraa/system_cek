@@ -119,12 +119,6 @@ class MachineMaintenanceAlert extends BaseWidget
                         return null;
                     }),
 
-                Tables\Columns\TextColumn::make('mesin.lokasi_instalasi')
-                    ->label('Lokasi')
-                    ->searchable()
-                    ->limit(25)
-                    ->toggleable(),
-
                 Tables\Columns\TextColumn::make('nama_supplier')
                     ->label('Supplier')
                     ->searchable()

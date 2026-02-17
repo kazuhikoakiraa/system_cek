@@ -67,7 +67,6 @@ class MachineReplacementReminder extends Notification implements ShouldQueue
         $mail->line("**Detail Mesin:**")
             ->line("- Manufaktur: {$this->mesin->manufacturer}")
             ->line("- Model: {$this->mesin->model_number}")
-            ->line("- Lokasi: {$this->mesin->lokasi_instalasi}")
             ->line("- Tanggal Pengadaan: " . ($this->mesin->tanggal_pengadaan ? $this->mesin->tanggal_pengadaan->format('d M Y') : '-'))
             ->line("- Umur Ekonomis: {$this->mesin->umur_ekonomis_tahun} tahun")
             ->line("- Status: {$this->mesin->status}")

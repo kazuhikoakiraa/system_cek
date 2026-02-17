@@ -307,10 +307,6 @@
                     <td>: {{ $mesin->jenis_mesin ?? '-' }}</td>
                 </tr>
                 <tr>
-                    <td>Lokasi Instalasi</td>
-                    <td>: {{ $mesin->lokasi_instalasi ?? '-' }}</td>
-                </tr>
-                <tr>
                     <td>Supplier</td>
                     <td>: {{ $mesin->supplier ?? '-' }}</td>
                 </tr>

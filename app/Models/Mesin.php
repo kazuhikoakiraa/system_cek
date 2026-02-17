@@ -21,7 +21,6 @@ class Mesin extends Model
         'model_number',
         'tahun_pembuatan',
         'jenis_mesin',
-        'lokasi_instalasi',
         'supplier',
         'tanggal_pengadaan',
         'harga_pengadaan',

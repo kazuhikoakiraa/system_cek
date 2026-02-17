@@ -88,7 +88,6 @@ class MesinSummarySheet implements FromCollection, WithTitle, WithStyles, WithCo
                 'Manufacturer',
                 'Model',
                 'Jenis Mesin',
-                'Lokasi',
                 'Status',
                 'Jumlah Komponen',
                 'Jumlah Maintenance',
@@ -104,7 +103,6 @@ class MesinSummarySheet implements FromCollection, WithTitle, WithStyles, WithCo
                 $mesin->manufacturer ?? '-',
                 $mesin->model_number ?? '-',
                 $mesin->jenis_mesin ?? '-',
-                $mesin->lokasi_instalasi ?? '-',
                 ucfirst($mesin->status ?? '-'),
                 $mesin->komponens->count(),
                 $mesin->requests->count(),
@@ -140,9 +138,8 @@ class MesinSummarySheet implements FromCollection, WithTitle, WithStyles, WithCo
             'F' => 15,
             'G' => 15,
             'H' => 15,
-            'I' => 12,
+            'I' => 15,
             'J' => 15,
-            'K' => 15,
         ];
     }
 
@@ -175,17 +172,17 @@ class MesinSummarySheet implements FromCollection, WithTitle, WithStyles, WithCo
 
                 // Title Report
                 $sheet->setCellValue('A5', 'LAPORAN DAFTAR MASTER MESIN');
-                $sheet->mergeCells('A5:K5');
+                $sheet->mergeCells('A5:J5');
                 $sheet->getStyle('A5')->getFont()->setBold(true)->setSize(12);
                 $sheet->getStyle('A5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
                 // Subtitle tanggal
                 $sheet->setCellValue('A6', 'Tanggal: ' . now()->translatedFormat('d F Y H:i'));
-                $sheet->mergeCells('A6:K6');
+                $sheet->mergeCells('A6:J6');
                 $sheet->getStyle('A6')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
                 // ===== BORDERS =====
-                $sheet->getStyle('A8:K' . $lastDataRow)
+                $sheet->getStyle('A8:J' . $lastDataRow)
                     ->getBorders()
                     ->getAllBorders()
                     ->setBorderStyle(Border::BORDER_THIN);
@@ -286,7 +283,6 @@ class MesinDetailSheet implements FromCollection, WithTitle, WithStyles, WithEve
         $data->push(['Model Number', $this->mesin->model_number ?? '-']);
         $data->push(['Tahun Pembuatan', $this->mesin->tahun_pembuatan ?? '-']);
         $data->push(['Jenis Mesin', $this->mesin->jenis_mesin ?? '-']);
-        $data->push(['Lokasi Instalasi', $this->mesin->lokasi_instalasi ?? '-']);
         $data->push(['Supplier', $this->mesin->supplier ?? '-']);
         $data->push(['Tanggal Pengadaan', $this->mesin->tanggal_pengadaan ? $this->mesin->tanggal_pengadaan->format('d/m/Y') : '-']);
         $data->push(['Harga Pengadaan', $this->mesin->harga_pengadaan ? 'Rp ' . number_format($this->mesin->harga_pengadaan, 0, ',', '.') : '-']);

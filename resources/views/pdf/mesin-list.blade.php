@@ -152,10 +152,6 @@
             width: 10%;
         }
 
-        .col-lokasi {
-            width: 12%;
-        }
-
         .col-status {
             width: 8%;
             text-align: center;
@@ -300,7 +296,6 @@
                 <th class="col-kode">Kode Mesin</th>
                 <th class="col-nama">Nama Mesin</th>
                 <th class="col-jenis">Jenis/Model</th>
-                <th class="col-lokasi">Lokasi</th>
                 <th class="col-status">Status</th>
                 <th class="col-tanggal">Tgl Pengadaan</th>
                 <th class="col-penanggung-jawab">Penanggung Jawab</th>
@@ -325,7 +320,6 @@
                     <br><small>{{ $mesin->model_number }}</small>
                     @endif
                 </td>
-                <td class="col-lokasi">{{ $mesin->lokasi_instalasi ?? '-' }}</td>
                 <td class="col-status">
                     @php
                         $statusClass = match($mesin->status) {

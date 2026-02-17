@@ -175,10 +175,6 @@
                 <td>{{ $mesin->tahun_pembuatan ?? '-' }}</td>
             </tr>
             <tr>
-                <td>Lokasi Instalasi</td>
-                <td>{{ $mesin->lokasi_instalasi ?? '-' }}</td>
-            </tr>
-            <tr>
                 <td>Status</td>
                 <td>
                     @php
