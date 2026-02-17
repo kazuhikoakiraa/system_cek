@@ -104,12 +104,6 @@ class MesinResource extends Resource
                                                     ->maxValue(date('Y'))
                                                     ->placeholder('YYYY'),
 
-                                                FormTextInput::make('lokasi_instalasi')
-                                                    ->label('Lokasi Instalasi')
-                                                    ->maxLength(255)
-                                                    ->placeholder('Contoh: Lantai 2, Area Produksi')
-                                                    ->columnSpan(2),
-
                                                 FormSelect::make('status')
                                                     ->label('Status')
                                                     ->options([
@@ -425,9 +419,6 @@ class MesinResource extends Resource
                                         'rusak' => 'danger',
                                         default => 'gray',
                                     }),
-                                TextEntry::make('lokasi_instalasi')
-                                    ->label('Lokasi Instalasi')
-                                    ->icon('heroicon-o-map-pin'),
                                 TextEntry::make('pemilik.name')
                                     ->label('Penanggung Jawab')
                                     ->icon('heroicon-o-user'),
@@ -526,12 +517,6 @@ class MesinResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->description(fn ($record) => $record->jenis_mesin),
-
-                TextColumn::make('lokasi_instalasi')
-                    ->label('Lokasi')
-                    ->searchable()
-                    ->sortable()
-                    ->toggleable(),
 
                 TextColumn::make('status')
                     ->label('Status')

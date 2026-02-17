@@ -34,9 +34,9 @@ class SparePartTransactionResource extends Resource
 
     protected static string|\UnitEnum|null $navigationGroup = 'Manajemen Suku Cadang';
 
-    protected static ?string $navigationLabel = 'Transaksi Suku Cadang';
+    protected static ?string $navigationLabel = 'Laporan Suku Cadang';
 
-    protected static ?string $pluralModelLabel = 'Transaksi Suku Cadang';
+    protected static ?string $pluralModelLabel = 'Laporan Suku Cadang';
 
     protected static ?string $modelLabel = 'Transaksi';
 
