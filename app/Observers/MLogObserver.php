@@ -66,9 +66,9 @@ class MLogObserver
                 $mLog->request->update(['status' => 'completed']);
 
                 // Notifikasi ke Admin & Super Admin bahwa pekerjaan selesai
-                $admins = User::role(['Super Admin', 'admin'])->get();
+                $admins = User::whereHas('roles', fn ($query) => $query->whereIn('name', ['super_admin', 'admin']))->get();
                 if ($admins->isNotEmpty()) {
-                    Notification::send($admins, new MaintenanceRequestApproved($mLog->request));
+                    Notification::sendNow($admins, new MaintenanceRequestApproved($mLog->request));
                 }
             }
         }

@@ -11,7 +11,7 @@ class AdminGreetingWidget extends Widget
     
     protected static ?int $sort = -5;
     
-    protected int | string | array $columnSpan = 1;
+    protected int | string | array $columnSpan = ['md' => 1, 'xl' => 2];
 
     protected ?string $pollingInterval = null;
 

@@ -19,7 +19,7 @@ class ListSparePartTransactions extends ListRecords
 {
     protected static string $resource = SparePartTransactionResource::class;
 
-    protected static ?string $title = 'Laporan Transaksi Suku Cadang';
+    protected static ?string $title = 'Laporan Suku Cadang';
     
     public function getTabs(): array
     {

@@ -14,9 +14,8 @@ class ListMLogs extends ListRecords
     {
         return [
             CreateAction::make()
-                ->label('Buat Log Perawatan')
+                ->label('Buat Laporan Perawatan')
                 ->icon('heroicon-o-plus'),
         ];
     }
 }
-

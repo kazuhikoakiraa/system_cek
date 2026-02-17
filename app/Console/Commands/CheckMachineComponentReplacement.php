@@ -4,10 +4,12 @@ namespace App\Console\Commands;
 
 use App\Models\MComponent;
 use App\Models\Mesin;
+use App\Models\User;
 use App\Notifications\ComponentReplacementReminder;
 use App\Notifications\MachineReplacementReminder;
 use Illuminate\Console\Command;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Notification;
 
 class CheckMachineComponentReplacement extends Command
 {
@@ -64,10 +66,10 @@ class CheckMachineComponentReplacement extends Command
         foreach ($overdueComponents as $component) {
             $this->warn("  ⚠️ OVERDUE: {$component->nama_komponen} - Mesin: {$component->mesin->nama_mesin}");
             
-            // Kirim notifikasi ke penanggung jawab mesin
-            if ($component->mesin->pemilik) {
-                $component->mesin->pemilik->notify(new ComponentReplacementReminder($component, true));
-            }
+            $this->notifyOwnerAndSuperAdmins(
+                $component->mesin->pemilik,
+                new ComponentReplacementReminder($component, true)
+            );
 
             // Update status komponen
             if ($component->status_komponen !== 'perlu_ganti') {
@@ -79,10 +81,10 @@ class CheckMachineComponentReplacement extends Command
             $daysLeft = Carbon::now()->diffInDays($component->estimasi_tanggal_ganti_berikutnya);
             $this->info("  ⏰ {$component->nama_komponen} - {$daysLeft} hari lagi - Mesin: {$component->mesin->nama_mesin}");
             
-            // Kirim notifikasi ke penanggung jawab mesin
-            if ($component->mesin->pemilik) {
-                $component->mesin->pemilik->notify(new ComponentReplacementReminder($component, false));
-            }
+            $this->notifyOwnerAndSuperAdmins(
+                $component->mesin->pemilik,
+                new ComponentReplacementReminder($component, false)
+            );
         }
     }
 
@@ -109,20 +111,40 @@ class CheckMachineComponentReplacement extends Command
         foreach ($overdueMachines as $mesin) {
             $this->warn("  ⚠️ OVERDUE: {$mesin->nama_mesin} ({$mesin->kode_mesin})");
             
-            // Kirim notifikasi ke penanggung jawab mesin
-            if ($mesin->pemilik) {
-                $mesin->pemilik->notify(new MachineReplacementReminder($mesin, true));
-            }
+            $this->notifyOwnerAndSuperAdmins(
+                $mesin->pemilik,
+                new MachineReplacementReminder($mesin, true)
+            );
         }
 
         foreach ($upcomingMachines as $mesin) {
             $daysLeft = Carbon::now()->diffInDays($mesin->estimasi_penggantian);
             $this->info("  ⏰ {$mesin->nama_mesin} ({$mesin->kode_mesin}) - {$daysLeft} hari lagi");
             
-            // Kirim notifikasi ke penanggung jawab mesin
-            if ($mesin->pemilik) {
-                $mesin->pemilik->notify(new MachineReplacementReminder($mesin, false));
-            }
+            $this->notifyOwnerAndSuperAdmins(
+                $mesin->pemilik,
+                new MachineReplacementReminder($mesin, false)
+            );
+        }
+    }
+
+    private function notifyOwnerAndSuperAdmins($owner, object $notification): void
+    {
+        $recipients = collect();
+
+        if ($owner) {
+            $recipients->push($owner);
+        }
+
+        $superAdmins = User::whereHas('roles', fn ($query) => $query->where('name', 'super_admin'))->get();
+
+        $recipients = $recipients
+            ->merge($superAdmins)
+            ->unique('id')
+            ->values();
+
+        if ($recipients->isNotEmpty()) {
+            Notification::sendNow($recipients, $notification);
         }
     }
 }

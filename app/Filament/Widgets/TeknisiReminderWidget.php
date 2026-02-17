@@ -12,14 +12,14 @@ class TeknisiReminderWidget extends Widget
     
     protected static ?int $sort = -4;
     
-    protected int | string | array $columnSpan = 1;
+    protected int | string | array $columnSpan = 'full';
 
     protected ?string $pollingInterval = '60s';
 
     public static function canView(): bool
     {
         $user = Auth::user();
-        return $user && $user->hasAnyRole(['Super Admin', 'admin', 'Teknisi']);
+        return $user && $user->hasAnyRole(['super_admin', 'admin', 'teknisi', 'operator', 'supervisor']);
     }
 
     public function getMessage(): array

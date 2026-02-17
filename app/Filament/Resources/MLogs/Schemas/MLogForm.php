@@ -50,7 +50,7 @@ class MLogForm
                                                         'teknisi',
                                                         'name',
                                                         fn ($query) => $query->where(function ($q) {
-                                                            $q->whereHas('roles', fn ($roleQuery) => $roleQuery->whereIn('name', ['Teknisi', 'Super Admin']));
+                                                            $q->whereHas('roles', fn ($roleQuery) => $roleQuery->whereIn('name', ['teknisi', 'operator', 'supervisor', 'super_admin']));
                                                         })
                                                     )
                                                     ->searchable()

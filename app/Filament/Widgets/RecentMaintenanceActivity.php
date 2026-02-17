@@ -3,19 +3,15 @@
 namespace App\Filament\Widgets;
 
 use App\Models\MRequest;
-use App\Models\MLog;
-use App\Models\MaintenanceReport;
-use Carbon\Carbon;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
-use Illuminate\Database\Eloquent\Builder;
 
 class RecentMaintenanceActivity extends BaseWidget
 {
     protected static ?int $sort = 9;
 
-    protected static ?string $heading = '🕐 Aktivitas Terbaru';
+    protected static ?string $heading = 'Aktivitas Maintenance Terbaru';
 
     protected int | string | array $columnSpan = 'full';
 
@@ -66,10 +62,10 @@ class RecentMaintenanceActivity extends BaseWidget
                         default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'critical' => '🔴 Critical',
-                        'high' => '🟠 High',
-                        'medium' => '🟡 Medium',
-                        'low' => '🟢 Low',
+                        'critical' => 'Critical',
+                        'high' => 'High',
+                        'medium' => 'Medium',
+                        'low' => 'Low',
                         default => $state,
                     }),
 
@@ -85,11 +81,11 @@ class RecentMaintenanceActivity extends BaseWidget
                         default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'pending' => '⏳ Pending',
-                        'approved' => '✅ Approved',
-                        'rejected' => '❌ Rejected',
-                        'in_progress' => '🔧 In Progress',
-                        'completed' => '✓ Completed',
+                        'pending' => 'Pending',
+                        'approved' => 'Approved',
+                        'rejected' => 'Rejected',
+                        'in_progress' => 'In Progress',
+                        'completed' => 'Completed',
                         default => $state,
                     }),
 

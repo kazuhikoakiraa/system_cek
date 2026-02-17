@@ -12,6 +12,10 @@ class TrenPengecekanChart extends ChartWidget
     
     protected static ?int $sort = 6;
 
+    protected int | string | array $columnSpan = ['md' => 1, 'xl' => 2];
+
+    protected ?string $maxHeight = '300px';
+
     protected ?string $pollingInterval = '60s';
 
     public static function canView(): bool
@@ -59,6 +63,7 @@ class TrenPengecekanChart extends ChartWidget
     protected function getOptions(): array
     {
         return [
+            'maintainAspectRatio' => false,
             'plugins' => [
                 'legend' => [
                     'display' => true,

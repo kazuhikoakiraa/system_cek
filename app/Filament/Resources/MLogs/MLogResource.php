@@ -19,17 +19,17 @@ class MLogResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;
 
-    protected static ?string $navigationLabel = 'Log Perawatan';
+    protected static ?string $navigationLabel = 'Laporan Perawatan';
 
-    protected static ?string $modelLabel = 'Log Perawatan';
+    protected static ?string $modelLabel = 'Laporan Perawatan';
 
-    protected static ?string $pluralModelLabel = 'Log Perawatan';
+    protected static ?string $pluralModelLabel = 'Laporan Perawatan';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Manajemen Mesin';
+    protected static string|\UnitEnum|null $navigationGroup = 'Laporan';
 
-    protected static ?int $navigationSort = 11;
+    protected static ?int $navigationSort = 71;
 
-    protected static ?int $navigationGroupSort = 2;
+    protected static ?int $navigationGroupSort = 4;
 
     protected static ?string $recordTitleAttribute = 'id';
 

@@ -35,13 +35,13 @@ class MRequestObserver
         ]);
 
         // Notifikasi ke Admin & Super Admin
-        $admins = User::role(['Super Admin', 'admin'])->get();
-        Notification::send($admins, new MaintenanceRequestCreated($mRequest));
+        $admins = User::whereHas('roles', fn ($query) => $query->whereIn('name', ['super_admin', 'admin']))->get();
+        Notification::sendNow($admins, new MaintenanceRequestCreated($mRequest));
         
         // Notifikasi langsung ke Teknisi (tidak perlu approval)
-        $teknisi = User::role(['Teknisi', 'Operator'])->get();
+        $teknisi = User::whereHas('roles', fn ($query) => $query->whereIn('name', ['operator', 'supervisor', 'teknisi']))->get();
         if ($teknisi->isNotEmpty()) {
-            Notification::send($teknisi, new MaintenanceRequestCreated($mRequest));
+            Notification::sendNow($teknisi, new MaintenanceRequestCreated($mRequest));
         }
         
         // Sinkronkan status mesin berdasarkan request aktif.
@@ -70,15 +70,15 @@ class MRequestObserver
             ]);
 
             // Notifikasi ke Admin & Super Admin bahwa pekerjaan selesai
-            $admins = User::role(['Super Admin', 'admin'])->get();
+            $admins = User::whereHas('roles', fn ($query) => $query->whereIn('name', ['super_admin', 'admin']))->get();
             if ($admins->isNotEmpty()) {
-                Notification::send($admins, new MaintenanceRequestApproved($mRequest));
+                Notification::sendNow($admins, new MaintenanceRequestApproved($mRequest));
             }
             
             // Notifikasi ke creator (yang buat request)
             $creator = $mRequest->creator;
             if ($creator) {
-                $creator->notify(new MaintenanceRequestApproved($mRequest));
+                Notification::sendNow(collect([$creator]), new MaintenanceRequestApproved($mRequest));
             }
         }
 

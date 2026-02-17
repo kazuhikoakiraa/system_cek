@@ -5,7 +5,6 @@ namespace App\Filament\Widgets;
 use App\Models\PengecekanMesin;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Facades\Auth;
-use Filament\Support\Enums\IconPosition;
 
 class OperatorReminderWidget extends Widget
 {
@@ -13,7 +12,7 @@ class OperatorReminderWidget extends Widget
     
     protected static ?int $sort = -4;
     
-    protected int | string | array $columnSpan = 1;
+    protected int | string | array $columnSpan = 'full';
 
     protected ?string $pollingInterval = '60s';
 

@@ -7,11 +7,13 @@ use Filament\Widgets\ChartWidget;
 
 class MachineStatusChart extends ChartWidget
 {
-    protected ?string $heading = '🏭 Status Mesin';
+    protected ?string $heading = 'Status Mesin';
 
     protected static ?int $sort = 7;
 
-    protected int | string | array $columnSpan = ['md' => 1, 'xl' => 1];
+    protected int | string | array $columnSpan = ['md' => 1, 'xl' => 2];
+
+    protected ?string $maxHeight = '300px';
 
     protected function getData(): array
     {
@@ -26,10 +28,10 @@ class MachineStatusChart extends ChartWidget
                     'label' => 'Status Mesin',
                     'data' => [$aktif, $nonaktif, $maintenance, $rusak],
                     'backgroundColor' => [
-                        'rgb(34, 197, 94)',  // Green for aktif
-                        'rgb(156, 163, 175)', // Gray for nonaktif
-                        'rgb(245, 158, 11)',  // Orange for maintenance
-                        'rgb(239, 68, 68)',   // Red for rusak
+                        'rgb(34, 197, 94)',
+                        'rgb(156, 163, 175)',
+                        'rgb(245, 158, 11)',
+                        'rgb(239, 68, 68)',
                     ],
                 ],
             ],
@@ -45,6 +47,7 @@ class MachineStatusChart extends ChartWidget
     protected function getOptions(): array
     {
         return [
+            'maintainAspectRatio' => false,
             'plugins' => [
                 'legend' => [
                     'display' => true,
