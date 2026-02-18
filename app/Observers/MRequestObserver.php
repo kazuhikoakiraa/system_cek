@@ -36,14 +36,7 @@ class MRequestObserver
             'user_agent' => request()->userAgent(),
         ]);
 
-        // Notifikasi ke Admin & Super Admin
-        $admins = User::whereHas('roles', fn ($query) => $query->whereIn('name', ['Super Admin', 'Admin']))->get();
-        Notification::sendNow(
-            $admins->merge($superAdmins)->unique('id')->values(),
-            new MaintenanceRequestCreated($mRequest)
-        );
-        
-        // Notifikasi langsung ke Teknisi (tidak perlu approval)
+        // Notifikasi langsung ke Teknisi
         $teknisi = User::whereHas('roles', fn ($query) => $query->whereIn('name', ['Operator', 'Teknisi']))->get();
         if ($teknisi->isNotEmpty()) {
             Notification::sendNow(

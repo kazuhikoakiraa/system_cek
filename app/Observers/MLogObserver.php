@@ -8,6 +8,7 @@ use App\Models\MRequest;
 use App\Models\SparePartTransaction;
 use App\Models\User;
 use App\Notifications\MaintenanceRequestApproved;
+use App\Notifications\MaintenanceRequestStarted;
 use Illuminate\Support\Facades\Notification;
 
 class MLogObserver
@@ -32,6 +33,16 @@ class MLogObserver
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),
         ]);
+
+        // Notifikasi ke Admin & Super Admin saat teknisi mulai
+        $superAdmins = User::whereHas('roles', fn ($query) => $query->where('name', 'Super Admin'))->get();
+        $admins = User::whereHas('roles', fn ($query) => $query->whereIn('name', ['Super Admin', 'Admin']))->get();
+        if ($admins->isNotEmpty() || $superAdmins->isNotEmpty()) {
+            Notification::sendNow(
+                $admins->merge($superAdmins)->unique('id')->values(),
+                new MaintenanceRequestStarted($mLog->request)
+            );
+        }
     }
 
     /**
