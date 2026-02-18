@@ -18,6 +18,8 @@ class MRequestObserver
      */
     public function created(MRequest $mRequest): void
     {
+        $superAdmins = User::whereHas('roles', fn ($query) => $query->where('name', 'Super Admin'))->get();
+
         // Record audit trail
         MAudit::create([
             'mesin_id' => $mRequest->mesin_id,
@@ -35,13 +37,19 @@ class MRequestObserver
         ]);
 
         // Notifikasi ke Admin & Super Admin
-        $admins = User::whereHas('roles', fn ($query) => $query->whereIn('name', ['super_admin', 'admin']))->get();
-        Notification::sendNow($admins, new MaintenanceRequestCreated($mRequest));
+        $admins = User::whereHas('roles', fn ($query) => $query->whereIn('name', ['Super Admin', 'Admin']))->get();
+        Notification::sendNow(
+            $admins->merge($superAdmins)->unique('id')->values(),
+            new MaintenanceRequestCreated($mRequest)
+        );
         
         // Notifikasi langsung ke Teknisi (tidak perlu approval)
-        $teknisi = User::whereHas('roles', fn ($query) => $query->whereIn('name', ['operator', 'supervisor', 'teknisi']))->get();
+        $teknisi = User::whereHas('roles', fn ($query) => $query->whereIn('name', ['Operator', 'Teknisi']))->get();
         if ($teknisi->isNotEmpty()) {
-            Notification::sendNow($teknisi, new MaintenanceRequestCreated($mRequest));
+            Notification::sendNow(
+                $teknisi->merge($superAdmins)->unique('id')->values(),
+                new MaintenanceRequestCreated($mRequest)
+            );
         }
         
         // Sinkronkan status mesin berdasarkan request aktif.
@@ -53,6 +61,8 @@ class MRequestObserver
      */
     public function updated(MRequest $mRequest): void
     {
+        $superAdmins = User::whereHas('roles', fn ($query) => $query->where('name', 'Super Admin'))->get();
+
         // Check if status changed to completed
         if ($mRequest->wasChanged('status') && $mRequest->status === 'completed') {
             // Record audit trail
@@ -70,15 +80,21 @@ class MRequestObserver
             ]);
 
             // Notifikasi ke Admin & Super Admin bahwa pekerjaan selesai
-            $admins = User::whereHas('roles', fn ($query) => $query->whereIn('name', ['super_admin', 'admin']))->get();
+            $admins = User::whereHas('roles', fn ($query) => $query->whereIn('name', ['Super Admin', 'Admin']))->get();
             if ($admins->isNotEmpty()) {
-                Notification::sendNow($admins, new MaintenanceRequestApproved($mRequest));
+                Notification::sendNow(
+                    $admins->merge($superAdmins)->unique('id')->values(),
+                    new MaintenanceRequestApproved($mRequest)
+                );
             }
             
             // Notifikasi ke creator (yang buat request)
             $creator = $mRequest->creator;
             if ($creator) {
-                Notification::sendNow(collect([$creator]), new MaintenanceRequestApproved($mRequest));
+                Notification::sendNow(
+                    collect([$creator])->merge($superAdmins)->unique('id')->values(),
+                    new MaintenanceRequestApproved($mRequest)
+                );
             }
         }
 

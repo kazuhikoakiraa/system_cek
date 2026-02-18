@@ -19,7 +19,7 @@ class TeknisiReminderWidget extends Widget
     public static function canView(): bool
     {
         $user = Auth::user();
-        return $user && $user->hasAnyRole(['super_admin', 'admin', 'teknisi', 'operator', 'supervisor']);
+        return $user && $user->hasAnyRole(['Super Admin', 'Admin', 'Teknisi', 'Operator', 'Supervisor']);
     }
 
     public function getMessage(): array

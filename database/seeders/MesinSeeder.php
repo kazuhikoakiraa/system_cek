@@ -15,7 +15,7 @@ class MesinSeeder extends Seeder
     public function run(): void
     {
         // Pastikan ada user dengan role operator
-        $operators = User::role('operator')->get();
+        $operators = User::role('Operator')->get();
         
         if ($operators->isEmpty()) {
             $this->command->warn('Tidak ada user dengan role operator. Membuat 3 operator...');
@@ -26,7 +26,7 @@ class MesinSeeder extends Seeder
                     'password' => bcrypt('password'),
                     'email_verified_at' => now(),
                 ]);
-                $user->assignRole('operator');
+                $user->assignRole('Operator');
                 $operators->push($user);
             }
         }

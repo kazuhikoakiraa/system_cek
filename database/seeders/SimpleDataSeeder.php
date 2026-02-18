@@ -22,7 +22,7 @@ class SimpleDataSeeder extends Seeder
         $this->command->info('🔄 Starting Simple Data Seeder...');
 
         // Pastikan ada user dengan role yang diperlukan
-        $admin = User::role('super_admin')->first() ?? User::role('admin')->first();
+        $admin = User::role('Super Admin')->first() ?? User::role('Admin')->first();
         
         // Create 5 operators for 5 machines and 5 daftar pengecekan
         $this->command->info('👥 Creating 5 Operators...');
@@ -41,8 +41,8 @@ class SimpleDataSeeder extends Seeder
                 ]
             );
             
-            if (!$operator->hasRole('operator')) {
-                $operator->assignRole('operator');
+            if (!$operator->hasRole('Operator')) {
+                $operator->assignRole('Operator');
             }
             
             $operators[] = $operator;

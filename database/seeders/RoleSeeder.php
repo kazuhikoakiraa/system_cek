@@ -17,10 +17,10 @@ class RoleSeeder extends Seeder
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         // Create roles
-        $superAdmin = Role::firstOrCreate(['name' => 'super_admin', 'guard_name' => 'web']);
-        $admin = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
-        $supervisor = Role::firstOrCreate(['name' => 'supervisor', 'guard_name' => 'web']);
-        $operator = Role::firstOrCreate(['name' => 'operator', 'guard_name' => 'web']);
+        $superAdmin = Role::firstOrCreate(['name' => 'Super Admin', 'guard_name' => 'web']);
+        $admin = Role::firstOrCreate(['name' => 'Admin', 'guard_name' => 'web']);
+        $supervisor = Role::firstOrCreate(['name' => 'Supervisor', 'guard_name' => 'web']);
+        $operator = Role::firstOrCreate(['name' => 'Operator', 'guard_name' => 'web']);
         $viewer = Role::firstOrCreate(['name' => 'viewer', 'guard_name' => 'web']);
 
         // Get all permissions

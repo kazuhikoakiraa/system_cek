@@ -74,20 +74,22 @@ class MaintenanceReportObserver
      */
     private function sendMaintenanceSelesaiNotification(MaintenanceReport $maintenanceReport): void
     {
+        $superAdmins = User::whereHas('roles', fn ($query) => $query->where('name', 'Super Admin'))->get();
+
         // Admin dan Manager mendapat notifikasi
-        $adminsAndManagers = User::whereHas('roles', fn ($query) => $query->whereIn('name', ['super_admin', 'admin']))
+        $adminsAndManagers = User::whereHas('roles', fn ($query) => $query->whereIn('name', ['Super Admin', 'Admin']))
             ->get();
 
         // Operator yang melakukan pengecekan mendapat notifikasi
         $operator = $maintenanceReport->detailPengecekanMesin?->pengecekanMesin?->operator;
         
-        $recipients = $adminsAndManagers;
+        $recipients = $adminsAndManagers->merge($superAdmins);
         if ($operator) {
             $recipients = $recipients->push($operator);
         }
 
         Notification::sendNow(
-            $recipients,
+            $recipients->unique('id')->values(),
             new MaintenanceSelesaiNotification($maintenanceReport)
         );
     }

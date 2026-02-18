@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
                 'email_verified_at' => now(),
             ]
         );
-        $superAdmin->assignRole('super_admin');
+        $superAdmin->assignRole('Super Admin');
 
         $this->command->info('✓ Super Admin created!');
         $this->command->info('  Email: admin@system-cek.com');
@@ -48,7 +48,7 @@ class DatabaseSeeder extends Seeder
                 'email_verified_at' => now(),
             ]
         );
-        $supervisor->assignRole('supervisor');
+        $supervisor->assignRole('Supervisor');
 
         $this->command->info('✓ Sample Supervisor created!');
         $this->command->info('  Email: supervisor@system-cek.com');

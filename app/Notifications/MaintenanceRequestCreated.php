@@ -52,6 +52,18 @@ class MaintenanceRequestCreated extends Notification
     public function toArray(object $notifiable): array
     {
         return [
+            'format' => 'filament',
+            'title' => 'Request Maintenance Baru',
+            'body' => "Request {$this->request->request_number} untuk mesin " . ($this->request->mesin?->nama_mesin ?? 'N/A'),
+            'duration' => 'persistent',
+            'actions' => [
+                [
+                    'name' => 'view',
+                    'label' => 'Lihat Detail',
+                    'url' => url('/admin/m-requests/' . $this->request->id),
+                    'color' => 'primary',
+                ],
+            ],
             'request_id' => $this->request->id,
             'request_number' => $this->request->request_number,
             'mesin_name' => $this->request->mesin?->nama_mesin ?? 'N/A',

@@ -19,11 +19,11 @@ class LaporanExportController extends Controller
         $request->validate([
             'tanggal_mulai' => 'required|date',
             'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
-            'mesin_id' => 'nullable|integer|exists:mesins,id',
+            'mesin_id' => 'nullable|integer|exists:daftar_pengecekan,id',
         ]);
 
-        $tanggalMulai = Carbon::parse($request->tanggal_mulai);
-        $tanggalSelesai = Carbon::parse($request->tanggal_selesai);
+        $tanggalMulai = $this->parseDateInput($request->tanggal_mulai);
+        $tanggalSelesai = $this->parseDateInput($request->tanggal_selesai);
         $mesinId = $request->mesin_id;
 
         $laporanData = $this->getLaporanData($tanggalMulai, $tanggalSelesai, $mesinId);
@@ -63,11 +63,11 @@ class LaporanExportController extends Controller
         $request->validate([
             'tanggal_mulai' => 'required|date',
             'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
-            'mesin_id' => 'nullable|integer|exists:mesins,id',
+            'mesin_id' => 'nullable|integer|exists:daftar_pengecekan,id',
         ]);
 
-        $tanggalMulai = Carbon::parse($request->tanggal_mulai);
-        $tanggalSelesai = Carbon::parse($request->tanggal_selesai);
+        $tanggalMulai = $this->parseDateInput($request->tanggal_mulai);
+        $tanggalSelesai = $this->parseDateInput($request->tanggal_selesai);
         $mesinId = $request->mesin_id;
 
         $laporanData = $this->getLaporanData($tanggalMulai, $tanggalSelesai, $mesinId);
@@ -120,5 +120,15 @@ class LaporanExportController extends Controller
             ->count() + 1;
 
         return sprintf('DOC/CKMS/%s/%s/%04d', $tahun, $bulan, $sequence);
+    }
+
+    protected function parseDateInput(string $value): Carbon
+    {
+        $value = trim($value);
+        if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $value)) {
+            return Carbon::createFromFormat('d/m/Y', $value);
+        }
+
+        return Carbon::parse($value);
     }
 }

@@ -14,7 +14,7 @@ class MesinFactory extends Factory
     {
         return [
             'nama_mesin' => 'Mesin ' . fake()->randomElement(['CNC', 'Bubut', 'Las', 'Frais', 'Gerinda']) . ' ' . fake()->unique()->numberBetween(100, 999),
-            'user_id' => User::role('operator')->inRandomOrder()->first()?->id ?? User::factory(),
+            'user_id' => User::role('Operator')->inRandomOrder()->first()?->id ?? User::factory(),
             'deskripsi' => fake()->sentence(10),
         ];
     }

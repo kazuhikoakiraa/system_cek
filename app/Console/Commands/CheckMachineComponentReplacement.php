@@ -136,7 +136,7 @@ class CheckMachineComponentReplacement extends Command
             $recipients->push($owner);
         }
 
-        $superAdmins = User::whereHas('roles', fn ($query) => $query->where('name', 'super_admin'))->get();
+        $superAdmins = User::whereHas('roles', fn ($query) => $query->where('name', 'Super Admin'))->get();
 
         $recipients = $recipients
             ->merge($superAdmins)

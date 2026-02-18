@@ -95,7 +95,7 @@ class SparePartTransactionObserver
             return false;
         }
         
-        if ($user->hasRole(['super_admin', 'admin'])) {
+        if ($user->hasRole(['Super Admin', 'Admin'])) {
             return true;
         }
         

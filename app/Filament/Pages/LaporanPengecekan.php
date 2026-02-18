@@ -162,13 +162,16 @@ class LaporanPengecekan extends Page implements HasForms
 
     protected function getLaporanData(): Collection
     {
+        $tanggalMulai = $this->parseDateInput($this->tanggalMulai)->startOfDay();
+        $tanggalSelesai = $this->parseDateInput($this->tanggalSelesai)->endOfDay();
+
         $query = DaftarPengecekan::with([
             'operator',
             'komponenMesins',
-            'pengecekan' => function ($query) {
+            'pengecekan' => function ($query) use ($tanggalMulai, $tanggalSelesai) {
                 $query->whereBetween('tanggal_pengecekan', [
-                    $this->tanggalMulai,
-                    Carbon::parse($this->tanggalSelesai)->endOfDay(),
+                    $tanggalMulai,
+                    $tanggalSelesai,
                 ])->with(['detailPengecekan', 'operator']);
             },
         ]);
@@ -251,6 +254,20 @@ class LaporanPengecekan extends Page implements HasForms
             ->count() + 1;
 
         return sprintf('DOC/CKMS/%s/%s/%04d', $tahun, $bulan, $sequence);
+    }
+
+    protected function parseDateInput(?string $value): Carbon
+    {
+        $value = trim((string) $value);
+        if ($value === '') {
+            return now();
+        }
+
+        if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $value)) {
+            return Carbon::createFromFormat('d/m/Y', $value);
+        }
+
+        return Carbon::parse($value);
     }
 
     protected function getHeaderActions(): array

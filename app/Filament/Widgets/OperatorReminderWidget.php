@@ -19,7 +19,7 @@ class OperatorReminderWidget extends Widget
     public static function canView(): bool
     {
         $user = Auth::user();
-        return $user && $user->hasRole('operator');
+        return $user && $user->hasRole('Operator');
     }
 
     public function getMessage(): array

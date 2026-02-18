@@ -69,7 +69,7 @@ class DaftarPengecekanResource extends Resource
                                             ->toArray();
 
                                         // Dapatkan semua operator yang belum ditugaskan
-                                        $availableOperators = User::role('operator')
+                                        $availableOperators = User::role('Operator')
                                             ->whereNotIn('id', $assignedOperatorIds)
                                             ->get()
                                             ->pluck('name', 'id');

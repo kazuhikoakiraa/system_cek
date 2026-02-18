@@ -55,6 +55,18 @@ class MaintenanceRequestApproved extends Notification
     public function toArray(object $notifiable): array
     {
         return [
+            'format' => 'filament',
+            'title' => 'Request Maintenance Disetujui',
+            'body' => "Request {$this->request->request_number} telah disetujui.",
+            'duration' => 'persistent',
+            'actions' => [
+                [
+                    'name' => 'view',
+                    'label' => 'Mulai Pekerjaan',
+                    'url' => url('/admin/m-logs/create?request=' . $this->request->id),
+                    'color' => 'success',
+                ],
+            ],
             'request_id' => $this->request->id,
             'request_number' => $this->request->request_number,
             'mesin_name' => $this->request->mesin?->nama_mesin ?? 'N/A',

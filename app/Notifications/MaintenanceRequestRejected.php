@@ -52,6 +52,18 @@ class MaintenanceRequestRejected extends Notification
     public function toArray(object $notifiable): array
     {
         return [
+            'format' => 'filament',
+            'title' => 'Request Maintenance Ditolak',
+            'body' => "Request {$this->request->request_number} ditolak.",
+            'duration' => 'persistent',
+            'actions' => [
+                [
+                    'name' => 'view',
+                    'label' => 'Lihat Detail',
+                    'url' => url('/admin/m-requests/' . $this->request->id),
+                    'color' => 'danger',
+                ],
+            ],
             'request_id' => $this->request->id,
             'request_number' => $this->request->request_number,
             'mesin_name' => $this->request->mesin?->nama_mesin ?? 'N/A',

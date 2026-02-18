@@ -30,7 +30,7 @@ class KetidaksesuaianDitemukanNotification extends Notification
         
         return [
             'format' => 'filament',
-            'title' => '⚠️ Ketidaksesuaian Ditemukan',
+            'title' => 'Ketidaksesuaian Ditemukan',
             'body' => "Ketidaksesuaian pada " . ($mesin?->nama_mesin ?? 'N/A') . " - " . ($komponen?->nama_komponen ?? 'N/A'),
             'duration' => 'persistent',
             'actions' => [
@@ -51,3 +51,4 @@ class KetidaksesuaianDitemukanNotification extends Notification
         ];
     }
 }
+

@@ -47,7 +47,7 @@ class PengecekanMesinForm
                             ->required()
                             ->disabled(function () {
                                 $user = Auth::user();
-                                return !($user && $user->hasAnyRole(['Super Admin', 'admin']));
+                                return !($user && $user->hasAnyRole(['Super Admin', 'Admin']));
                             }),
                     ])
                     ->columns(2),
@@ -82,7 +82,7 @@ class PengecekanMesinForm
                                     ->required()
                                     ->disabled(function () {
                                         $user = Auth::user();
-                                        return !($user && $user->hasAnyRole(['Super Admin', 'admin']));
+                                        return !($user && $user->hasAnyRole(['Super Admin', 'Admin']));
                                     }),
 
                                 Textarea::make('keterangan')
@@ -90,7 +90,7 @@ class PengecekanMesinForm
                                     ->rows(2)
                                     ->disabled(function () {
                                         $user = Auth::user();
-                                        return !($user && $user->hasAnyRole(['Super Admin', 'admin']));
+                                        return !($user && $user->hasAnyRole(['Super Admin', 'Admin']));
                                     })
                                     ->columnSpanFull(),
                             ])
