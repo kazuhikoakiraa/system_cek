@@ -5,6 +5,7 @@ namespace App\Filament\Resources\SpareParts\Pages;
 use App\Exports\SparePartTransactionExport;
 use App\Filament\Resources\SparePartTransactionResource;
 use App\Models\SparePartTransaction;
+use App\Http\Controllers\SparePartTransactionPdfController;
 use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
@@ -159,15 +160,15 @@ class ListSparePartTransactions extends ListRecords
                 ])
                 ->action(function (array $data) {
                     $params = array_filter($data);
-                    $url = route('spare-part-transactions.pdf', $params);
-                    
+
                     Notification::make()
                         ->success()
                         ->title('Export berhasil')
                         ->body('File PDF sedang diunduh...')
                         ->send();
 
-                    return redirect($url);
+                    $request = request()->merge($params);
+                    return app(SparePartTransactionPdfController::class)->download($request);
                 }),
         ];
     }

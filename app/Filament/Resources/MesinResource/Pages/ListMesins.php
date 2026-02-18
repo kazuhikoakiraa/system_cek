@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\MesinResource\Pages;
 
 use App\Filament\Resources\MesinResource;
+use App\Http\Controllers\MesinPdfController;
 use App\Exports\MesinLengkapExport;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
@@ -19,8 +20,9 @@ class ListMesins extends ListRecords
                 ->label('Export PDF')
                 ->icon('heroicon-o-document-arrow-down')
                 ->color('danger')
-                ->url(fn () => route('mesin.export.pdf'))
-                ->openUrlInNewTab()
+                ->action(function () {
+                    return app(MesinPdfController::class)->download(request());
+                })
                 ->tooltip('Export daftar mesin ke PDF'),
             
             Actions\Action::make('export_excel')

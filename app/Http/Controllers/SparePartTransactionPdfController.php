@@ -11,6 +11,20 @@ use Illuminate\Support\Facades\Blade;
 
 class SparePartTransactionPdfController extends Controller
 {
+    protected function parseDateInput(?string $value): ?Carbon
+    {
+        $value = trim((string) $value);
+        if ($value === '') {
+            return null;
+        }
+
+        if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $value)) {
+            return Carbon::createFromFormat('d/m/Y', $value);
+        }
+
+        return Carbon::parse($value);
+    }
+
     public function download(Request $request)
     {
         $query = SparePartTransaction::query()
@@ -26,18 +40,18 @@ class SparePartTransactionPdfController extends Controller
             $query->where('spare_part_id', $request->spare_part_id);
         }
 
-        if ($request->has('tanggal_mulai') && $request->tanggal_mulai) {
-            $query->whereDate('tanggal_transaksi', '>=', $request->tanggal_mulai);
+        $tanggalMulai = $this->parseDateInput($request->tanggal_mulai);
+        $tanggalSelesai = $this->parseDateInput($request->tanggal_selesai);
+
+        if ($tanggalMulai) {
+            $query->whereDate('tanggal_transaksi', '>=', $tanggalMulai->toDateString());
         }
 
-        if ($request->has('tanggal_selesai') && $request->tanggal_selesai) {
-            $query->whereDate('tanggal_transaksi', '<=', $request->tanggal_selesai);
+        if ($tanggalSelesai) {
+            $query->whereDate('tanggal_transaksi', '<=', $tanggalSelesai->toDateString());
         }
 
         $transactions = $query->get();
-
-        $tanggalMulai = $request->tanggal_mulai ? Carbon::parse($request->tanggal_mulai) : null;
-        $tanggalSelesai = $request->tanggal_selesai ? Carbon::parse($request->tanggal_selesai) : null;
 
         $html = Blade::render('pdf.spare-part-transactions', [
             'transactions' => $transactions,
