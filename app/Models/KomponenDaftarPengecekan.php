@@ -40,7 +40,7 @@ class KomponenDaftarPengecekan extends Model
 
     public function detailPengecekan(): HasMany
     {
-        return $this->hasMany(DetailPengecekanMesin::class);
+        return $this->hasMany(DetailPengecekanMesin::class, 'komponen_mesin_id');
     }
 
     /**

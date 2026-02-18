@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use Illuminate\Support\Arr;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerifyEmail
@@ -50,7 +50,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerif
      */
     public function getFilamentAvatarUrl(): ?string
     {
-        return $this->avatarUrl;
+        return $this->avatar_url;
     }
 
     /**
@@ -59,7 +59,17 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerif
     protected function avatarUrl(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->resolveAvatarUrl($this->avatar),
+            get: fn () => $this->resolveAvatarUrl($this->getRawOriginal('avatar')),
+        );
+    }
+
+    /**
+     * Normalize avatar path before persisting to database.
+     */
+    protected function avatar(): Attribute
+    {
+        return Attribute::make(
+            set: fn (mixed $value) => $this->normalizeAvatarPath($this->extractAvatarValue($value)),
         );
     }
 
@@ -70,74 +80,124 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerif
      */
     protected function resolveAvatarUrl(mixed $avatar): string
     {
+        $avatar = $this->extractAvatarValue($avatar);
+
         // Early return jika avatar kosong atau bukan string
         if (empty($avatar) || !is_string($avatar)) {
             return $this->getDefaultAvatarUrl();
         }
         
-        // Assign ke variabel dan trim
-        $path = trim($avatar);
-        
-        // Return default jika kosong setelah trim
-        if ($path === '') {
+        $path = $this->normalizeAvatarPath($avatar);
+
+        if (empty($path)) {
             return $this->getDefaultAvatarUrl();
         }
-        
-        // Hilangkan leading slash
-        $path = ltrim($path, '/');
-        
+
         // Jika sudah URL lengkap (http, https, atau data URI)
         if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, 'data:')) {
+            if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+                if (filter_var($path, FILTER_VALIDATE_URL) === false) {
+                    return $this->getDefaultAvatarUrl();
+                }
+            }
+
             return $path;
         }
 
-        // Jika path mengandung 'public/', hilangkan prefix tersebut
-        if (str_starts_with($path, 'public/')) {
-            $path = substr($path, 7); // strlen('public/') = 7
+        $path = ltrim($path, '/');
+
+        if ($path === '') {
+            return $this->getDefaultAvatarUrl();
         }
 
-        // Jika path mengandung 'storage/', gunakan asset helper
         if (str_starts_with($path, 'storage/')) {
-            return asset($path);
+            $path = substr($path, 8);
         }
 
-        // Default: gunakan Storage URL dengan disk public
-        /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
-        $disk = Storage::disk('public');
-        
-        return $disk->url($path);
+        try {
+            return Storage::disk('public')->url($path);
+        } catch (\Throwable $e) {
+            return $this->getDefaultAvatarUrl();
+        }
+    }
+
+    protected function normalizeAvatarPath(mixed $avatar): ?string
+    {
+        $avatar = $this->extractAvatarValue($avatar);
+
+        if (empty($avatar) || !is_string($avatar)) {
+            return null;
+        }
+
+        $path = str_replace('\\', '/', trim($avatar));
+
+        if ($path === '') {
+            return null;
+        }
+
+        // Handle JSON array string such as ["avatars/file.jpg"].
+        if (str_starts_with($path, '[')) {
+            $decoded = json_decode($path, true);
+
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                $first = Arr::first($decoded);
+
+                if (is_string($first)) {
+                    $path = $first;
+                }
+            }
+        }
+
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            $urlHost = parse_url($path, PHP_URL_HOST);
+            $appHost = parse_url(config('app.url'), PHP_URL_HOST);
+
+            // Keep third-party URLs as-is.
+            if (is_string($urlHost) && is_string($appHost) && ! str_contains($urlHost, $appHost)) {
+                return $path;
+            }
+
+            $urlPath = parse_url($path, PHP_URL_PATH);
+
+            if (is_string($urlPath) && $urlPath !== '') {
+                $urlPath = ltrim($urlPath, '/');
+                $urlPath = preg_replace('#^public/#', '', $urlPath) ?? $urlPath;
+                $urlPath = preg_replace('#^storage/#', '', $urlPath) ?? $urlPath;
+
+                return ltrim($urlPath, '/');
+            }
+
+            return $path;
+        }
+
+        if (str_starts_with($path, 'data:')) {
+            return $path;
+        }
+
+        $path = preg_replace('#^/?public/#', '', $path) ?? $path;
+        $path = preg_replace('#^/?storage/#', '', $path) ?? $path;
+
+        return ltrim($path, '/');
+    }
+
+    protected function extractAvatarValue(mixed $avatar): mixed
+    {
+        if (is_array($avatar)) {
+            return Arr::first($avatar);
+        }
+
+        return $avatar;
     }
 
     protected function getDefaultAvatarUrl(): string
     {
-        $name = trim((string) ($this->name ?? ''));
-        $name = $name !== '' ? $name : 'User';
+        $name = trim((string) ($this->name ?? 'User'));
 
-        $parts = preg_split('/\s+/', $name) ?: [];
-        $initials = '';
-        
-        foreach ($parts as $part) {
-            $part = trim($part);
-            if ($part === '') {
-                continue;
-            }
-
-            $initials .= mb_substr($part, 0, 1);
-            if (mb_strlen($initials) >= 2) {
-                break;
-            }
+        if ($name === '') {
+            $name = 'User';
         }
 
-        $initials = mb_strtoupper($initials !== '' ? $initials : 'U');
-
-        $svg = "<svg xmlns='http://www.w3.org/2000/svg' width='128' height='128' viewBox='0 0 128 128'>".
-            "<rect width='128' height='128' rx='64' fill='#0D8ABC'/>".
-            "<text x='50%' y='52%' text-anchor='middle' dominant-baseline='middle' font-family='ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial' font-size='52' fill='#fff'>".
-            htmlspecialchars($initials, ENT_XML1 | ENT_QUOTES, 'UTF-8').
-            "</text>".
-            "</svg>";
-
-        return 'data:image/svg+xml;base64,' . base64_encode($svg);
+        return 'https://ui-avatars.com/api/?name=' . urlencode($name) . '&color=FFFFFF&background=0D8ABC&size=128&rounded=true';
     }
 
     /**

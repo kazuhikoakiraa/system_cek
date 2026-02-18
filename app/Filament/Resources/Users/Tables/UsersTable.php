@@ -21,11 +21,10 @@ class UsersTable
     {
         return $table
             ->columns([
-                ImageColumn::make('avatar')
+                ImageColumn::make('avatar_url')
                     ->label('Foto')
                     ->circular()
-                    ->disk('public')
-                    ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->name) . '&color=7F9CF5&background=EBF4FF'),
+                    ->checkFileExistence(false),
                 TextColumn::make('name')
                     ->label('Nama')
                     ->searchable()

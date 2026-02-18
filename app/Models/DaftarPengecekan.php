@@ -31,6 +31,7 @@ class DaftarPengecekan extends Model
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'user_id' => 'integer',
     ];
 
     /**

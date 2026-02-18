@@ -390,7 +390,7 @@ class MulaiPengecekan extends Page implements HasForms
 
         // Cek apakah user adalah operator dari mesin ini
         $mesin = DaftarPengecekan::find($data['mesin_id']);
-        if ($mesin && $mesin->user_id !== Auth::id()) {
+        if ($mesin && (int) $mesin->user_id !== (int) Auth::id()) {
             Notification::make()
                 ->danger()
                 ->title('Akses Ditolak')

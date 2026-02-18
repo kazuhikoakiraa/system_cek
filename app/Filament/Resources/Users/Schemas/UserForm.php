@@ -13,6 +13,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Colors\Color;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Arr;
 
 class UserForm
 {
@@ -33,6 +34,7 @@ class UserForm
                             ->disk('public')
                             ->directory('avatars')
                             ->visibility('public')
+                            ->dehydrateStateUsing(fn (mixed $state) => is_array($state) ? Arr::first($state) : $state)
                             ->maxSize(2048)
                             ->imageEditor()
                             ->circleCropper()
