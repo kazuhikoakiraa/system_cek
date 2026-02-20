@@ -135,7 +135,7 @@ class LaporanMesinSheet implements FromCollection, WithTitle, WithStyles, WithEv
                 if ($pengecekan) {
                     $detail = $pengecekan->detailPengecekan
                         ->first(function ($d) use ($komponen) {
-                            return $d->komponen_mesin_id === $komponen->id;
+                            return (int) $d->komponen_mesin_id === (int) $komponen->id;
                         });
 
                     if ($detail) {
@@ -157,7 +157,7 @@ class LaporanMesinSheet implements FromCollection, WithTitle, WithStyles, WithEv
             $keterangan = '-';
             if ($lastPengecekan) {
                 $lastDetail = $lastPengecekan->detailPengecekan
-                    ->first(fn ($d) => $d->komponen_mesin_id === $komponen->id);
+                    ->first(fn ($d) => (int) $d->komponen_mesin_id === (int) $komponen->id);
                 if ($lastDetail && $lastDetail->keterangan) {
                     $keterangan = $lastDetail->keterangan;
                 }

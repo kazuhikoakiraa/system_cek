@@ -400,7 +400,7 @@
 
                                 if ($pengecekan) {
                                     $detail = $pengecekan->detailPengecekan
-                                        ->first(fn($d) => $d->komponen_mesin_id === $komponen->id);
+                                        ->first(fn($d) => (int) $d->komponen_mesin_id === (int) $komponen->id);
 
                                     if ($detail) {
                                         if ($detail->status_sesuai === 'sesuai') {
@@ -421,7 +421,7 @@
                             $keterangan = '-';
                             if ($lastPengecekan) {
                                 $lastDetail = $lastPengecekan->detailPengecekan
-                                    ->first(fn($d) => $d->komponen_mesin_id === $komponen->id);
+                                    ->first(fn($d) => (int) $d->komponen_mesin_id === (int) $komponen->id);
                                 if ($lastDetail && $lastDetail->keterangan) {
                                     $keterangan = $lastDetail->keterangan;
                                 }
