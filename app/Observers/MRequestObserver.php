@@ -19,6 +19,7 @@ class MRequestObserver
     public function created(MRequest $mRequest): void
     {
         $superAdmins = User::whereHas('roles', fn ($query) => $query->where('name', 'Super Admin'))->get();
+        $admins = User::whereHas('roles', fn ($query) => $query->where('name', 'Admin'))->get();
 
         // Record audit trail
         MAudit::create([
@@ -40,7 +41,7 @@ class MRequestObserver
         $teknisi = User::whereHas('roles', fn ($query) => $query->whereIn('name', ['Operator', 'Teknisi']))->get();
         if ($teknisi->isNotEmpty()) {
             Notification::sendNow(
-                $teknisi->merge($superAdmins)->unique('id')->values(),
+                $teknisi->merge($admins)->merge($superAdmins)->unique('id')->values(),
                 new MaintenanceRequestCreated($mRequest)
             );
         }
@@ -55,6 +56,7 @@ class MRequestObserver
     public function updated(MRequest $mRequest): void
     {
         $superAdmins = User::whereHas('roles', fn ($query) => $query->where('name', 'Super Admin'))->get();
+        $admins = User::whereHas('roles', fn ($query) => $query->where('name', 'Admin'))->get();
 
         // Check if status changed to completed
         if ($mRequest->wasChanged('status') && $mRequest->status === 'completed') {
@@ -73,10 +75,10 @@ class MRequestObserver
             ]);
 
             // Notifikasi ke Admin & Super Admin bahwa pekerjaan selesai
-            $admins = User::whereHas('roles', fn ($query) => $query->whereIn('name', ['Super Admin', 'Admin']))->get();
+            $admins = $admins->merge($superAdmins)->unique('id')->values();
             if ($admins->isNotEmpty()) {
                 Notification::sendNow(
-                    $admins->merge($superAdmins)->unique('id')->values(),
+                    $admins,
                     new MaintenanceRequestApproved($mRequest)
                 );
             }
@@ -85,7 +87,7 @@ class MRequestObserver
             $creator = $mRequest->creator;
             if ($creator) {
                 Notification::sendNow(
-                    collect([$creator])->merge($superAdmins)->unique('id')->values(),
+                    collect([$creator])->merge($admins)->merge($superAdmins)->unique('id')->values(),
                     new MaintenanceRequestApproved($mRequest)
                 );
             }

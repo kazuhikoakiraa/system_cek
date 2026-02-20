@@ -137,8 +137,10 @@ class CheckMachineComponentReplacement extends Command
         }
 
         $superAdmins = User::whereHas('roles', fn ($query) => $query->where('name', 'Super Admin'))->get();
+        $admins = User::whereHas('roles', fn ($query) => $query->where('name', 'Admin'))->get();
 
         $recipients = $recipients
+            ->merge($admins)
             ->merge($superAdmins)
             ->unique('id')
             ->values();

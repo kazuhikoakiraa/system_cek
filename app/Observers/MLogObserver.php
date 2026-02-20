@@ -77,14 +77,14 @@ class MLogObserver
                 $mLog->request->update(['status' => 'completed']);
 
                 // Notifikasi ke Admin & Super Admin bahwa pekerjaan selesai
-                $superAdmins = User::whereHas('roles', fn ($query) => $query->where('name', 'Super Admin'))->get();
-                $admins = User::whereHas('roles', fn ($query) => $query->whereIn('name', ['Super Admin', 'Admin']))->get();
-                if ($admins->isNotEmpty() || $superAdmins->isNotEmpty()) {
-                    Notification::sendNow(
-                        $admins->merge($superAdmins)->unique('id')->values(),
-                        new MaintenanceRequestApproved($mLog->request)
-                    );
-                }
+        $superAdmins = User::whereHas('roles', fn ($query) => $query->where('name', 'Super Admin'))->get();
+        $admins = User::whereHas('roles', fn ($query) => $query->where('name', 'Admin'))->get();
+        if ($admins->isNotEmpty() || $superAdmins->isNotEmpty()) {
+            Notification::sendNow(
+                $admins->merge($superAdmins)->unique('id')->values(),
+                new MaintenanceRequestApproved($mLog->request)
+            );
+        }
             }
         }
 

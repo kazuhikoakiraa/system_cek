@@ -59,10 +59,10 @@ class DetailPengecekanMesinObserver
     private function sendKetidaksesuaianNotification(MaintenanceReport $maintenanceReport): void
     {
         $superAdmins = User::whereHas('roles', fn ($query) => $query->where('name', 'Super Admin'))->get();
+        $admins = User::whereHas('roles', fn ($query) => $query->where('name', 'Admin'))->get();
 
         // Admin dan Manager mendapat notifikasi
-        $adminsAndManagers = User::whereHas('roles', fn ($query) => $query->whereIn('name', ['Super Admin', 'Admin']))
-            ->get();
+        $adminsAndManagers = $admins->merge($superAdmins)->unique('id')->values();
 
         // Teknisi mendapat notifikasi
         $teknisi = User::whereHas('roles', fn ($query) => $query->whereIn('name', ['Operator', 'Teknisi']))->get();
@@ -70,7 +70,6 @@ class DetailPengecekanMesinObserver
         // Gabungkan dan kirim notifikasi
         $recipients = $adminsAndManagers
             ->merge($teknisi)
-            ->merge($superAdmins)
             ->unique('id')
             ->values();
         
